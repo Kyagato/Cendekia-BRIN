@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
+
+class RegisteredUserController extends Controller
+{
+    /**
+     * Display the registration view.
+     */
+    public function create(): View
+    {
+        return view('auth.register');
+    }
+
+    /**
+     * Handle an incoming registration request.
+     *
+     * @throws ValidationException
+     */
+   public function store(Request $request): RedirectResponse
+    {
+        // 1. Tambahkan validasi untuk jenis kelamin dan instansi
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'jenis_kelamin' => 'required|in:L,P',     // L = Laki-laki, P = Perempuan
+            'instansi' => 'required|string|max:255',
+        ]);
+
+        // 2. Masukkan data baru tersebut ke dalam proses pembuatan User
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'instansi' => $request->instansi,
+        ]);
+
+        // (Nantinya di baris ini kita akan otomatis memberikan Role 'Anggota' kepada user yang baru mendaftar)
+
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        return redirect(route('home', absolute: false));
+    }
+}

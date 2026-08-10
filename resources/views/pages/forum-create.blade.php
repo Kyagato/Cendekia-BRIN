@@ -1,0 +1,60 @@
+@extends('layouts.public')
+@section('title', 'Buat Topik Baru')
+
+@section('content')
+<section class="py-12 bg-slate-50 min-h-screen">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="mb-8">
+            <a href="{{ route('forum.index') }}" class="inline-flex items-center gap-2 text-slate-500 hover:text-primary-600 transition">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Kembali ke Forum
+            </a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-8 border-b border-slate-100">
+                <h1 class="text-2xl font-bold text-slate-800">Buat Topik Diskusi Baru</h1>
+                <p class="text-slate-500 mt-1">Mulai diskusi, ajukan pertanyaan, atau bagikan wawasan dengan komunitas SPBE.</p>
+            </div>
+
+            <div class="p-8">
+                <form action="{{ route('forum.store') }}" method="POST">
+                    @csrf
+                    
+                    <div class="mb-6">
+                        <label for="judul" class="block text-sm font-semibold text-slate-800 mb-2">Judul Topik <span class="text-red-500">*</span></label>
+                        <input type="text" id="judul" name="judul" value="{{ old('judul') }}" required placeholder="Contoh: Bagaimana cara mengimplementasikan arsitektur SPBE?" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-primary-500 focus:ring-primary-500 transition">
+                        @error('judul') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="category_id" class="block text-sm font-semibold text-slate-800 mb-2">Kategori <span class="text-red-500">*</span></label>
+                        <select id="category_id" name="category_id" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-primary-500 focus:ring-primary-500 transition bg-white">
+                            <option value="" disabled selected>Pilih Kategori</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->nama_kategori }}</option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-8">
+                        <label for="konten" class="block text-sm font-semibold text-slate-800 mb-2">Konten / Pertanyaan <span class="text-red-500">*</span></label>
+                        <textarea id="konten" name="konten" rows="8" required placeholder="Jelaskan secara detail topik diskusi atau pertanyaan Anda di sini..." class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-primary-500 focus:ring-primary-500 transition">{{ old('konten') }}</textarea>
+                        @error('konten') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="flex justify-end gap-3">
+                        <a href="{{ route('forum.index') }}" class="px-6 py-3 rounded-lg font-medium text-slate-600 hover:bg-slate-100 transition">
+                            Batal
+                        </a>
+                        <button type="submit" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg shadow-sm transition">
+                            Kirim Topik
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+@endsection
