@@ -1,6 +1,19 @@
 @extends('layouts.admin')
 @section('title', 'Buat Pengetahuan')
 
+@section('breadcrumbs')
+    <li>
+        <svg class="w-4 h-4 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </li>
+    <li>
+        <a href="{{ route('knowledge.index') }}" class="hover:text-primary-600 transition">Pengetahuan</a>
+    </li>
+    <li>
+        <svg class="w-4 h-4 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </li>
+    <li class="text-slate-800 font-semibold">Tambah Pengetahuan</li>
+@endsection
+
 @section('content')
 <form action="{{ route('knowledge.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
