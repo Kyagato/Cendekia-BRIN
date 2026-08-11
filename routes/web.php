@@ -112,13 +112,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // =============================================================
+    // =============================================================
+    // ROLE: SUPER ADMIN ONLY
+    // Manajemen CRUD Pengguna (Strictly Super Admin)
+    // =============================================================
+    Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
+        Route::resource('/admin/users', App\Http\Controllers\UserController::class, ['as' => 'admin']);
+    });
+
+    // =============================================================
     // ROLE: SUPER ADMIN + ADMIN PUSAT ONLY
-    // Panel administrator tertinggi — kelola user, role, konfigurasi
+    // Panel administrator tertinggi — kelola role, konfigurasi
     // =============================================================
     Route::middleware(['role:Super Admin,Admin Pusat'])->group(function () {
-        Route::get('/admin/users', function () {
-            return view('dashboard'); // TODO: CRUD User
-        })->name('admin.users');
         Route::get('/admin/roles', function () {
             return view('dashboard'); // TODO: Manajemen Role
         })->name('admin.roles');

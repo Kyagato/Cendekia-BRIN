@@ -36,6 +36,12 @@
                     <a href="#" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
                         Komentar
                     </a>
+                    
+                    @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id'))
+                    <a href="{{ route('admin.users.index') }}" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('admin.users.*') ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                        Pengguna
+                    </a>
+                    @endif
                 </nav>
             </div>
             
@@ -104,6 +110,9 @@
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">Label</a>
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">Kategori</a>
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">Komentar</a>
+        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id'))
+        <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 rounded-lg text-base font-semibold transition {{ request()->routeIs('admin.users.*') ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">Pengguna</a>
+        @endif
     </div>
 
     <!-- Main Page Content wrapper (Fluid and Centered) -->
