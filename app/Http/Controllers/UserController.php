@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -50,7 +51,13 @@ class UserController extends Controller
             'gender' => 'required|in:L,P',
             'instansi' => 'nullable|string|max:255',
             'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator,Anggota,Guest',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        $fotoProfilPath = null;
+        if ($request->hasFile('foto_profil')) {
+            $fotoProfilPath = $request->file('foto_profil')->store('profile_photos', 'public');
+        }
 
         User::create([
             'name' => $validated['name'],
@@ -59,6 +66,7 @@ class UserController extends Controller
             'jenis_kelamin' => $validated['gender'],
             'instansi' => $validated['instansi'],
             'role' => $validated['role'],
+            'foto_profil' => $fotoProfilPath,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
@@ -90,6 +98,7 @@ class UserController extends Controller
             'gender' => 'required|in:L,P',
             'instansi' => 'nullable|string|max:255',
             'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator,Anggota,Guest',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $user->name = $validated['name'];
@@ -100,6 +109,13 @@ class UserController extends Controller
 
         if (!empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
+        }
+
+        if ($request->hasFile('foto_profil')) {
+            if ($user->foto_profil) {
+                Storage::disk('public')->delete($user->foto_profil);
+            }
+            $user->foto_profil = $request->file('foto_profil')->store('profile_photos', 'public');
         }
 
         $user->save();
@@ -114,6 +130,10 @@ class UserController extends Controller
     {
         if (auth()->id() === $user->id) {
             return redirect()->route('admin.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        if ($user->foto_profil) {
+            Storage::disk('public')->delete($user->foto_profil);
         }
 
         $user->delete();

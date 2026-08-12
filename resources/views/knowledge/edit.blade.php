@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Tambah Pengetahuan')
+@section('title', 'Edit Pengetahuan')
 
 @section('breadcrumbs')
     <li>
@@ -11,24 +11,48 @@
     <li>
         <svg class="w-4 h-4 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
-    <li class="text-slate-800 font-semibold">Tambah Pengetahuan</li>
+    <li class="text-slate-800 font-semibold">Edit Pengetahuan</li>
 @endsection
 
 @section('content')
-<form x-data="{ formatType: '{{ old('tipe', 'Teks') }}' }" action="{{ route('knowledge.store') }}" method="POST" enctype="multipart/form-data">
+<form x-data="{ formatType: '{{ old('tipe', $knowledge->tipe ?? 'Teks') }}' }" action="{{ route('knowledge.update', $knowledge->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
+    @method('PUT')
 
     {{-- Top Action Bar --}}
     <div class="max-w-6xl mx-auto">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h1 class="text-2xl font-bold text-slate-800">Tambah Pengetahuan</h1>
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Edit Pengetahuan</h1>
+                @if(isset($knowledge->status))
+                <p class="text-sm text-slate-500 mt-1">Status saat ini: 
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold
+                        {{ $knowledge->status == 'Disetujui' ? 'bg-green-100 text-green-700' : 
+                          ($knowledge->status == 'Ditolak' ? 'bg-red-100 text-red-700' : 
+                          ($knowledge->status == 'Diajukan' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700')) }}">
+                        {{ $knowledge->status }}
+                    </span>
+                </p>
+                @endif
+            </div>
             <div class="flex items-center gap-3">
                 <a href="{{ route('knowledge.index') }}" class="px-5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                     Kembali
                 </a>
-                <button type="submit" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition shadow-sm">
-                    Simpan
+
+                {{-- Tombol Batal Ajukan (hanya muncul jika status = Diajukan) --}}
+                @if(isset($knowledge->status) && $knowledge->status == 'Diajukan')
+                <button type="button" onclick="document.getElementById('form-batal-ajukan').submit()" class="px-5 py-2.5 border-2 border-red-600 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                    Batal Ajukan
+                </button>
+                @endif
+
+                {{-- Tombol Simpan --}}
+                <button type="submit" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    Simpan & Ajukan
                 </button>
             </div>
         </div>
@@ -43,7 +67,7 @@
                     {{-- Judul --}}
                     <div>
                         <label for="judul" class="block text-sm font-bold text-slate-800 mb-2">Judul</label>
-                        <input type="text" id="judul" name="judul" value="{{ old('judul') }}" placeholder="Masukkan judul pengetahuan" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" required>
+                        <input type="text" id="judul" name="judul" value="{{ old('judul', $knowledge->judul) }}" placeholder="Masukkan judul pengetahuan" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" required>
                         @error('judul') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -76,19 +100,19 @@
                         <label for="url_teks" class="block text-sm font-bold text-slate-800 mb-2">
                             Url <span x-text="formatType"></span>
                         </label>
-                        <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks') }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-slate-50 text-slate-800">
+                        <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks', $knowledge->url_teks) }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-slate-50 text-slate-800">
                     </div>
 
                     {{-- Penulis & Kolaborator --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="penulis" class="block text-sm font-bold text-slate-800 mb-2">Penulis</label>
-                            <input type="text" id="penulis" name="penulis" value="{{ old('penulis', Auth::user()->name) }}" placeholder="Masukkan nama penulis" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800" required>
+                            <input type="text" id="penulis" name="penulis" value="{{ old('penulis', $knowledge->penulis) }}" placeholder="Masukkan nama penulis" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800" required>
                             @error('penulis') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label for="kolaborator" class="block text-sm font-bold text-slate-800 mb-2">Kolaborator</label>
-                            <input type="text" id="kolaborator" name="kolaborator" value="{{ old('kolaborator') }}" placeholder="Masukkan nama kolaborator" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800">
+                            <input type="text" id="kolaborator" name="kolaborator" value="{{ old('kolaborator', $knowledge->kolaborator) }}" placeholder="Masukkan nama kolaborator" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800">
                             @error('kolaborator') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -107,7 +131,7 @@
                             <button type="button" class="p-1 hover:bg-slate-200 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
                             <button type="button" class="p-1 hover:bg-slate-200 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/></svg></button>
                         </div>
-                        <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" placeholder="Tuliskan ringkasan pengetahuan di sini...">{{ old('deskripsi') }}</textarea>
+                        <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" placeholder="Tuliskan ringkasan pengetahuan di sini...">{{ old('deskripsi', $knowledge->deskripsi) }}</textarea>
                         @error('deskripsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -121,7 +145,7 @@
                             <button type="button" class="p-1 hover:bg-slate-200 rounded underline">U</button>
                             <button type="button" class="p-1 hover:bg-slate-200 rounded line-through">S</button>
                         </div>
-                        <textarea id="detail" name="detail" rows="6" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" placeholder="Tuliskan detail pengetahuan di sini...">{{ old('detail') }}</textarea>
+                        <textarea id="detail" name="detail" rows="6" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" placeholder="Tuliskan detail pengetahuan di sini...">{{ old('detail', $knowledge->detail) }}</textarea>
                     </div>
 
                 </div>
@@ -134,9 +158,9 @@
                         <label for="category_id" class="block text-sm font-bold text-slate-800 mb-2">Kategori</label>
                         <div class="relative">
                             <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800" required>
-                                <option value="" disabled selected>Pilih Kategori</option>
+                                <option value="" disabled>Pilih Kategori</option>
                                 @foreach ($categories as $kategori)
-                                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                    <option value="{{ $kategori->id }}" {{ old('category_id', $knowledge->category_id) == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
                                 @endforeach
                             </select>
                             <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
@@ -150,13 +174,13 @@
                     {{-- Label --}}
                     <div>
                         <label for="tags" class="block text-sm font-bold text-slate-800 mb-2">Label</label>
-                        <input type="text" id="tags" name="tags" value="{{ old('tags') }}" placeholder="Pilih Tag (pisahkan dengan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
+                        <input type="text" id="tags" name="tags" value="{{ old('tags', $knowledge->tags->pluck('nama_label')->implode(', ')) }}" placeholder="Pilih Tag (pisahkan dengan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
                     </div>
 
                     {{-- Tanggal Terbit --}}
                     <div>
                         <label class="block text-sm font-bold text-slate-800 mb-2">Tanggal Terbit</label>
-                        <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit') }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-700">
+                        <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit', $knowledge->tanggal_terbit) }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-700">
                     </div>
 
                     {{-- Status Akses --}}
@@ -164,9 +188,9 @@
                         <label class="block text-sm font-bold text-slate-800 mb-2">Status Akses</label>
                         <div class="relative">
                             <select name="status_akses" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
-                                <option value="" disabled selected>Pilih status</option>
-                                <option value="public" {{ old('status_akses') == 'public' ? 'selected' : '' }}>Publik</option>
-                                <option value="private" {{ old('status_akses') == 'private' ? 'selected' : '' }}>Private</option>
+                                <option value="" disabled>Pilih status</option>
+                                <option value="public" {{ old('status_akses', $knowledge->status_akses) == 'public' ? 'selected' : '' }}>Publik</option>
+                                <option value="private" {{ old('status_akses', $knowledge->status_akses) == 'private' ? 'selected' : '' }}>Private</option>
                             </select>
                             <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -178,7 +202,7 @@
                     <div class="flex items-center justify-between py-3 border-b border-slate-100">
                         <span class="text-sm font-bold text-slate-800">Unggulan</span>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="unggulan" value="1" class="sr-only peer" {{ old('unggulan') ? 'checked' : '' }}>
+                            <input type="checkbox" name="unggulan" value="1" class="sr-only peer" {{ old('unggulan', $knowledge->unggulan) ? 'checked' : '' }}>
                             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
                         </label>
                     </div>
@@ -186,6 +210,20 @@
                     {{-- Thumbnail Upload --}}
                     <div x-data="{ fileName: '' }">
                         <label class="block text-sm font-bold text-slate-800 mb-2">Thumbnail / File Lampiran</label>
+                        
+                        {{-- Preview thumbnail yang sudah ada --}}
+                        @if($knowledge->file_path)
+                        <div class="mb-3 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center gap-3">
+                            <div class="w-12 h-12 bg-slate-200 rounded flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-700 font-medium">File saat ini terpasang</p>
+                                <p class="text-xs text-slate-500">Unggah file baru untuk mengganti.</p>
+                            </div>
+                        </div>
+                        @endif
+                        
                         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg bg-slate-50 hover:bg-slate-100 transition cursor-pointer" onclick="document.getElementById('file_upload').click()">
                             <div class="space-y-1 text-center">
                                 <svg x-show="!fileName" class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -212,4 +250,14 @@
         </div>
     </div>
 </form>
+
+{{-- Form terpisah: Batal Ajukan (mengubah status dari "Diajukan" → "Draft") --}}
+@if(isset($knowledge->status) && $knowledge->status == 'Diajukan')
+<form id="form-batal-ajukan" action="{{ route('knowledge.update', $knowledge->id) }}" method="POST" class="hidden">
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="status" value="Draft">
+    <input type="hidden" name="batal_ajukan" value="1">
+</form>
+@endif
 @endsection
