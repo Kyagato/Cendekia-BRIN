@@ -10,10 +10,15 @@ use Illuminate\Support\Facades\Auth;
 
 class KnowledgeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil semua data pengetahuan, diurutkan dari yang terbaru dengan paginasi
-        $knowledges = \App\Models\Knowledge::with(['category', 'user', 'tags'])->latest()->paginate(10);
+        $query = \App\Models\Knowledge::with(['category', 'user', 'tags'])->latest();
+        
+        if ($request->has('tipe') && $request->tipe != '') {
+            $query->where('tipe', $request->tipe);
+        }
+
+        $knowledges = $query->paginate(10)->appends($request->all());
         
         return view('knowledge.index', compact('knowledges'));
     }
@@ -37,6 +42,9 @@ class KnowledgeController extends Controller
             'deskripsi' => 'nullable|string',
             'file_upload' => 'nullable|file|max:51200', // Maks 50MB
             'tags' => 'nullable|string', // Format teks biasa: "spbe, panduan, ai"
+            'penulis' => 'nullable|string|max:255',
+            'kolaborator' => 'nullable|string|max:255',
+            'url_teks' => 'nullable|url|max:255',
         ]);
 
         // B. Proses Upload File (jika ada)
@@ -55,6 +63,9 @@ class KnowledgeController extends Controller
             'tipe' => $request->tipe,
             'file_path' => $filePath,
             'status' => 'Diajukan', // Sesuai analisismu, harus divalidasi Analisis Pengetahuan
+            'penulis' => $request->penulis,
+            'kolaborator' => $request->kolaborator,
+            'url_teks' => $request->url_teks,
         ]);
 
         // D. Proses Label/Tags (Relasi Many-to-Many)
@@ -92,20 +103,46 @@ class KnowledgeController extends Controller
 
     public function update(Request $request, Knowledge $knowledge)
     {
+        // Handle "Batal Ajukan" — revert status from "Diajukan" to "Draft"
+        if ($request->has('batal_ajukan')) {
+            $knowledge->update(['status' => 'Draft']);
+            return redirect()->route('knowledge.index')->with('success', 'Pengajuan berhasil dibatalkan. Status kembali ke Draft.');
+        }
+
         $request->validate([
             'judul' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'tipe' => 'required|in:Teks,Video,Gambar,Audio',
             'deskripsi' => 'nullable|string',
             'tags' => 'nullable|string',
+            'file_upload' => 'nullable|file|max:51200',
+            'penulis' => 'nullable|string|max:255',
+            'kolaborator' => 'nullable|string|max:255',
+            'url_teks' => 'nullable|url|max:255',
         ]);
 
-        $knowledge->update([
+        // Determine new status: if currently Draft, re-submit as "Diajukan"
+        $newStatus = ($knowledge->status === 'Draft') ? 'Diajukan' : $knowledge->status;
+
+        $updateData = [
             'category_id' => $request->category_id,
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'tipe' => $request->tipe,
-        ]);
+            'status' => $newStatus,
+            'penulis' => $request->penulis,
+            'kolaborator' => $request->kolaborator,
+            'url_teks' => $request->url_teks,
+        ];
+
+        if ($request->hasFile('file_upload')) {
+            if ($knowledge->file_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($knowledge->file_path);
+            }
+            $updateData['file_path'] = $request->file('file_upload')->store('uploads', 'public');
+        }
+
+        $knowledge->update($updateData);
 
         if ($request->tags) {
             $tagNames = array_map('trim', explode(',', $request->tags));
