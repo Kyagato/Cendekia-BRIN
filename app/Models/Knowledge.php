@@ -9,6 +9,9 @@ class Knowledge extends Model
     // Karena nama tabel kita 'knowledge' (bukan knowledges), kita harus definisikan secara eksplisit
     protected $table = 'knowledge'; 
     protected $guarded = ['id'];
+    protected $casts = [
+        'validated_at' => 'datetime',
+    ];
 
     // Relasi ke Tag/Label
     public function tags()
@@ -26,6 +29,12 @@ class Knowledge extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Relasi ke User (Validator / Analisis Pengetahuan)
+    public function validator()
+    {
+        return $this->belongsTo(User::class, 'validated_by');
     }
 }
 

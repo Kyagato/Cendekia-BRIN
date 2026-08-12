@@ -7,15 +7,24 @@ use App\Models\Knowledge;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 
 class KnowledgeController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data pengetahuan, diurutkan dari yang terbaru dengan paginasi
-        $knowledges = \App\Models\Knowledge::with(['category', 'user', 'tags'])->latest()->paginate(10);
-        
-        return view('knowledge.index', compact('knowledges'));
+        $pendingKnowledges = Knowledge::with(['category', 'user', 'tags'])
+            ->where('status', 'Diajukan')
+            ->latest()
+            ->paginate(10);
+
+        $processedKnowledges = Knowledge::with(['category', 'user', 'validator'])
+            ->whereIn('status', ['Disetujui', 'Ditolak'])
+            ->latest('updated_at')
+            ->get();
+
+        return view('knowledge.index', compact('pendingKnowledges', 'processedKnowledges'));
     }
     // 1. Menampilkan Form Upload
     public function create()
@@ -124,5 +133,93 @@ class KnowledgeController extends Controller
     {
         $knowledge->delete();
         return redirect()->route('knowledge.index')->with('success', 'Pengetahuan berhasil dihapus.');
+    }
+
+    public function validationIndex()
+    {
+        Gate::authorize('validate-knowledge');
+
+        $knowledges = Knowledge::with(['category', 'user', 'tags'])
+            ->where('status', 'Diajukan')
+            ->latest()
+            ->paginate(10);
+
+        $recentReviews = collect();
+        if (Schema::hasColumn('knowledge', 'validated_at')) {
+            $recentReviews = Knowledge::with(['category', 'user', 'validator'])
+                ->whereIn('status', ['Disetujui', 'Ditolak'])
+                ->whereNotNull('validated_at')
+                ->leftJoin('categories', 'categories.id', '=', 'knowledge.category_id')
+                ->orderBy('categories.nama_kategori')
+                ->orderByRaw("FIELD(knowledge.status, 'Disetujui', 'Ditolak')")
+                ->select('knowledge.*')
+                ->take(5)
+                ->get();
+        }
+
+        return view('knowledge.validation-index', compact('knowledges', 'recentReviews'));
+    }
+
+    public function validationShow(Knowledge $knowledge)
+    {
+        Gate::authorize('validate-knowledge');
+
+        $knowledge->load(['category', 'user', 'tags', 'validator']);
+
+        return view('knowledge.validation-show', compact('knowledge'));
+    }
+
+    public function approve(Request $request, Knowledge $knowledge)
+    {
+        Gate::authorize('validate-knowledge');
+
+        $request->validate([
+            'catatan_validasi' => 'nullable|string|max:2000',
+        ]);
+
+        $data = [
+            'status' => 'Disetujui',
+        ];
+
+        if (Schema::hasColumn('knowledge', 'catatan_validasi')) {
+            $data['catatan_validasi'] = $request->input('catatan_validasi');
+        }
+        if (Schema::hasColumn('knowledge', 'validated_by')) {
+            $data['validated_by'] = Auth::id();
+        }
+        if (Schema::hasColumn('knowledge', 'validated_at')) {
+            $data['validated_at'] = now();
+        }
+
+        $knowledge->update($data);
+
+        return redirect()->route('validasi.index')->with('success', 'Pengetahuan berhasil disetujui.');
+    }
+
+    public function reject(Request $request, Knowledge $knowledge)
+    {
+        Gate::authorize('validate-knowledge');
+
+        $request->validate([
+            'catatan_validasi' => 'required|string|min:10|max:2000',
+        ]);
+
+        $data = [
+            'status' => 'Ditolak',
+        ];
+
+        if (Schema::hasColumn('knowledge', 'catatan_validasi')) {
+            $data['catatan_validasi'] = $request->input('catatan_validasi');
+        }
+        if (Schema::hasColumn('knowledge', 'validated_by')) {
+            $data['validated_by'] = Auth::id();
+        }
+        if (Schema::hasColumn('knowledge', 'validated_at')) {
+            $data['validated_at'] = now();
+        }
+
+        $knowledge->update($data);
+
+        return redirect()->route('validasi.index')->with('success', 'Pengetahuan berhasil ditolak dengan catatan revisi.');
     }
 }

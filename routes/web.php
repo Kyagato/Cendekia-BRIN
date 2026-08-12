@@ -26,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ----- Dashboard Redirect -----
     Route::get('/dashboard', function () {
-        return redirect()->route('knowledge.index');
+        return view('dashboard');
     })->name('dashboard');
 
     // ----- Profil (semua user login) -----
@@ -61,15 +61,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Validasi, approve, atau reject konten
     // =============================================================
     Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Analisis Pengetahuan'])->group(function () {
-        Route::get('/validasi', function () {
-            return view('dashboard'); // TODO: Buat halaman validasi konten
-        })->name('validasi.index');
-        Route::patch('/validasi/{knowledge}/approve', function () {
-            // TODO: Logika approve konten
-        })->name('validasi.approve');
-        Route::patch('/validasi/{knowledge}/reject', function () {
-            // TODO: Logika reject konten
-        })->name('validasi.reject');
+        Route::get('/validasi', [KnowledgeController::class, 'validationIndex'])->name('validasi.index');
+        Route::get('/validasi/{knowledge}', [KnowledgeController::class, 'validationShow'])->name('validasi.show');
+        Route::patch('/validasi/{knowledge}/approve', [KnowledgeController::class, 'approve'])->name('validasi.approve');
+        Route::patch('/validasi/{knowledge}/reject', [KnowledgeController::class, 'reject'])->name('validasi.reject');
     });
 
     // =============================================================

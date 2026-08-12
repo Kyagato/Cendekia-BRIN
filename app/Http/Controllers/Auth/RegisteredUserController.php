@@ -35,8 +35,8 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
-            'jenis_kelamin' => 'required|in:L,P',     // L = Laki-laki, P = Perempuan
-            'instansi' => 'required|string|max:255',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'instansi' => 'nullable|string|max:255',
         ]);
 
         // 2. Masukkan data baru tersebut ke dalam proses pembuatan User
@@ -44,8 +44,8 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'instansi' => $request->instansi,
+            'jenis_kelamin' => $request->input('jenis_kelamin', 'L'),
+            'instansi' => $request->input('instansi', 'Tidak diisi'),
         ]);
 
         // (Nantinya di baris ini kita akan otomatis memberikan Role 'Anggota' kepada user yang baru mendaftar)
@@ -54,6 +54,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('home', absolute: false));
+        return redirect(route('dashboard', absolute: false));
     }
 }

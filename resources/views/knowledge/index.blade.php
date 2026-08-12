@@ -15,6 +15,11 @@
         </a>
     </div>
 
+    <div class="px-6 py-4 border-b border-slate-200">
+        <h2 class="text-lg font-bold text-slate-800">Pengetahuan menunggu validasi</h2>
+        <p class="text-sm text-slate-500">Daftar yang masih menunggu persetujuan atau penolakan.</p>
+    </div>
+
     <!-- Filters -->
     <div class="p-6 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-center gap-4">
         <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
@@ -58,10 +63,13 @@
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500">Status</th>
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500">Penulis</th>
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500">Terbit</th>
+                    @can('validate-knowledge')
+                    <th class="py-3 px-6 text-xs font-semibold text-slate-500 text-right">Aksi</th>
+                    @endcan
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-                @forelse($knowledges as $item)
+                @forelse($pendingKnowledges as $item)
                 <tr class="hover:bg-slate-50 transition">
                     <td class="py-3 px-6">
                         <div class="w-12 h-12 bg-slate-100 rounded flex items-center justify-center text-slate-400">
@@ -74,19 +82,34 @@
                     <td class="py-3 px-6 text-sm text-slate-600">{{ $item->tipe }}</td>
                     <td class="py-3 px-6 text-sm text-slate-600">{{ $item->category->nama_kategori ?? '-' }}</td>
                     <td class="py-3 px-6">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
-                            {{ $item->status == 'Disetujui' ? 'bg-green-100 text-green-800' : 
-                              ($item->status == 'Ditolak' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
                             {{ $item->status }}
                         </span>
                     </td>
                     <td class="py-3 px-6 text-sm text-slate-600">{{ $item->user->name ?? '-' }}</td>
                     <td class="py-3 px-6 text-sm text-slate-600">{{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}</td>
+                    @can('validate-knowledge')
+                    <td class="py-3 px-6 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <form method="POST" action="{{ route('validasi.approve', $item) }}" onsubmit="return confirm('Setujui pengetahuan ini?')">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="px-2.5 py-1.5 rounded text-xs font-medium bg-green-600 text-white hover:bg-green-700">Setujui</button>
+                            </form>
+                            <form method="POST" action="{{ route('validasi.reject', $item) }}" onsubmit="return confirm('Tolak pengetahuan ini?')">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="catatan_validasi" value="Penolakan otomatis dari analisis karena belum memenuhi kriteria publikasi.">
+                                <button type="submit" class="px-2.5 py-1.5 rounded text-xs font-medium bg-red-600 text-white hover:bg-red-700">Tolak</button>
+                            </form>
+                        </div>
+                    </td>
+                    @endcan
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="py-16 text-center">
-                        <p class="text-slate-500 text-sm">Data tidak ditemukan</p>
+                    <td colspan="@can('validate-knowledge') 8 @else 7 @endcan" class="py-16 text-center">
+                        <p class="text-slate-500 text-sm">Belum ada pengetahuan yang menunggu validasi.</p>
                     </td>
                 </tr>
                 @endforelse
@@ -97,9 +120,9 @@
     <!-- Pagination Footer -->
     <div class="p-4 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-600">
         <div>
-            Menampilkan {{ $knowledges->firstItem() ?? 0 }} dari {{ $knowledges->lastItem() ?? 0 }} baris data.
+            Menampilkan {{ $pendingKnowledges->firstItem() ?? 0 }} dari {{ $pendingKnowledges->lastItem() ?? 0 }} baris data.
         </div>
-        
+
         <div class="flex flex-wrap items-center gap-6">
             <div class="flex items-center gap-2">
                 <span>Baris per halaman</span>
@@ -109,26 +132,68 @@
                     <option>50</option>
                 </select>
             </div>
-            
+
             <div>
-                Hal. {{ $knowledges->currentPage() }} dari {{ $knowledges->lastPage() }}
+                Hal. {{ $pendingKnowledges->currentPage() }} dari {{ $pendingKnowledges->lastPage() }}
             </div>
-            
+
             <div class="flex items-center gap-1">
-                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ $knowledges->onFirstPage() ? 'disabled' : '' }}>
+                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ $pendingKnowledges->onFirstPage() ? 'disabled' : '' }}>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
                 </button>
-                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ $knowledges->onFirstPage() ? 'disabled' : '' }}>
+                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ $pendingKnowledges->onFirstPage() ? 'disabled' : '' }}>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                 </button>
-                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ !$knowledges->hasMorePages() ? 'disabled' : '' }}>
+                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ !$pendingKnowledges->hasMorePages() ? 'disabled' : '' }}>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </button>
-                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ !$knowledges->hasMorePages() ? 'disabled' : '' }}>
+                <button class="p-1 rounded hover:bg-slate-100 disabled:opacity-50" {{ !$pendingKnowledges->hasMorePages() ? 'disabled' : '' }}>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
                 </button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-200">
+        <h2 class="text-lg font-bold text-slate-800">Riwayat validasi</h2>
+        <p class="text-sm text-slate-500">Pengetahuan yang sudah disetujui atau ditolak akan muncul di bawah ini.</p>
+    </div>
+
+    <div class="overflow-x-auto">
+        @if($processedKnowledges->isNotEmpty())
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="py-3 px-6 text-xs font-semibold text-slate-500">Judul</th>
+                    <th class="py-3 px-6 text-xs font-semibold text-slate-500">Kategori</th>
+                    <th class="py-3 px-6 text-xs font-semibold text-slate-500">Status</th>
+                    <th class="py-3 px-6 text-xs font-semibold text-slate-500">Divalidasi oleh</th>
+                    <th class="py-3 px-6 text-xs font-semibold text-slate-500">Waktu</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                @foreach($processedKnowledges as $item)
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3 px-6 text-sm font-medium text-slate-800">{{ $item->judul }}</td>
+                    <td class="py-3 px-6 text-sm text-slate-600">{{ $item->category->nama_kategori ?? '-' }}</td>
+                    <td class="py-3 px-6">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $item->status == 'Disetujui' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $item->status }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-6 text-sm text-slate-600">{{ $item->validator->name ?? '-' }}</td>
+                    <td class="py-3 px-6 text-sm text-slate-600">{{ $item->validated_at ? $item->validated_at->format('d M Y H:i') : '-' }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @else
+        <div class="p-10 text-center text-sm text-slate-500">
+            Belum ada riwayat validasi.
+        </div>
+        @endif
     </div>
 </div>
 @endsection

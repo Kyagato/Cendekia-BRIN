@@ -20,11 +20,16 @@
                         </ul>
                     </div>
 
-                    <div class="mt-8">
-                        <p class="mb-4">Mulai kelola dan jelajahi repositori pengetahuan institusi sekarang.</p>
+                    <div class="mt-8 flex flex-wrap gap-3">
+                        <p class="w-full mb-1">Mulai kelola dan jelajahi repositori pengetahuan institusi sekarang.</p>
                         <a href="{{ route('knowledge.index') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:bg-primary-700 active:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Buka Repositori Pengetahuan
                         </a>
+                        @can('validate-knowledge')
+                        <a href="{{ route('validasi.index') }}" class="inline-flex items-center px-4 py-2 bg-amber-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-amber-600 focus:bg-amber-600 active:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            Validasi Pengetahuan
+                        </a>
+                        @endcan
                     </div>
                 </div>
             </div>
