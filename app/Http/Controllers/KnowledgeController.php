@@ -10,10 +10,15 @@ use Illuminate\Support\Facades\Auth;
 
 class KnowledgeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil semua data pengetahuan, diurutkan dari yang terbaru dengan paginasi
-        $knowledges = \App\Models\Knowledge::with(['category', 'user', 'tags'])->latest()->paginate(10);
+        $query = \App\Models\Knowledge::with(['category', 'user', 'tags'])->latest();
+        
+        if ($request->has('tipe') && $request->tipe != '') {
+            $query->where('tipe', $request->tipe);
+        }
+
+        $knowledges = $query->paginate(10)->appends($request->all());
         
         return view('knowledge.index', compact('knowledges'));
     }

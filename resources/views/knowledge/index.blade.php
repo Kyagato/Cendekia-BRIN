@@ -26,17 +26,23 @@
                 <input type="text" placeholder="Pencarian..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-red-600 focus:border-red-600">
             </div>
 
-            <!-- Status -->
-            <button class="inline-flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-600 bg-white hover:bg-slate-50 transition">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                Status
-            </button>
+            <!-- Filter Tipe -->
+            <div x-data="{ open: false }" class="relative inline-block text-left">
+                <button @click="open = !open" @click.away="open = false" type="button" class="inline-flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-600 bg-white hover:bg-slate-50 transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+                    Tipe {{ request('tipe') ? ': ' . request('tipe') : '' }}
+                </button>
 
-            <!-- Type -->
-            <button class="inline-flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-600 bg-white hover:bg-slate-50 transition">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                Type
-            </button>
+                <div x-show="open" x-transition class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" style="display: none;">
+                    <div class="py-1">
+                        <a href="{{ route('knowledge.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 {{ request('tipe') == '' ? 'bg-slate-50 font-bold' : '' }}">Semua Tipe</a>
+                        <a href="{{ route('knowledge.index', ['tipe' => 'Teks']) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 {{ request('tipe') == 'Teks' ? 'bg-slate-50 font-bold' : '' }}">Teks</a>
+                        <a href="{{ route('knowledge.index', ['tipe' => 'Video']) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 {{ request('tipe') == 'Video' ? 'bg-slate-50 font-bold' : '' }}">Video</a>
+                        <a href="{{ route('knowledge.index', ['tipe' => 'Gambar']) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 {{ request('tipe') == 'Gambar' ? 'bg-slate-50 font-bold' : '' }}">Gambar</a>
+                        <a href="{{ route('knowledge.index', ['tipe' => 'Audio']) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 {{ request('tipe') == 'Audio' ? 'bg-slate-50 font-bold' : '' }}">Audio</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Tampil Kolom -->
