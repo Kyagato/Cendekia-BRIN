@@ -27,7 +27,7 @@
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-6">
-    <form action="{{ isset($user) ? route('admin.users.update', $user->id) : route('admin.users.store') }}" method="POST">
+    <form action="{{ isset($user) ? route('admin.users.update', $user->id) : route('admin.users.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if(isset($user))
             @method('PUT')
@@ -84,6 +84,21 @@
                     <option value="Anggota" {{ old('role', $user->role ?? '') == 'Anggota' ? 'selected' : '' }}>Anggota</option>
                     <option value="Guest" {{ old('role', $user->role ?? '') == 'Guest' ? 'selected' : '' }}>Guest</option>
                 </select>
+            </div>
+
+            <!-- Foto Profil -->
+            <div class="lg:col-span-2">
+                <label for="foto_profil" class="block text-sm font-bold text-slate-800 mb-2">Foto Profil (Opsional)</label>
+                
+                @if(isset($user) && $user->foto_profil)
+                    <div class="mb-3 flex items-center gap-4">
+                        <img src="{{ Storage::url($user->foto_profil) }}" alt="Foto Profil Saat Ini" class="w-16 h-16 rounded-full object-cover border border-slate-200">
+                        <span class="text-sm text-slate-500">Foto profil saat ini</span>
+                    </div>
+                @endif
+                
+                <input type="file" id="foto_profil" name="foto_profil" accept="image/*" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-red-600 focus:border-red-600 text-slate-800 transition bg-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                <p class="text-xs text-slate-500 mt-1.5">Format yang diizinkan: JPG, JPEG, PNG. Maksimal ukuran file: 2MB.</p>
             </div>
         </div>
 
