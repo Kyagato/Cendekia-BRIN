@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Knowledge;
 use Illuminate\Support\Facades\Route;
 
 // =================================================================
@@ -64,11 +65,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/validasi', function () {
             return view('dashboard'); // TODO: Buat halaman validasi konten
         })->name('validasi.index');
-        Route::patch('/validasi/{knowledge}/approve', function () {
-            // TODO: Logika approve konten
+        Route::get('/validasi/{knowledge}', function (Knowledge $knowledge) {
+            $categories = \App\Models\Category::all();
+            return view('knowledge.validasi', compact('knowledge', 'categories'));
+        })->name('validasi.show');
+        Route::patch('/validasi/{knowledge}/approve', function (Knowledge $knowledge) {
+            $knowledge->update(['status' => 'Disetujui']);
+            return back()->with('success', 'Konten berhasil disetujui.');
         })->name('validasi.approve');
-        Route::patch('/validasi/{knowledge}/reject', function () {
-            // TODO: Logika reject konten
+        Route::patch('/validasi/{knowledge}/reject', function (Knowledge $knowledge) {
+            $knowledge->update(['status' => 'Ditolak']);
+            return redirect()->route('knowledge.index')->with('success', 'Konten berhasil ditolak.');
         })->name('validasi.reject');
     });
 

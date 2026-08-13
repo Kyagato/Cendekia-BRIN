@@ -101,14 +101,29 @@
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" /></svg>
                             </button>
                             <div x-show="open" @mouseleave="open = false" @click.away="open = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 z-50 mt-1 w-36 origin-top-right bg-white rounded-lg shadow-lg border border-slate-200 py-1" style="display: none;">
+
+                                {{-- Tombol Lihat — tampil untuk semua role --}}
                                 <a href="{{ route('knowledge.show', $item->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">
                                     <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                     Lihat
                                 </a>
+
+                                {{-- Tombol Edit — hanya untuk Kreator Pengetahuan & Admin --}}
+                                @if(in_array(auth()->user()->role, ['Kreator Pengetahuan', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
                                 <a href="{{ route('knowledge.edit', $item->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">
                                     <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                     Edit
                                 </a>
+                                @endif
+
+                                {{-- Tombol Ubah (Validasi) — hanya untuk Analisis Pengetahuan & Admin --}}
+                                @if(in_array(auth()->user()->role, ['Analisis Pengetahuan', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
+                                <a href="{{ route('validasi.show', $item->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">
+                                    <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                                    Ubah
+                                </a>
+                                @endif
+
                             </div>
                         </div>
                     </td>
