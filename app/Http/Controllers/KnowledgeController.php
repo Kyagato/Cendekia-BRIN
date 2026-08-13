@@ -12,15 +12,44 @@ class KnowledgeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\Knowledge::with(['category', 'user', 'tags'])->latest();
+        $query = Knowledge::with(['category', 'user', 'tags'])
+            ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak'])
+            ->latest();
         
         if ($request->has('tipe') && $request->tipe != '') {
             $query->where('tipe', $request->tipe);
         }
 
-        $knowledges = $query->paginate(10)->appends($request->all());
+        if ($request->has('status') && $request->status != '') {
+            $statusMap = [
+                'diajukan' => 'Diajukan',
+                'diterima' => 'Disetujui',
+                'ditolak' => 'Ditolak'
+            ];
+            if (isset($statusMap[strtolower($request->status)])) {
+                $query->where('status', $statusMap[strtolower($request->status)]);
+            }
+        }
+
+        if ($request->has('q') && $request->q != '') {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        $knowledges = $query->paginate(10, ['*'], 'page_knowledges')->appends($request->all());
+
+        // Get drafts only for the logged-in user
+        $drafts = Knowledge::with(['category', 'user', 'tags'])
+            ->where('status', 'Draft')
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->paginate(5, ['*'], 'page_drafts')
+            ->appends($request->all());
         
-        return view('knowledge.index', compact('knowledges'));
+        return view('knowledge.index', compact('knowledges', 'drafts'));
     }
     // 1. Menampilkan Form Upload
     public function create()
@@ -54,6 +83,11 @@ class KnowledgeController extends Controller
             $filePath = $request->file('file_upload')->store('uploads', 'public');
         }
 
+        $status = $request->input('status', 'Diajukan');
+        if (!in_array($status, ['Draft', 'Diajukan'])) {
+            $status = 'Diajukan';
+        }
+
         // C. Simpan ke tabel Knowledge
         $knowledge = Knowledge::create([
             'user_id' => Auth::id(), // ID user yang sedang login
@@ -62,7 +96,7 @@ class KnowledgeController extends Controller
             'deskripsi' => $request->deskripsi,
             'tipe' => $request->tipe,
             'file_path' => $filePath,
-            'status' => 'Diajukan', // Sesuai analisismu, harus divalidasi Analisis Pengetahuan
+            'status' => $status,
             'penulis' => $request->penulis,
             'kolaborator' => $request->kolaborator,
             'url_teks' => $request->url_teks,
