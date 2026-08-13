@@ -26,13 +26,35 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        
+        // Exclude role from fill and handle it separately
+        $validatedData = $request->validated();
+        $role = $validatedData['role'] ?? null;
+        unset($validatedData['role']);
+        
+        $user->fill($validatedData);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+        
+        // Handle profile photo upload
+        if ($request->hasFile('foto_profil')) {
+            // Delete old photo if exists
+            if ($user->foto_profil && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->foto_profil)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
+            }
+            $path = $request->file('foto_profil')->store('profile_photos', 'public');
+            $user->foto_profil = $path;
         }
 
-        $request->user()->save();
+        // Only Super Admin, Admin Pusat, Admin IPPD can change roles
+        if ($role && in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD'])) {
+            $user->role = $role;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
