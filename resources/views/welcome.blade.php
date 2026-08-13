@@ -110,6 +110,23 @@
     </div>
 </section>
 
+<!-- Pengetahuan Unggulan Section -->
+@if($featuredKnowledges->isNotEmpty())
+<section class="py-12 bg-amber-50/50 dark:bg-amber-900/10 container mx-auto px-4 scroll-reveal rounded-3xl mb-8 border border-amber-100 dark:border-amber-800/30">
+    <div class="flex items-center gap-3 mb-8">
+        <div class="h-8 w-2 bg-amber-500 rounded-full"></div>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Pengetahuan Unggulan</h2>
+        <span class="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-700 rounded-full dark:bg-amber-900/50 dark:text-amber-400">Pilihan Editor</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach($featuredKnowledges as $item)
+            @include('components.knowledge-card', ['item' => $item])
+        @endforeach
+    </div>
+</section>
+@endif
+
 <!-- Paling Banyak Dilihat Section -->
 <section class="py-12 container mx-auto px-4 scroll-reveal">
     <div class="flex items-center gap-3 mb-8">

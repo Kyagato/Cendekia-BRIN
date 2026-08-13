@@ -66,6 +66,7 @@ class KnowledgeController extends Controller
             'penulis' => $request->penulis,
             'kolaborator' => $request->kolaborator,
             'url_teks' => $request->url_teks,
+            'unggulan' => $request->has('unggulan'),
         ]);
 
         // D. Proses Label/Tags (Relasi Many-to-Many)
@@ -133,6 +134,7 @@ class KnowledgeController extends Controller
             'penulis' => $request->penulis,
             'kolaborator' => $request->kolaborator,
             'url_teks' => $request->url_teks,
+            'unggulan' => $request->has('unggulan'),
         ];
 
         if ($request->hasFile('file_upload')) {

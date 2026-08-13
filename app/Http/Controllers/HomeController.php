@@ -13,6 +13,13 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $featuredKnowledges = Knowledge::with(['category', 'user', 'tags'])
+            ->where('status', 'Disetujui')
+            ->where('unggulan', true)
+            ->latest()
+            ->take(6)
+            ->get();
+
         $mostViewed = Knowledge::with(['category', 'user', 'tags'])
             ->where('status', 'Disetujui')
             ->orderByDesc('views_count')
@@ -35,7 +42,7 @@ class HomeController extends Controller
             ->take(12)
             ->get();
 
-        return view('welcome', compact('mostViewed', 'latest', 'popularCategories', 'popularTags'));
+        return view('welcome', compact('featuredKnowledges', 'mostViewed', 'latest', 'popularCategories', 'popularTags'));
     }
 
     public function about()

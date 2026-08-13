@@ -153,57 +153,62 @@
                 {{-- ===== RIGHT COLUMN (5/12) ===== --}}
                 <div class="lg:col-span-5 space-y-6">
 
-                    {{-- Kategori --}}
-                    <div>
-                        <label for="category_id" class="block text-sm font-bold text-slate-800 mb-2">Kategori</label>
-                        <div class="relative">
-                            <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800" required>
-                                <option value="" disabled>Pilih Kategori</option>
-                                @foreach ($categories as $kategori)
-                                    <option value="{{ $kategori->id }}" {{ old('category_id', $knowledge->category_id) == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
-                                @endforeach
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    {{-- Baris 1: Kategori & Tanggal Terbit --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{-- Kategori --}}
+                        <div>
+                            <label for="category_id" class="block text-sm font-bold text-slate-800 mb-2">Kategori</label>
+                            <div class="relative">
+                                <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800" required>
+                                    <option value="" disabled>Pilih Kategori</option>
+                                    @foreach ($categories as $kategori)
+                                        <option value="{{ $kategori->id }}" {{ old('category_id', $knowledge->category_id) == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
                             </div>
+                            <p class="text-xs text-slate-500 mt-1.5">Klik menu <a href="{{ route('category.index') }}" class="text-red-600 hover:underline">Kategori</a> untuk melihat detil kategori.</p>
+                            @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
-                        <p class="text-xs text-slate-500 mt-1.5">Klik menu <a href="{{ route('category.index') }}" class="text-red-600 hover:underline">Kategori</a> untuk melihat detil kategori.</p>
-                        @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+
+                        {{-- Tanggal Terbit --}}
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-2">Tanggal Terbit</label>
+                            <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit', $knowledge->tanggal_terbit) }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-700">
+                        </div>
                     </div>
 
-                    {{-- Label --}}
-                    <div>
-                        <label for="tags" class="block text-sm font-bold text-slate-800 mb-2">Label</label>
-                        <input type="text" id="tags" name="tags" value="{{ old('tags', $knowledge->tags->pluck('nama_label')->implode(', ')) }}" placeholder="Pilih Tag (pisahkan dengan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
-                    </div>
+                    {{-- Baris 2: Label & Status Akses --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{-- Label --}}
+                        <div>
+                            <label for="tags" class="block text-sm font-bold text-slate-800 mb-2">Label</label>
+                            <input type="text" id="tags" name="tags" value="{{ old('tags', $knowledge->tags->pluck('nama_label')->implode(', ')) }}" placeholder="Pilih Tag (pisahkan dengan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
+                        </div>
 
-                    {{-- Tanggal Terbit --}}
-                    <div>
-                        <label class="block text-sm font-bold text-slate-800 mb-2">Tanggal Terbit</label>
-                        <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit', $knowledge->tanggal_terbit) }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-700">
-                    </div>
-
-                    {{-- Status Akses --}}
-                    <div>
-                        <label class="block text-sm font-bold text-slate-800 mb-2">Status Akses</label>
-                        <div class="relative">
-                            <select name="status_akses" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
-                                <option value="" disabled>Pilih status</option>
-                                <option value="public" {{ old('status_akses', $knowledge->status_akses) == 'public' ? 'selected' : '' }}>Publik</option>
-                                <option value="private" {{ old('status_akses', $knowledge->status_akses) == 'private' ? 'selected' : '' }}>Private</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        {{-- Status Akses --}}
+                        <div>
+                            <label class="block text-sm font-bold text-slate-800 mb-2">Status Akses</label>
+                            <div class="relative">
+                                <select name="status_akses" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
+                                    <option value="" disabled>Pilih status</option>
+                                    <option value="public" {{ old('status_akses', $knowledge->status_akses) == 'public' ? 'selected' : '' }}>Publik</option>
+                                    <option value="private" {{ old('status_akses', $knowledge->status_akses) == 'private' ? 'selected' : '' }}>Private</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {{-- Unggulan --}}
-                    <div class="flex items-center justify-between py-3 border-b border-slate-100">
-                        <span class="text-sm font-bold text-slate-800">Unggulan</span>
+                    <div class="flex items-center gap-3 py-3 border-b border-slate-100">
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="unggulan" value="1" class="sr-only peer" {{ old('unggulan', $knowledge->unggulan) ? 'checked' : '' }}>
-                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                            <input type="checkbox" name="unggulan" value="1" class="w-5 h-5 text-red-600 bg-slate-100 border-slate-300 rounded focus:ring-red-600 focus:ring-2" {{ old('unggulan', $knowledge->unggulan) ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm font-bold text-slate-800">Jadikan Pengetahuan Unggulan</span>
                         </label>
                     </div>
 
