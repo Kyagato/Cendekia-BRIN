@@ -34,21 +34,31 @@ class ForumController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'judul' => 'required|string|max:255',
-            'konten' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
+            'judul'        => 'required|string|max:255',
+            'konten'       => 'required|string',
+            'category_id'  => 'required|exists:categories,id',
             'knowledge_id' => 'nullable|exists:knowledge,id',
         ]);
 
+        $user   = Auth::user();
+        $status = in_array($user->role, ForumThread::AUTO_APPROVE_ROLES) ? 'approved' : 'pending';
+
         $thread = ForumThread::create([
-            'user_id' => Auth::id(),
-            'category_id' => $request->category_id,
-            'judul' => $request->judul,
-            'konten' => $request->konten,
+            'user_id'      => $user->id,
+            'category_id'  => $request->category_id,
+            'judul'        => $request->judul,
+            'konten'       => $request->konten,
             'knowledge_id' => $request->knowledge_id,
+            'status'       => $status,
+            'approved_by'  => $status === 'approved' ? $user->id : null,
+            'approved_at'  => $status === 'approved' ? now() : null,
         ]);
 
-        return redirect()->route('forum.show', $thread->id)->with('success', 'Topik diskusi berhasil dibuat.');
+        $message = $status === 'approved'
+            ? 'Topik diskusi berhasil dibuat dan langsung tayang.'
+            : 'Topik diskusi berhasil dibuat dan menunggu persetujuan moderator.';
+
+        return redirect()->route('forum.show', $thread->id)->with('success', $message);
     }
 
     // 3. Tampilkan Thread Detail + Replies

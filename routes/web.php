@@ -92,7 +92,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: MODERATOR + ADMIN
     // Mengelola forum diskusi
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Moderator'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Moderator'])->group(function () {
         Route::get('/forum/manage', function () {
             return view('dashboard'); // TODO: Buat halaman manajemen forum
         })->name('forum.manage');
@@ -100,6 +100,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
         Route::patch('/forum/{thread}/pin', [App\Http\Controllers\ForumController::class, 'pin'])->name('forum.pin');
         Route::patch('/forum/{thread}/lock', [App\Http\Controllers\ForumController::class, 'lock'])->name('forum.lock');
+
+        // ---- Moderasi Approval Forum ----
+        Route::prefix('moderator')->name('moderator.')->group(function () {
+            Route::get('/forum/approval', [App\Http\Controllers\ModeratorForumController::class, 'index'])->name('forum.approval');
+            Route::patch('/forum/{thread}/approve', [App\Http\Controllers\ModeratorForumController::class, 'approve'])->name('forum.approve');
+            Route::patch('/forum/{thread}/reject', [App\Http\Controllers\ModeratorForumController::class, 'reject'])->name('forum.reject');
+        });
     });
 
     // =============================================================

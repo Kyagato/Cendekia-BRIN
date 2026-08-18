@@ -9,6 +9,15 @@ class ForumThread extends Model
     protected $table = 'forum_threads';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'approved_at' => 'datetime',
+        'is_pinned'   => 'boolean',
+        'is_locked'   => 'boolean',
+    ];
+
+    // Roles that get auto-approval
+    const AUTO_APPROVE_ROLES = ['super_admin', 'admin_pusat', 'admin_ippd', 'Super Admin', 'Admin Pusat', 'Admin IPPD'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -27,5 +36,20 @@ class ForumThread extends Model
     public function knowledge()
     {
         return $this->belongsTo(Knowledge::class, 'knowledge_id');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
     }
 }

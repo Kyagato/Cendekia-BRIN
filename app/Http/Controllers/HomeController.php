@@ -109,6 +109,7 @@ class HomeController extends Controller
     {
         $threads = ForumThread::with(['user', 'category'])
             ->withCount('replies')
+            ->where('status', 'approved')
             ->latest()
             ->paginate(15);
 
