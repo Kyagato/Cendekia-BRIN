@@ -23,4 +23,9 @@ class ForumThread extends Model
     {
         return $this->hasMany(ForumReply::class, 'thread_id');
     }
+
+    public function knowledge()
+    {
+        return $this->belongsTo(Knowledge::class, 'knowledge_id');
+    }
 }

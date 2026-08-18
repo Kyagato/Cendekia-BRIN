@@ -81,6 +81,25 @@
                     </span>
                 </div>
 
+                @if($thread->knowledge)
+                    <div class="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-red-100 text-red-600 rounded-lg shrink-0">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            </div>
+                            <div>
+                                <span class="text-xs font-semibold text-red-600 uppercase tracking-wider block">Membahas Pengetahuan</span>
+                                <a href="{{ route('knowledge.show', $thread->knowledge->id) }}" class="text-sm font-semibold text-slate-800 hover:text-red-600 transition">
+                                    {{ $thread->knowledge->judul }}
+                                </a>
+                            </div>
+                        </div>
+                        <a href="{{ route('knowledge.show', $thread->knowledge->id) }}" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 font-semibold px-3 py-1.5 rounded-lg transition shrink-0">
+                            Lihat Materi
+                        </a>
+                    </div>
+                @endif
+
                 <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6">{{ $thread->judul }}</h1>
 
                 <div class="prose prose-slate max-w-none mb-8">

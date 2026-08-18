@@ -14,10 +14,20 @@ class ForumController extends Controller
     // Halaman list forum sudah ada di HomeController@forum
 
     // 1. Form Buat Thread (Untuk semua member login)
-    public function create()
+    public function create(Request $request)
     {
         $categories = Category::all();
-        return view('pages.forum-create', compact('categories'));
+        $knowledges = \App\Models\Knowledge::with('category')
+            ->where('status', 'Disetujui')
+            ->orderBy('judul')
+            ->get();
+
+        $linkedKnowledge = null;
+        if ($request->filled('knowledge_id')) {
+            $linkedKnowledge = \App\Models\Knowledge::find($request->knowledge_id);
+        }
+
+        return view('pages.forum-create', compact('categories', 'knowledges', 'linkedKnowledge'));
     }
 
     // 2. Simpan Thread
@@ -27,6 +37,7 @@ class ForumController extends Controller
             'judul' => 'required|string|max:255',
             'konten' => 'required|string',
             'category_id' => 'required|exists:categories,id',
+            'knowledge_id' => 'nullable|exists:knowledge,id',
         ]);
 
         $thread = ForumThread::create([
@@ -34,6 +45,7 @@ class ForumController extends Controller
             'category_id' => $request->category_id,
             'judul' => $request->judul,
             'konten' => $request->konten,
+            'knowledge_id' => $request->knowledge_id,
         ]);
 
         return redirect()->route('forum.show', $thread->id)->with('success', 'Topik diskusi berhasil dibuat.');
@@ -45,7 +57,7 @@ class ForumController extends Controller
         // Increment view count
         $thread->increment('views_count');
         
-        $thread->load(['user', 'category']);
+        $thread->load(['user', 'category', 'knowledge.category']);
         
         $replies = $thread->replies()->with('user')->latest()->paginate(15);
         

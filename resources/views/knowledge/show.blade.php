@@ -162,6 +162,34 @@
                         </div>
                     </div>
 
+                    {{-- Forum Diskusi Terkait --}}
+                    <div class="bg-white rounded-xl p-5 border border-slate-200 space-y-4 shadow-sm">
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                            <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                            Diskusi Forum
+                        </h3>
+                        
+                        @if($knowledge->threads && $knowledge->threads->count() > 0)
+                            <div class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                                @foreach($knowledge->threads as $thread)
+                                <a href="{{ route('forum.show', $thread->id) }}" class="block p-3 rounded-lg border border-slate-100 hover:border-red-200 hover:bg-red-50/30 transition text-sm">
+                                    <div class="font-semibold text-slate-800 line-clamp-1 hover:text-red-600 transition">{{ $thread->judul }}</div>
+                                    <div class="text-xs text-slate-400 mt-1 flex justify-between">
+                                        <span>Oleh: {{ $thread->user->name ?? 'Anonim' }}</span>
+                                        <span>{{ $thread->created_at?->diffForHumans() }}</span>
+                                    </div>
+                                </a>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-xs text-slate-400">Belum ada diskusi forum terkait pengetahuan ini.</p>
+                        @endif
+                        
+                        <a href="{{ route('forum.create', ['knowledge_id' => $knowledge->id]) }}" class="w-full text-center block px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-semibold transition">
+                            Mulai Diskusi Baru
+                        </a>
+                    </div>
+
                     {{-- Danger Zone --}}
                     <div class="bg-red-50 rounded-xl p-5 border border-red-200">
                         <h3 class="text-sm font-bold text-red-800 mb-3">Konfirmasi hapus pengetahuan?</h3>

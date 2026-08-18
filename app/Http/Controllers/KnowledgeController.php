@@ -126,7 +126,7 @@ class KnowledgeController extends Controller
     public function show(Knowledge $knowledge)
     {
         $knowledge->increment('views_count');
-        $knowledge->load(['category', 'user', 'tags']);
+        $knowledge->load(['category', 'user', 'tags', 'threads.user']);
         return view('knowledge.show', compact('knowledge'));
     }
 

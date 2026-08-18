@@ -27,5 +27,11 @@ class Knowledge extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Relasi ke ForumThread
+    public function threads()
+    {
+        return $this->hasMany(ForumThread::class, 'knowledge_id');
+    }
 }
 
