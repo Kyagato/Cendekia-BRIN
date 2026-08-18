@@ -59,12 +59,17 @@ class ForumController extends Controller
         
         $thread->load(['user', 'category', 'knowledge.category']);
         
-        $replies = $thread->replies()->with('user')->latest()->paginate(15);
+        // Load only top-level replies (no parent), with their nested replies & user info
+        $replies = $thread->replies()
+            ->whereNull('parent_id')
+            ->with(['user', 'replies.user', 'replies.replies.user'])
+            ->latest()
+            ->paginate(15);
         
         return view('pages.forum-show', compact('thread', 'replies'));
     }
 
-    // 4. Tambah Balasan (Reply)
+    // 4. Tambah Balasan (Reply) — supports nested replies
     public function storeReply(Request $request, ForumThread $thread)
     {
         if ($thread->is_locked) {
@@ -72,13 +77,17 @@ class ForumController extends Controller
         }
 
         $request->validate([
-            'konten' => 'required|string'
+            'konten'      => 'required|string',
+            'parent_id'   => 'nullable|exists:forum_replies,id',
+            'mention_user'=> 'nullable|string|max:255',
         ]);
 
         ForumReply::create([
-            'thread_id' => $thread->id,
-            'user_id' => Auth::id(),
-            'konten' => $request->konten,
+            'thread_id'    => $thread->id,
+            'user_id'      => Auth::id(),
+            'konten'       => $request->konten,
+            'parent_id'    => $request->parent_id ?: null,
+            'mention_user' => $request->mention_user ?: null,
         ]);
 
         return back()->with('success', 'Balasan berhasil ditambahkan.');

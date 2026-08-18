@@ -18,4 +18,16 @@ class ForumReply extends Model
     {
         return $this->belongsTo(ForumThread::class, 'thread_id');
     }
+
+    // Self-referencing: a reply can have nested child replies
+    public function replies()
+    {
+        return $this->hasMany(ForumReply::class, 'parent_id')->with('user', 'replies');
+    }
+
+    // Parent reply (if this is a nested reply)
+    public function parent()
+    {
+        return $this->belongsTo(ForumReply::class, 'parent_id');
+    }
 }
