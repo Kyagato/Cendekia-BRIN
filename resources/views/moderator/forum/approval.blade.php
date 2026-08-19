@@ -1,10 +1,10 @@
 @extends('layouts.admin')
-@section('title', 'Moderasi Forum Diskusi')
+@section('title', 'Atur Forum')
 
 @section('breadcrumbs')
 <li class="flex items-center">
-    <svg class="w-4 h-4 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-    <span class="text-slate-800 font-semibold">Moderasi Forum</span>
+    <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <span class="text-slate-800 dark:text-slate-200 font-semibold">Atur Forum</span>
 </li>
 @endsection
 
@@ -14,7 +14,7 @@
     {{-- Page Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Moderasi Forum Diskusi</h1>
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Atur Forum</h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola dan moderasi topik diskusi yang masuk dari anggota.</p>
         </div>
         <a href="{{ route('forum.index') }}" target="_blank"

@@ -141,10 +141,22 @@ class HomeController extends Controller
     {
         if (auth()->check()) {
             $user = auth()->user();
-            $user->dark_mode = $request->input('dark_mode', !$user->dark_mode);
+
+            // Accept value from JSON body (fetch) or form input
+            $input = $request->json('dark_mode');
+            if ($input === null) {
+                $input = $request->input('dark_mode');
+            }
+
+            if ($input !== null) {
+                $user->dark_mode = (bool) $input;
+            } else {
+                $user->dark_mode = !$user->dark_mode;
+            }
+
             $user->save();
 
-            return response()->json(['status' => 'success', 'dark_mode' => $user->dark_mode]);
+            return response()->json(['status' => 'success', 'dark_mode' => (bool) $user->dark_mode]);
         }
 
         return response()->json(['status' => 'unauthenticated'], 401);
