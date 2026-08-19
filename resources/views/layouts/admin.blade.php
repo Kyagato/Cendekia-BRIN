@@ -34,11 +34,12 @@
                 @if(!request()->routeIs('profile.edit'))
                 <nav class="hidden md:flex items-center space-x-1">
                 @php
-                    $isModerator = auth()->check() && auth()->user()->role === 'Moderator';
+                    $isModerator = auth()->check() && str_contains(auth()->user()->role, 'Moderator');
+                    $isKreator  = auth()->check() && str_contains(auth()->user()->role, 'Kreator');
                     $moderatorRoles = ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator'];
                 @endphp
 
-                {{-- Menu umum: disembunyikan untuk role Moderator murni --}}
+                {{-- Pengetahuan: semua kecuali Moderator murni --}}
                 @if(!$isModerator)
                     <a href="{{ route('knowledge.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
@@ -47,6 +48,10 @@
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Pengetahuan
                     </a>
+                @endif
+
+                {{-- Label / Kategori / Komentar: disembunyikan untuk Moderator & Kreator Pengetahuan --}}
+                @if(!$isModerator && !$isKreator)
                     <a href="#" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 transition">
                         Label
                     </a>
@@ -161,16 +166,25 @@
          x-transition:leave-end="opacity-0 -translate-y-2"
          class="md:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 absolute top-16 w-full left-0 z-40 px-4 py-3 shadow-md space-y-1"
          style="display: none;">
-        @php $isModerator = auth()->check() && auth()->user()->role === 'Moderator'; @endphp
+        @php
+            $isModerator = auth()->check() && str_contains(auth()->user()->role, 'Moderator');
+            $isKreator   = auth()->check() && str_contains(auth()->user()->role, 'Kreator');
+        @endphp
 
-        {{-- Menu umum: disembunyikan untuk Moderator murni --}}
+        {{-- Pengetahuan: semua kecuali Moderator --}}
         @if(!$isModerator)
-        <a href="{{ route('knowledge.index') }}" class="block px-3 py-2 rounded-lg text-base font-semibold transition {{ request()->routeIs('knowledge.*') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
+        <a href="{{ route('knowledge.index') }}"
+           class="block px-3 py-2 rounded-lg text-base font-semibold transition
+                  {{ request()->routeIs('knowledge.*') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
+        @endif
+
+        {{-- Label / Kategori / Komentar: hanya untuk admin & analis, bukan Moderator atau Kreator --}}
+        @if(!$isModerator && !$isKreator)
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Label</a>
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Kategori</a>
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Komentar</a>
         @endif
-        
+
         @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator']))
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition

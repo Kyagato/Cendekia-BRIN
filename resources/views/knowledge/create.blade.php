@@ -1,17 +1,17 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Tambah Pengetahuan')
 
 @section('breadcrumbs')
     <li>
-        <svg class="w-4 h-4 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
     <li>
-        <a href="{{ route('knowledge.index') }}" class="hover:text-red-600 transition">Pengetahuan</a>
+        <a href="{{ route('knowledge.index') }}" class="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition">Pengetahuan</a>
     </li>
     <li>
-        <svg class="w-4 h-4 text-slate-400 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
-    <li class="text-slate-800 font-semibold">Tambah Pengetahuan</li>
+    <li class="text-slate-800 dark:text-slate-200 font-semibold">Tambah Pengetahuan</li>
 @endsection
 
 @section('content')
@@ -21,15 +21,15 @@
     {{-- Top Action Bar --}}
     <div class="max-w-6xl mx-auto">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h1 class="text-2xl font-bold text-slate-800">Tambah Pengetahuan</h1>
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Tambah Pengetahuan</h1>
             <div class="flex items-center gap-3">
-                <a href="{{ route('knowledge.index') }}" class="px-5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">
+                <a href="{{ route('knowledge.index') }}" class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                     Kembali
                 </a>
                 <input type="hidden" name="status" id="knowledge_status" value="Diajukan">
 
-                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Draft'" class="px-5 py-2.5 border-2 border-red-600 text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Draft'" class="px-5 py-2.5 border-2 border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm font-medium transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
                     Simpan sebagai Draft
                 </button>
@@ -42,7 +42,7 @@
         </div>
 
         {{-- Main Card --}}
-        <div class="bg-white shadow-md rounded-xl p-8">
+        <div class="bg-white dark:bg-slate-800 shadow-md rounded-xl p-8 border border-transparent dark:border-slate-700">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
                 {{-- ===== LEFT COLUMN (7/12) ===== --}}
@@ -50,30 +50,30 @@
 
                     {{-- Judul --}}
                     <div>
-                        <label for="judul" class="block text-sm font-bold text-slate-800 mb-2">Judul</label>
-                        <input type="text" id="judul" name="judul" value="{{ old('judul') }}" placeholder="Masukkan judul pengetahuan" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" required>
+                        <label for="judul" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Judul</label>
+                        <input type="text" id="judul" name="judul" value="{{ old('judul') }}" placeholder="Masukkan judul pengetahuan" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" required>
                         @error('judul') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Format (Alpine.js dynamic) --}}
                     <div>
-                        <label class="block text-sm font-bold text-slate-800 mb-3">Format</label>
+                        <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">Format</label>
                         <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Gambar" x-model="formatType" class="text-red-600 focus:ring-red-600 w-4 h-4" required>
-                                <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition">Gambar</span>
+                                <input type="radio" name="tipe" value="Gambar" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Gambar</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Video" x-model="formatType" class="text-red-600 focus:ring-red-600 w-4 h-4" required>
-                                <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition">Video</span>
+                                <input type="radio" name="tipe" value="Video" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Video</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Audio" x-model="formatType" class="text-red-600 focus:ring-red-600 w-4 h-4" required>
-                                <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition">Audio</span>
+                                <input type="radio" name="tipe" value="Audio" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Audio</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Teks" x-model="formatType" class="text-red-600 focus:ring-red-600 w-4 h-4" required>
-                                <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition">Text</span>
+                                <input type="radio" name="tipe" value="Teks" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Text</span>
                             </label>
                         </div>
                         @error('tipe') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -81,55 +81,55 @@
 
                     {{-- Dynamic URL field --}}
                     <div>
-                        <label for="url_teks" class="block text-sm font-bold text-slate-800 mb-2">
+                        <label for="url_teks" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
                             Url <span x-text="formatType"></span>
                         </label>
-                        <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks') }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-slate-50 text-slate-800">
+                        <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks') }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                     </div>
 
                     {{-- Penulis & Kolaborator --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="penulis" class="block text-sm font-bold text-slate-800 mb-2">Penulis</label>
-                            <input type="text" id="penulis" name="penulis" value="{{ old('penulis', Auth::user()->name) }}" placeholder="Masukkan nama penulis" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800" required>
+                            <label for="penulis" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Penulis</label>
+                            <input type="text" id="penulis" name="penulis" value="{{ old('penulis', Auth::user()->name) }}" placeholder="Masukkan nama penulis" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" required>
                             @error('penulis') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label for="kolaborator" class="block text-sm font-bold text-slate-800 mb-2">Kolaborator</label>
-                            <input type="text" id="kolaborator" name="kolaborator" value="{{ old('kolaborator') }}" placeholder="Masukkan nama kolaborator" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800">
+                            <label for="kolaborator" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Kolaborator</label>
+                            <input type="text" id="kolaborator" name="kolaborator" value="{{ old('kolaborator') }}" placeholder="Masukkan nama kolaborator" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                             @error('kolaborator') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     {{-- Ringkasan --}}
                     <div>
-                        <label for="deskripsi" class="block text-sm font-bold text-slate-800 mb-2">Ringkasan</label>
+                        <label for="deskripsi" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Ringkasan</label>
                         {{-- Toolbar --}}
-                        <div class="border border-slate-300 border-b-0 rounded-t-lg bg-slate-50 p-2 flex gap-2 flex-wrap text-slate-600">
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded font-bold">B</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded italic">I</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded underline">U</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded line-through">S</button>
-                            <div class="w-px h-5 bg-slate-300 my-auto mx-1"></div>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg></button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/></svg></button>
+                        <div class="border border-slate-300 dark:border-slate-600 border-b-0 rounded-t-lg bg-slate-50 dark:bg-slate-800 p-2 flex gap-2 flex-wrap text-slate-600 dark:text-slate-400">
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded font-bold transition">B</button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded italic transition">I</button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded underline transition">U</button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded line-through transition">S</button>
+                            <div class="w-px h-5 bg-slate-300 dark:bg-slate-600 my-auto mx-1"></div>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg></button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/></svg></button>
                         </div>
-                        <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" placeholder="Tuliskan ringkasan pengetahuan di sini...">{{ old('deskripsi') }}</textarea>
+                        <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" placeholder="Tuliskan ringkasan pengetahuan di sini...">{{ old('deskripsi') }}</textarea>
                         @error('deskripsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Detail --}}
                     <div>
-                        <label for="detail" class="block text-sm font-bold text-slate-800 mb-2">Detail</label>
+                        <label for="detail" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Detail</label>
                         {{-- Toolbar --}}
-                        <div class="border border-slate-300 border-b-0 rounded-t-lg bg-slate-50 p-2 flex gap-2 flex-wrap text-slate-600">
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded font-bold">B</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded italic">I</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded underline">U</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 rounded line-through">S</button>
+                        <div class="border border-slate-300 dark:border-slate-600 border-b-0 rounded-t-lg bg-slate-50 dark:bg-slate-800 p-2 flex gap-2 flex-wrap text-slate-600 dark:text-slate-400">
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded font-bold transition">B</button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded italic transition">I</button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded underline transition">U</button>
+                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded line-through transition">S</button>
                         </div>
-                        <textarea id="detail" name="detail" rows="6" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 text-slate-800" placeholder="Tuliskan detail pengetahuan di sini...">{{ old('detail') }}</textarea>
+                        <textarea id="detail" name="detail" rows="6" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" placeholder="Tuliskan detail pengetahuan di sini...">{{ old('detail') }}</textarea>
                     </div>
 
                 </div>
@@ -141,26 +141,26 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- Kategori --}}
                         <div>
-                            <label for="category_id" class="block text-sm font-bold text-slate-800 mb-2">Kategori</label>
+                            <label for="category_id" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Kategori</label>
                             <div class="relative">
-                                <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800" required>
+                                <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100" required>
                                     <option value="" disabled selected>Pilih Kategori</option>
                                     @foreach ($categories as $kategori)
                                         <option value="{{ $kategori->id }}" {{ old('category_id') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
                                     @endforeach
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-500 mt-1.5">Klik menu <a href="{{ route('category.index') }}" class="text-red-600 hover:underline">Kategori</a> untuk melihat detil kategori.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Klik menu <a href="{{ route('category.index') }}" class="text-red-600 dark:text-red-400 hover:underline">Kategori</a> untuk melihat detil kategori.</p>
                             @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         {{-- Tanggal Terbit --}}
                         <div>
-                            <label class="block text-sm font-bold text-slate-800 mb-2">Tanggal Terbit</label>
-                            <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit') }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-700">
+                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Tanggal Terbit</label>
+                            <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit') }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300">
                         </div>
                     </div>
 
@@ -168,54 +168,54 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- Label --}}
                         <div>
-                            <label for="tags" class="block text-sm font-bold text-slate-800 mb-2">Label</label>
-                            <input type="text" id="tags" name="tags" value="{{ old('tags') }}" placeholder="Pilih Tag (pisahkan dengan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
+                            <label for="tags" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Label</label>
+                            <input type="text" id="tags" name="tags" value="{{ old('tags') }}" placeholder="Pilih Tag (pisahkan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                         </div>
 
                         {{-- Status Akses --}}
                         <div>
-                            <label class="block text-sm font-bold text-slate-800 mb-2">Status Akses</label>
+                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Status Akses</label>
                             <div class="relative">
-                                <select name="status_akses" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 focus:ring-red-600 focus:border-red-600 bg-white text-slate-800">
+                                <select name="status_akses" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                                     <option value="" disabled selected>Pilih status</option>
                                     <option value="public" {{ old('status_akses') == 'public' ? 'selected' : '' }}>Publik</option>
                                     <option value="private" {{ old('status_akses') == 'private' ? 'selected' : '' }}>Private</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {{-- Unggulan --}}
-                    <div class="flex items-center gap-3 py-3 border-b border-slate-100">
+                    <div class="flex items-center gap-3 py-3 border-b border-slate-100 dark:border-slate-700">
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="unggulan" value="1" class="w-5 h-5 text-red-600 bg-slate-100 border-slate-300 rounded focus:ring-red-600 focus:ring-2" {{ old('unggulan') ? 'checked' : '' }}>
-                            <span class="ml-2 text-sm font-bold text-slate-800">Jadikan Pengetahuan Unggulan</span>
+                            <input type="checkbox" name="unggulan" value="1" class="w-5 h-5 text-red-600 bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded focus:ring-red-600 focus:ring-2" {{ old('unggulan') ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm font-bold text-slate-800 dark:text-slate-200">Jadikan Pengetahuan Unggulan</span>
                         </label>
                     </div>
 
                     {{-- Thumbnail Upload --}}
                     <div x-data="{ fileName: '' }">
-                        <label class="block text-sm font-bold text-slate-800 mb-2">Thumbnail / File Lampiran</label>
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg bg-slate-50 hover:bg-slate-100 transition cursor-pointer" onclick="document.getElementById('file_upload').click()">
+                        <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Thumbnail / File Lampiran</label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" onclick="document.getElementById('file_upload').click()">
                             <div class="space-y-1 text-center">
-                                <svg x-show="!fileName" class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <svg x-show="!fileName" class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
-                                <svg x-cloak x-show="fileName" class="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg x-cloak x-show="fileName" class="mx-auto h-12 w-12 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <div class="flex text-sm text-slate-600 justify-center mt-2">
-                                    <label for="file_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
+                                <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
+                                    <label for="file_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
                                         <span x-show="!fileName">Unggah file thumbnail</span>
-                                        <span x-cloak x-show="fileName" x-text="fileName" class="text-slate-800 font-semibold truncate max-w-[200px] inline-block"></span>
+                                        <span x-cloak x-show="fileName" x-text="fileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[200px] inline-block"></span>
                                         <input id="file_upload" name="file_upload" type="file" class="sr-only" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
                                     </label>
                                 </div>
-                                <p x-show="!fileName" class="text-xs text-slate-500 mt-1">PNG, JPG, GIF up to 50MB</p>
-                                <p x-cloak x-show="fileName" class="text-xs text-green-600 font-medium mt-1">File siap disimpan</p>
+                                <p x-show="!fileName" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PNG, JPG, GIF up to 50MB</p>
+                                <p x-cloak x-show="fileName" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">File siap disimpan</p>
                             </div>
                         </div>
                     </div>

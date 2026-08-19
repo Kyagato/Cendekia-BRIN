@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', 'Pengetahuan')
 
 @section('content')
@@ -64,12 +64,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Tampil Kolom -->
-        <button class="inline-flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm text-slate-700 dark:text-slate-300 font-medium bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition w-full lg:w-auto justify-center">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-            Tampil Kolom
-        </button>
     </div>
 
     <!-- Table -->
@@ -109,7 +103,7 @@
                     <td class="py-3 px-6">
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
                             {{ $item->status == 'Disetujui' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300' :
-                              ($item->status == 'Ditolak' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300' : 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300') }}">
+                              ($item->status == 'Ditolak' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300' : 'bg-yellow-100 text-yellow-800') }}">
                             {{ $item->status }}
                         </span>
                     </td>
