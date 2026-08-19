@@ -18,7 +18,7 @@
         @method('patch')
         
         <div class="flex items-center gap-4 mb-6">
-            <div class="w-20 h-20 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xl overflow-hidden shrink-0 ring-4 ring-primary-500/20">
+            <div class="w-20 h-20 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xl overflow-hidden shrink-0 ring-4 ring-red-500/20">
                 @if($user->foto_profil)
                     <img src="{{ asset('storage/' . $user->foto_profil) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                 @else
@@ -28,7 +28,7 @@
             <div class="flex-1" x-data="{ fileName: '' }">
                 <x-input-label for="foto_profil" :value="__('Foto Profil')" class="mb-1" />
                 <div class="flex items-center gap-3">
-                    <label class="cursor-pointer inline-flex items-center px-4 py-2 bg-primary-50 dark:bg-slate-700 text-primary-700 dark:text-slate-200 text-sm font-semibold rounded-md border-0 hover:bg-primary-100 dark:hover:bg-slate-600 transition">
+                    <label class="cursor-pointer inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow-sm transition">
                         Ubah Foto Profil
                         <input type="file" id="foto_profil" name="foto_profil" class="hidden" accept="image/*" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''" />
                     </label>
@@ -54,7 +54,7 @@
                     <p class="text-sm mt-2 text-slate-800 dark:text-slate-200">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800">
+                        <button form="send-verification" class="underline text-sm text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-800">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -71,7 +71,7 @@
         <div>
             <x-input-label for="role" :value="__('Role')" />
             @if(in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']))
-                <select id="role" name="role" class="mt-1 block w-full border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 focus:border-primary-500 dark:focus:border-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 rounded-md shadow-sm">
+                <select id="role" name="role" class="mt-1 block w-full border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 focus:border-red-600 dark:focus:border-red-600 focus:ring-red-600 dark:focus:ring-red-600 rounded-md shadow-sm">
                     <option value="Super Admin" {{ $user->role == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
                     <option value="Admin Pusat" {{ $user->role == 'Admin Pusat' ? 'selected' : '' }}>Admin Pusat</option>
                     <option value="Admin IPPD" {{ $user->role == 'Admin IPPD' ? 'selected' : '' }}>Admin IPPD</option>
