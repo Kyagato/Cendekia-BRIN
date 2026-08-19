@@ -27,7 +27,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ----- Dashboard Redirect -----
     Route::get('/dashboard', function () {
-        return redirect()->route('knowledge.index');
+        $user = auth()->user();
+        if (!$user) return redirect('/login');
+
+        if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan'])) {
+            return redirect()->route('knowledge.index');
+        } elseif (in_array($user->role, ['Moderator'])) {
+            return redirect()->route('moderator.forum.approval');
+        }
+
+        return redirect()->route('home');
     })->name('dashboard');
 
     // ----- Profil (semua user login) -----
@@ -39,10 +48,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/toggle-dark-mode', [HomeController::class, 'toggleDarkMode'])->name('toggle.darkmode');
 
     // =============================================================
-    // ROLE: KREATOR PENGETAHUAN + ADMIN
-    // Membuat, mengedit, dan menghapus konten pengetahuan
+    // ROLE: MANAJEMEN KONTEN PENGETAHUAN
+    // Super Admin, Admin Pusat, Admin IPPD, Analisis Pengetahuan, Kreator Pengetahuan
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Analisis Pengetahuan,Analis Pengetahuan,Kreator Pengetahuan'])->group(function () {
+        Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
         Route::get('/knowledge/create', [KnowledgeController::class, 'create'])->name('knowledge.create');
         Route::post('/knowledge', [KnowledgeController::class, 'store'])->name('knowledge.store');
         Route::get('/knowledge/{knowledge}/edit', [KnowledgeController::class, 'edit'])->name('knowledge.edit');
@@ -50,11 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/knowledge/{knowledge}', [KnowledgeController::class, 'destroy'])->name('knowledge.destroy');
     });
 
-    // =============================================================
-    // ROLE: ANGGOTA — Bisa melihat repositori (read-only)
-    // Semua user login minimal bisa melihat daftar knowledge
-    // =============================================================
-    Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
+    // Detail Knowledge (Read-only untuk publik/member)
     Route::get('/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('knowledge.show');
 
     // =============================================================

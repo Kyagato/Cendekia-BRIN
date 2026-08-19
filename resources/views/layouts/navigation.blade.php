@@ -21,9 +21,11 @@
                     </x-nav-link>
                     
                     <!-- Menu Tambahan untuk Cendekia BRIN -->
+                    @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan']))
                     <x-nav-link :href="route('knowledge.index')" :active="request()->routeIs('knowledge.*')">
                         {{ __('Repositori') }}
                     </x-nav-link>
+                    @endif
                 </div>
             </div>
             <!-- Settings Dropdown -->
@@ -80,9 +82,11 @@
     </x-responsive-nav-link>
 
     <!-- Menu Tambahan Mobile -->
+    @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan']))
     <x-responsive-nav-link :href="route('knowledge.index')" :active="request()->routeIs('knowledge.*')">
         {{ __('Repositori') }}
     </x-responsive-nav-link>
+    @endif
 </div>
 
         <!-- Responsive Settings Options -->

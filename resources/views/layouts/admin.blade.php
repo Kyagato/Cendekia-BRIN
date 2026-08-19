@@ -25,6 +25,10 @@
                 <!-- Navigation Menu (Desktop) -->
                 @if(!request()->routeIs('profile.edit'))
                 <nav class="hidden md:flex items-center space-x-1">
+                    @php
+                        $knowledgeRoles = ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan'];
+                    @endphp
+                    @if(auth()->check() && in_array(auth()->user()->role, $knowledgeRoles))
                     <a href="{{ route('knowledge.index') }}" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('knowledge.*') ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         Pengetahuan
                     </a>
@@ -37,6 +41,7 @@
                     <a href="#" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">
                         Komentar
                     </a>
+                    @endif
                     
                     @php
                         $moderatorRoles = ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator'];
@@ -129,10 +134,15 @@
          x-transition:leave-end="opacity-0 -translate-y-2"
          class="md:hidden bg-white border-b border-slate-200 absolute top-16 w-full left-0 z-40 px-4 py-3 shadow-md space-y-1"
          style="display: none;">
+        @php
+            $knowledgeRoles = ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan'];
+        @endphp
+        @if(auth()->check() && in_array(auth()->user()->role, $knowledgeRoles))
         <a href="{{ route('knowledge.index') }}" class="block px-3 py-2 rounded-lg text-base font-semibold transition {{ request()->routeIs('knowledge.*') ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">Pengetahuan</a>
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">Label</a>
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">Kategori</a>
         <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition">Komentar</a>
+        @endif
         @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator']))
         <a href="{{ route('moderator.forum.approval') }}" class="block px-3 py-2 rounded-lg text-base font-semibold transition {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">Forum</a>
         @endif
