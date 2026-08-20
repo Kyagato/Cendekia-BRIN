@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ showSuccessModal: {{ session('registered_success') || session('success') ? 'true' : 'false' }} }">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,51 @@
     <title>Masuk — {{ config('app.name', 'Cendekia BRIN') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-slate-50">
+<body class="font-sans antialiased bg-slate-50 relative">
+
+    {{-- ========== POPUP MODAL KONFIRMASI REGISTRASI SUKSES ========== --}}
+    @if(session('registered_success') || session('success'))
+    <div x-show="showSuccessModal"
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 text-center border border-slate-100 relative">
+            {{-- Icon Centang Sukses --}}
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-emerald-50">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Akun Berhasil Dibuat!</h3>
+            <p class="text-sm text-slate-600 mb-4">
+                Pendaftaran akun Cendekia BRIN Anda telah sukses. Silakan lakukan login ulang untuk masuk ke website.
+            </p>
+
+            @if(session('registered_email'))
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6">
+                    <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Email Terdaftar</p>
+                    <p class="text-sm font-bold text-slate-800 break-all mt-0.5">{{ session('registered_email') }}</p>
+                </div>
+            @endif
+
+            <div class="flex flex-col gap-2">
+                <button @click="showSuccessModal = false; document.getElementById('email').focus()"
+                        type="button"
+                        class="w-full py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold rounded-xl shadow-md transition-all duration-200 uppercase tracking-wider text-sm flex justify-center items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    Konfirmasi & Lanjut Login
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <div class="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
         {{-- Split-Screen Card --}}
@@ -55,7 +99,7 @@
                 {{-- ========== KOLOM KANAN: Form Login ========== --}}
                 <div class="flex flex-col p-8 sm:p-10 lg:p-12">
                     {{-- Header: Toggle to Register --}}
-                    <div class="flex items-center justify-between mb-10">
+                    <div class="flex items-center justify-between mb-8">
                         {{-- Mobile logo --}}
                         <a href="/" class="lg:hidden inline-flex items-center gap-2">
                             <span class="text-xl font-bold text-red-600">Cendekia</span>
@@ -70,10 +114,23 @@
                     </div>
 
                     {{-- Title --}}
-                    <div class="mb-8">
+                    <div class="mb-6">
                         <h1 class="text-3xl font-bold text-slate-800 mb-2">Selamat Datang!</h1>
                         <p class="text-slate-400">Masuk ke akun Cendekia BRIN Anda</p>
                     </div>
+
+                    {{-- Banner Notifikasi Sukses --}}
+                    @if(session('success'))
+                        <div class="mb-5 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex items-start gap-3 shadow-sm">
+                            <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="font-bold text-emerald-900">Akun Berhasil Dibuat!</p>
+                                <p class="text-emerald-700 mt-0.5">{{ session('success') }}</p>
+                            </div>
+                        </div>
+                    @endif
 
                     {{-- Session Status --}}
                     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -85,7 +142,7 @@
                         {{-- Email --}}
                         <div>
                             <label for="email" class="block text-sm font-semibold text-slate-800 mb-1.5">Email</label>
-                            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+                            <input id="email" type="email" name="email" value="{{ old('email', session('registered_email')) }}" required autofocus autocomplete="username"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg text-slate-800 placeholder-slate-400 focus:border-red-600 focus:ring-red-600 focus:ring-1 transition duration-200"
                                    placeholder="nama@brin.go.id">
                             <x-input-error :messages="$errors->get('email')" class="mt-1.5" />

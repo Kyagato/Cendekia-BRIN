@@ -51,8 +51,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('home', absolute: false));
+        // Tidak otomatis login — pengguna harus melakukan login ulang
+        return redirect()->route('login')
+            ->with('registered_success', true)
+            ->with('registered_email', $user->email)
+            ->with('success', 'Akun berhasil dibuat! Silakan masukan email & password Anda untuk login.');
     }
 }
