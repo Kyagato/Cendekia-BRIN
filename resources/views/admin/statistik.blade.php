@@ -19,9 +19,9 @@
     </div>
 
     {{-- Top Summary Cards (Statistik Angka) --}}
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div class="flex flex-col md:flex-row gap-4">
         {{-- Total --}}
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+        <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
             </div>
@@ -32,7 +32,7 @@
         </div>
 
         {{-- Teks --}}
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+        <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             </div>
@@ -43,7 +43,7 @@
         </div>
 
         {{-- Gambar --}}
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+        <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             </div>
@@ -54,7 +54,7 @@
         </div>
 
         {{-- Video --}}
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+        <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
             </div>
@@ -65,16 +65,17 @@
         </div>
 
         {{-- Audio --}}
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4 col-span-2 sm:col-span-1">
-            <div class="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+        <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
             </div>
             <div>
-                <p class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Audio</p>
+                <p class="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide">Audio</p>
                 <h3 class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-0.5">{{ number_format($countAudio) }}</h3>
             </div>
         </div>
     </div>
+
 
     {{-- Main Charts Grid --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -83,27 +84,27 @@
         <div class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 flex flex-col justify-between">
             <div>
                 <h2 class="text-base font-bold text-slate-800 dark:text-slate-100 text-center mb-6">Jumlah Pengetahuan</h2>
-                <div class="relative w-full max-w-[280px] mx-auto aspect-square">
+                <div class="relative w-full max-w-[260px] mx-auto aspect-square">
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
 
-            {{-- Custom Legend Match Screenshot --}}
-            <div class="grid grid-cols-2 gap-3 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 max-w-xs mx-auto w-full">
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 rounded bg-[#60A5FA] shrink-0 border border-blue-300"></span>
+            {{-- Keterangan Warna (Legend) Di Bawah Grafik Bulat --}}
+            <div class="grid grid-cols-2 gap-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-700 max-w-xs mx-auto w-full">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-4 h-4 rounded shrink-0 border border-blue-400 shadow-sm" style="background-color: #60A5FA;"></span>
                     <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Teks</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 rounded bg-[#4ADE80] shrink-0 border border-emerald-300"></span>
+                <div class="flex items-center gap-2.5">
+                    <span class="w-4 h-4 rounded shrink-0 border border-emerald-400 shadow-sm" style="background-color: #4ADE80;"></span>
                     <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Gambar</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 rounded bg-[#F87171] shrink-0 border border-rose-300"></span>
+                <div class="flex items-center gap-2.5">
+                    <span class="w-4 h-4 rounded shrink-0 border border-rose-400 shadow-sm" style="background-color: #F87171;"></span>
                     <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Video</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 rounded bg-[#C084FC] shrink-0 border border-purple-300"></span>
+                <div class="flex items-center gap-2.5">
+                    <span class="w-4 h-4 rounded shrink-0 border border-amber-400 shadow-sm" style="background-color: #FACC15;"></span>
                     <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Audio</span>
                 </div>
             </div>
@@ -171,8 +172,8 @@
                     backgroundColor: [
                         '#60A5FA', // Teks (Blue)
                         '#4ADE80', // Gambar (Green)
-                        '#F87171', // Video (Red/Pink)
-                        '#C084FC'  // Audio (Purple)
+                        '#F87171', // Video (Red)
+                        '#FACC15'  // Audio (Yellow)
                     ],
                     borderWidth: 2,
                     borderColor: isDark ? '#1e293b' : '#ffffff'
@@ -214,16 +215,17 @@
                         {{ $instansiAudio }}
                     ],
                     backgroundColor: [
-                        '#60A5FA', // Teks
-                        '#4ADE80', // Gambar
-                        '#F87171', // Video
-                        '#C084FC'  // Audio
+                        '#60A5FA', // Teks (Blue)
+                        '#4ADE80', // Gambar (Green)
+                        '#F87171', // Video (Red)
+                        '#FACC15'  // Audio (Yellow)
                     ],
                     borderRadius: 6,
                     borderSkipped: false
                 }]
             },
             options: {
+
                 indexAxis: 'y', // Makes the bar chart horizontal
                 responsive: true,
                 maintainAspectRatio: false,
