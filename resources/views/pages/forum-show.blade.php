@@ -97,11 +97,11 @@
                         {{ $thread->category->nama_kategori }}
                     </span>
                     @endif
-                    {{-- Date (no clock icon) --}}
+                    {{-- Date --}}
                     <span class="text-xs">
                         {{ \Carbon\Carbon::parse($thread->created_at)->translatedFormat('d M Y, H:i') }}
                     </span>
-                    {{-- Views count — inline with date --}}
+                    {{-- Views count --}}
                     <span class="flex items-center gap-1 text-xs">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                         {{ $thread->views_count }} tayangan
@@ -155,10 +155,10 @@
             {{ $replies->total() }} Balasan
         </h3>
 
-        {{-- Main Reply Form --}}
+        {{-- Main Reply Section --}}
         @if(!$thread->is_locked)
             @auth
-            <div x-data="replySystem()" class="space-y-4 mb-8">
+            <div x-data="replySystem()" class="space-y-4 mb-8" :class="activeReplyId !== null ? 'pb-44 sm:pb-36' : ''">
 
                 {{-- Each top-level reply --}}
                 @foreach($replies as $reply)
@@ -190,36 +190,51 @@
                 @endforeach
 
                 {{-- Pagination --}}
+                @if($replies->hasPages())
                 <div class="mt-4">
                     {{ $replies->links() }}
                 </div>
+                @endif
 
-                {{-- Floating reply form (shown when replying to a comment) --}}
-                <div x-show="activeReplyId !== null" x-transition class="sticky bottom-4 bg-white dark:bg-slate-800 border border-primary-300 dark:border-primary-600 rounded-xl shadow-xl p-4 mt-4" style="display: none;">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-semibold text-primary-600 dark:text-primary-400">
-                            Membalas: <span x-text="replyingToName" class="text-slate-700 dark:text-slate-300"></span>
-                        </span>
-                        <button @click="cancelReply()" class="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition">Batal ✕</button>
-                    </div>
-                    <form :action="'{{ route('forum.reply', $thread->id) }}'" method="POST">
-                        @csrf
-                        <input type="hidden" name="parent_id" :value="activeReplyId">
-                        <input type="hidden" name="mention_user" :value="replyingToName">
-                        <textarea name="konten" x-ref="replyTextarea" rows="3" required
-                            placeholder="Tulis balasan Anda..."
-                            class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-primary-500 focus:ring-primary-500 text-sm transition resize-none"></textarea>
-                        <div class="flex justify-end mt-2">
-                            <button type="submit" class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition">
-                                Kirim Balasan
-                            </button>
+                {{-- Inline form shown when replying to a comment (Opsi B: floating/fixed di bawah layar) --}}
+                <div x-show="activeReplyId !== null"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-y-4"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 translate-y-4"
+                     class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-800 border-t-2 border-primary-500 shadow-[0_-6px_16px_rgba(0,0,0,0.12)] dark:shadow-[0_-6px_16px_rgba(0,0,0,0.5)]"
+                     style="display: none;">
+                    <div class="container mx-auto px-4 max-w-4xl py-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-primary-600 dark:text-primary-400">
+                                Membalas: <span x-text="replyingToName" class="text-slate-700 dark:text-slate-300 font-bold"></span>
+                            </span>
+                            <button type="button" @click="cancelReply()" class="text-xs text-slate-400 hover:text-red-500 transition">Batal ✕</button>
                         </div>
-                    </form>
+                        <form :action="'{{ route('forum.reply', $thread->id) }}'" method="POST">
+                            @csrf
+                            <input type="hidden" name="parent_id" :value="activeReplyId">
+                            <input type="hidden" name="mention_user" :value="replyingToName">
+                            <textarea name="konten" x-ref="replyTextarea" rows="3" required
+                                placeholder="Tulis balasan Anda..."
+                                class="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:border-primary-500 focus:ring-primary-500 text-sm transition resize-none"></textarea>
+                            <div class="flex justify-end mt-2">
+                                <button type="submit" class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition">
+                                    Kirim Balasan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
-                {{-- Root-level reply form (shown when not replying to a specific comment) --}}
+                {{-- Root-level reply form (Standard / Opsi A: Di bawah paling akhir) --}}
                 <div x-show="activeReplyId === null" x-transition class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
-                    <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-3 text-sm">Tambahkan Balasan</h4>
+                    <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-3 text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                        Tambahkan Balasan
+                    </h4>
                     <form action="{{ route('forum.reply', $thread->id) }}" method="POST">
                         @csrf
                         <textarea name="konten" rows="4" required
@@ -232,10 +247,10 @@
                         </div>
                     </form>
                 </div>
-            </div>
 
+            </div>
             @else
-            {{-- Replies list (no form for guests) --}}
+            {{-- Replies list for guests --}}
             <div class="space-y-4 mb-8">
                 @foreach($replies as $reply)
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
@@ -255,7 +270,7 @@
             </div>
 
             <div class="bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 text-center">
-                <p class="text-slate-600 dark:text-slate-400 mb-3 text-sm">Silakan masuk ke akun Anda untuk ikut berdiskusi.</p>
+                <p class="text-slate-600 dark:text-slate-400 mb-3 text-sm">Silakan masuk ke akun Anda me-reply diskusi.</p>
                 <a href="{{ route('login') }}" class="inline-block px-6 py-2 bg-slate-800 dark:bg-primary-600 hover:bg-slate-900 dark:hover:bg-primary-700 text-white font-medium rounded-lg text-sm transition">Masuk / Login</a>
             </div>
             @endauth
@@ -299,10 +314,6 @@ function replySystem() {
             this.$nextTick(() => {
                 this.$refs.replyTextarea && this.$refs.replyTextarea.focus();
             });
-            // Scroll to the reply form
-            setTimeout(() => {
-                document.querySelector('[x-ref="replyTextarea"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
         },
         cancelReply() {
             this.activeReplyId = null;
@@ -312,4 +323,3 @@ function replySystem() {
 }
 </script>
 @endsection
-
