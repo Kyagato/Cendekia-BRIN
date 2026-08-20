@@ -30,7 +30,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = auth()->user();
         if (!$user) return redirect('/login');
 
-        if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan'])) {
+        if ($user->role === 'Super Admin' || $user->email === 'superadmin@brin.go.id') {
+            return redirect()->route('admin.statistik');
+        }
+
+        if (in_array($user->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan'])) {
             return redirect()->route('knowledge.index');
         } elseif (in_array($user->role, ['Moderator'])) {
             return redirect()->route('moderator.forum.approval');
@@ -145,6 +149,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Panel administrator tertinggi — kelola role, konfigurasi
     // =============================================================
     Route::middleware(['role:Super Admin,Admin Pusat'])->group(function () {
+        Route::get('/admin/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('admin.statistik');
         Route::get('/admin/roles', function () {
             return view('dashboard'); // TODO: Manajemen Role
         })->name('admin.roles');

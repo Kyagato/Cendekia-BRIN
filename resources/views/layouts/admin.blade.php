@@ -39,6 +39,17 @@
                     $moderatorRoles = ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator'];
                 @endphp
 
+                {{-- Statistik: Super Admin & Admin Pusat --}}
+                @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Pusat' || auth()->user()->email === 'superadmin@brin.go.id'))
+                    <a href="{{ route('admin.statistik') }}"
+                       class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
+                              {{ request()->routeIs('admin.statistik')
+                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
+                        Statistik
+                    </a>
+                @endif
+
                 {{-- Pengetahuan: semua kecuali Moderator murni --}}
                 @if(!$isModerator)
                     <a href="{{ route('knowledge.index') }}"
@@ -170,6 +181,12 @@
             $isModerator = auth()->check() && str_contains(auth()->user()->role, 'Moderator');
             $isKreator   = auth()->check() && str_contains(auth()->user()->role, 'Kreator');
         @endphp
+
+        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Pusat' || auth()->user()->email === 'superadmin@brin.go.id'))
+        <a href="{{ route('admin.statistik') }}"
+           class="block px-3 py-2 rounded-lg text-base font-semibold transition
+                  {{ request()->routeIs('admin.statistik') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Statistik</a>
+        @endif
 
         {{-- Pengetahuan: semua kecuali Moderator --}}
         @if(!$isModerator)

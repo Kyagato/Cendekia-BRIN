@@ -19,7 +19,14 @@ class RoleMiddleware
             return redirect('login');
         }
 
-        if (!in_array(auth()->user()->role, $roles)) {
+        $user = auth()->user();
+
+        // Super Admin & email superadmin selalu diberikan akses penuh
+        if ($user->role === 'Super Admin' || $user->email === 'superadmin@brin.go.id') {
+            return $next($request);
+        }
+
+        if (!in_array($user->role, $roles)) {
             abort(403, 'Anda tidak memiliki hak akses untuk halaman ini.');
         }
 
