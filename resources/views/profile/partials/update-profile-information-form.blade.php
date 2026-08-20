@@ -77,8 +77,7 @@
                     <option value="Admin IPPD" {{ $user->role == 'Admin IPPD' ? 'selected' : '' }}>Admin IPPD</option>
                     <option value="Kreator Pengetahuan" {{ $user->role == 'Kreator Pengetahuan' ? 'selected' : '' }}>Kreator Pengetahuan</option>
                     <option value="Analisis Pengetahuan" {{ $user->role == 'Analisis Pengetahuan' ? 'selected' : '' }}>Analisis Pengetahuan</option>
-                    <option value="Karyawan BRIN" {{ $user->role == 'Karyawan BRIN' ? 'selected' : '' }}>Karyawan BRIN</option>
-                    <option value="Publik" {{ $user->role == 'Publik' ? 'selected' : '' }}>Publik</option>
+                    <option value="Moderator" {{ $user->role == 'Moderator' ? 'selected' : '' }}>Moderator</option>
                 </select>
                 <x-input-error class="mt-2" :messages="$errors->get('role')" />
             @else

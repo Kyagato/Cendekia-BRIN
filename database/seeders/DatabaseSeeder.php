@@ -72,9 +72,9 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
             ],
             [
-                'name' => 'Anggota Biasa',
+                'name' => 'Kreator Pengetahuan (Pengguna Umum)',
                 'email' => 'anggota@simpan.brin',
-                'role' => 'Anggota',
+                'role' => 'Kreator Pengetahuan',
                 'instansi' => 'Universitas Negeri Surabaya',
                 'jenis_kelamin' => 'P',
             ],

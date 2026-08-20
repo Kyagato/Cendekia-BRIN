@@ -89,12 +89,13 @@ class User extends Authenticatable
 
     public function isMember()
     {
-        return $this->role === 'Anggota';
+        // Role Anggota kini menyatu dengan Kreator Pengetahuan
+        return $this->role === 'Kreator Pengetahuan';
     }
 
     public function isGuest()
     {
-        return $this->role === 'Guest';
+        return false;
     }
 
     public function isAdmin()

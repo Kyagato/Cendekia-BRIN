@@ -44,7 +44,7 @@
                     <a href="{{ route('knowledge.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('knowledge.*')
-                                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Pengetahuan
                     </a>
@@ -68,7 +68,7 @@
                     <a href="{{ route('moderator.forum.approval') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('moderator.forum.*')
-                                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400'
+                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Atur Forum
                     </a>
@@ -79,7 +79,7 @@
                     <a href="{{ route('admin.users.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.users.*')
-                                  ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Pengguna
                     </a>

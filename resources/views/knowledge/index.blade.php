@@ -70,7 +70,7 @@
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
+                <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Thumbnail</th>
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Judul</th>
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Tipe</th>
@@ -83,7 +83,7 @@
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                 @forelse($knowledges as $item)
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                     <td class="py-3 px-6">
                         @if($item->file_path)
                             <div class="w-12 h-12 rounded overflow-hidden shadow-sm">
@@ -101,9 +101,9 @@
                     <td class="py-3 px-6 text-sm text-slate-600 dark:text-slate-300">{{ $item->tipe }}</td>
                     <td class="py-3 px-6 text-sm text-slate-600 dark:text-slate-300">{{ $item->category->nama_kategori ?? '-' }}</td>
                     <td class="py-3 px-6">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
-                            {{ $item->status == 'Disetujui' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300' :
-                              ($item->status == 'Ditolak' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300' : 'bg-yellow-100 text-yellow-800') }}">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border
+                            {{ $item->status == 'Disetujui' ? 'bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800' :
+                              ($item->status == 'Ditolak' ? 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800') }}">
                             {{ $item->status }}
                         </span>
                     </td>
@@ -204,7 +204,7 @@
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
+                <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Thumbnail</th>
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Judul</th>
                     <th class="py-3 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Tipe</th>
@@ -217,7 +217,7 @@
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                 @forelse($drafts as $item)
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                     <td class="py-3 px-6">
                         @if($item->file_path)
                             <div class="w-12 h-12 rounded overflow-hidden shadow-sm">

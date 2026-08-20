@@ -39,16 +39,15 @@ class RegisteredUserController extends Controller
             'instansi' => 'required|string|max:255',
         ]);
 
-        // 2. Masukkan data baru tersebut ke dalam proses pembuatan User
+        // 2. Masukkan data baru tersebut ke dalam proses pembuatan User (Otomatis role Kreator Pengetahuan)
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'jenis_kelamin' => $request->jenis_kelamin,
             'instansi' => $request->instansi,
+            'role' => 'Kreator Pengetahuan',
         ]);
-
-        // (Nantinya di baris ini kita akan otomatis memberikan Role 'Anggota' kepada user yang baru mendaftar)
 
         event(new Registered($user));
 

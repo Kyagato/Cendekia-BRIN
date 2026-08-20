@@ -50,7 +50,7 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'gender' => 'required|in:L,P',
             'instansi' => 'nullable|string|max:255',
-            'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator,Anggota,Guest',
+            'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator',
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -97,7 +97,7 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8',
             'gender' => 'required|in:L,P',
             'instansi' => 'nullable|string|max:255',
-            'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator,Anggota,Guest',
+            'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator',
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
