@@ -61,21 +61,20 @@
                     </a>
                 @endif
 
-                {{-- Label / Kategori / Komentar: disembunyikan untuk Moderator & Kreator Pengetahuan --}}
-                @if(!$isModerator && !$isKreator)
-                    <a href="#" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 transition">
-                        Label
-                    </a>
-                    <a href="#" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 transition">
-                        Kategori
-                    </a>
-                    <a href="#" class="px-3.5 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 transition">
-                        Komentar
+                {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
+                @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan'])))
+                    <a href="{{ route('validasi.index') }}"
+                       class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
+                              {{ request()->routeIs('validasi.*')
+                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
+                        Validasi
                     </a>
                 @endif
 
+
                 {{-- Atur Forum: hanya untuk role moderator/admin --}}
-                @if(auth()->check() && in_array(auth()->user()->role, $moderatorRoles))
+                @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, $moderatorRoles)))
                     <a href="{{ route('moderator.forum.approval') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('moderator.forum.*')
@@ -84,6 +83,7 @@
                         Atur Forum
                     </a>
                 @endif
+
 
                 {{-- Pengguna: hanya Super Admin --}}
                 @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id'))
@@ -192,21 +192,23 @@
         @if(!$isModerator)
         <a href="{{ route('knowledge.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('knowledge.*') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
+                  {{ request()->routeIs('knowledge.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
         @endif
 
-        {{-- Label / Kategori / Komentar: hanya untuk admin & analis, bukan Moderator atau Kreator --}}
-        @if(!$isModerator && !$isKreator)
-        <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Label</a>
-        <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Kategori</a>
-        <a href="#" class="block px-3 py-2 rounded-lg text-base font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Komentar</a>
+        {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
+        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan'])))
+        <a href="{{ route('validasi.index') }}"
+           class="block px-3 py-2 rounded-lg text-base font-semibold transition
+                  {{ request()->routeIs('validasi.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Validasi</a>
         @endif
 
-        @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator']))
+
+        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin IPPD', 'Moderator'])))
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
+                  {{ request()->routeIs('moderator.forum.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
         @endif
+
         @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id'))
         <a href="{{ route('admin.users.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition

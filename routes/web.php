@@ -71,23 +71,46 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: ANALISIS PENGETAHUAN + ADMIN
     // Validasi, approve, atau reject konten
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Analisis Pengetahuan'])->group(function () {
-        Route::get('/validasi', function () {
-            return view('dashboard'); // TODO: Buat halaman validasi konten
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Analisis Pengetahuan,Analis Pengetahuan'])->group(function () {
+        Route::get('/validasi', function (\Illuminate\Http\Request $request) {
+            $query = Knowledge::with(['user', 'category'])->where('status', '!=', 'Draft')->latest();
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('judul', 'like', "%{$search}%")
+                      ->orWhere('penulis', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->filled('tipe')) {
+                $query->where('tipe', $request->tipe);
+            }
+
+            $knowledges = $query->paginate(10)->withQueryString();
+            return view('knowledge.validasi_index', compact('knowledges'));
         })->name('validasi.index');
+
         Route::get('/validasi/{knowledge}', function (Knowledge $knowledge) {
             $categories = \App\Models\Category::all();
             return view('knowledge.validasi', compact('knowledge', 'categories'));
         })->name('validasi.show');
+
         Route::patch('/validasi/{knowledge}/approve', function (Knowledge $knowledge) {
             $knowledge->update(['status' => 'Disetujui']);
             return back()->with('success', 'Konten berhasil disetujui.');
         })->name('validasi.approve');
+
         Route::patch('/validasi/{knowledge}/reject', function (Knowledge $knowledge) {
             $knowledge->update(['status' => 'Ditolak']);
-            return redirect()->route('knowledge.index')->with('success', 'Konten berhasil ditolak.');
+            return redirect()->route('validasi.index')->with('success', 'Konten berhasil ditolak.');
         })->name('validasi.reject');
     });
+
 
     // =============================================================
     // ROLE: ANGGOTA & SEMUA MEMBER
@@ -104,8 +127,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =============================================================
     Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Moderator'])->group(function () {
         Route::get('/forum/manage', function () {
-            return view('dashboard'); // TODO: Buat halaman manajemen forum
+            return redirect()->route('moderator.forum.approval');
         })->name('forum.manage');
+
         Route::delete('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
         Route::delete('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
         Route::patch('/forum/{thread}/pin', [App\Http\Controllers\ForumController::class, 'pin'])->name('forum.pin');
