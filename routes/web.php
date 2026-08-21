@@ -100,6 +100,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('knowledge.validasi', compact('knowledge', 'categories'));
         })->name('validasi.show');
 
+        Route::put('/validasi/{knowledge}', function (\Illuminate\Http\Request $request, Knowledge $knowledge) {
+            $validated = $request->validate([
+                'judul'          => 'required|string|max:255',
+                'tipe'           => 'required|in:Teks,Gambar,Video,Audio',
+                'url_teks'       => 'nullable|string',
+                'penulis'        => 'nullable|string|max:255',
+                'kolaborator'    => 'nullable|string|max:255',
+                'deskripsi'      => 'nullable|string',
+                'detail'         => 'nullable|string',
+                'category_id'    => 'nullable|exists:categories,id',
+                'tanggal_terbit' => 'nullable|date',
+                'file'           => 'nullable|file|max:10240',
+            ]);
+
+            if ($request->hasFile('file')) {
+                $validated['file_path'] = $request->file('file')->store('knowledge_files', 'public');
+            }
+
+            $knowledge->update($validated);
+
+            if ($request->has('tags')) {
+                $tagsInput = explode(',', $request->tags ?? '');
+                $tagIds = [];
+                foreach ($tagsInput as $tagName) {
+                    $trimmed = trim($tagName);
+                    if ($trimmed) {
+                        $tag = \App\Models\Tag::firstOrCreate(['nama_label' => $trimmed]);
+                        $tagIds[] = $tag->id;
+                    }
+                }
+                $knowledge->tags()->sync($tagIds);
+            }
+
+            return back()->with('success', 'Data pengetahuan berhasil diperbarui.');
+        })->name('validasi.update');
+
+
         Route::patch('/validasi/{knowledge}/approve', function (Knowledge $knowledge) {
             $knowledge->update(['status' => 'Disetujui']);
             return back()->with('success', 'Konten berhasil disetujui.');
