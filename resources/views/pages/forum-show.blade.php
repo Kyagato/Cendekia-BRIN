@@ -127,9 +127,9 @@
                     </div>
                 @endif
 
-                <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6">{{ $thread->judul }}</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 mb-6 break-words [overflow-wrap:anywhere]">{{ $thread->judul }}</h1>
 
-                <div class="prose prose-slate dark:prose-invert max-w-none mb-8 text-slate-700 dark:text-slate-300">
+                <div class="prose prose-slate dark:prose-invert max-w-none mb-8 text-slate-700 dark:text-slate-300 break-words [overflow-wrap:anywhere]">
                     {!! nl2br(e($thread->konten)) !!}
                 </div>
 

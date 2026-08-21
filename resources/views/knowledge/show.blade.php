@@ -20,7 +20,7 @@
     {{-- Top Action Bar --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ $knowledge->judul }}</h1>
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100 break-words [overflow-wrap:anywhere]">{{ $knowledge->judul }}</h1>
             <div class="flex items-center gap-3 mt-2 text-sm text-slate-500 dark:text-slate-400">
                 <span>{{ $knowledge->user->name ?? 'Anonim' }}</span>
                 <span class="w-1 h-1 rounded-full bg-slate-400 dark:bg-slate-600"></span>
@@ -96,7 +96,7 @@
                     @if($knowledge->deskripsi)
                     <div>
                         <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2 uppercase tracking-wider">Ringkasan</h2>
-                        <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-sm bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                        <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-sm bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-700 break-words [overflow-wrap:anywhere]">
                             {!! nl2br(e($knowledge->deskripsi)) !!}
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                     @if($knowledge->detail)
                     <div>
                         <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2 uppercase tracking-wider">Detail</h2>
-                        <div class="prose prose-sm max-w-none text-slate-700 dark:text-slate-300 leading-relaxed">
+                        <div class="prose prose-sm max-w-none text-slate-700 dark:text-slate-300 leading-relaxed break-words [overflow-wrap:anywhere]">
                             {!! nl2br(e($knowledge->detail)) !!}
                         </div>
                     </div>

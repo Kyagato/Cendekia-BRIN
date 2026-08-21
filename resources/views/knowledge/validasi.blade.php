@@ -45,7 +45,7 @@
 
                 <div>
                     <label class="block text-sm font-bold text-slate-800 mb-2">Judul</label>
-                    <div class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-800">{{ $knowledge->judul }}</div>
+                    <div class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 break-words [overflow-wrap:anywhere]">{{ $knowledge->judul }}</div>
                 </div>
 
                 <div>
@@ -84,14 +84,14 @@
                 @if($knowledge->deskripsi)
                 <div>
                     <label class="block text-sm font-bold text-slate-800 mb-2">Ringkasan</label>
-                    <div class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-sm leading-relaxed min-h-[80px]">{!! nl2br(e($knowledge->deskripsi)) !!}</div>
+                    <div class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-sm leading-relaxed min-h-[80px] break-words [overflow-wrap:anywhere]">{!! nl2br(e($knowledge->deskripsi)) !!}</div>
                 </div>
                 @endif
 
                 @if($knowledge->detail)
                 <div>
                     <label class="block text-sm font-bold text-slate-800 mb-2">Detail</label>
-                    <div class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-sm leading-relaxed min-h-[120px]">{!! nl2br(e($knowledge->detail)) !!}</div>
+                    <div class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-sm leading-relaxed min-h-[120px] break-words [overflow-wrap:anywhere]">{!! nl2br(e($knowledge->detail)) !!}</div>
                 </div>
                 @endif
 
