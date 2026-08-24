@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Kreator Pengetahuan',
                 'email' => 'kreator@simpan.brin',
-                'role' => 'Kreator Pengetahuan',
+                'role' => 'Anggota',
                 'instansi' => 'Pusat Riset Teknologi',
                 'jenis_kelamin' => 'L',
             ],
@@ -72,12 +72,13 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
             ],
             [
-                'name' => 'Kreator Pengetahuan (Pengguna Umum)',
+                'name' => 'Anggota Biasa (Pengguna Umum)',
                 'email' => 'anggota@simpan.brin',
-                'role' => 'Kreator Pengetahuan',
+                'role' => 'Anggota',
                 'instansi' => 'Universitas Negeri Surabaya',
                 'jenis_kelamin' => 'P',
             ],
+
         ];
 
         foreach ($dummyUsers as $userData) {
