@@ -12,10 +12,18 @@ class KnowledgeController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+
         $query = Knowledge::with(['category', 'user', 'tags'])
-            ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak'])
-            ->latest();
-        
+            ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak']);
+
+        // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (kecuali Admin)
+        if (!in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) && $user->email !== 'superadmin@brin.go.id') {
+            $query->where('user_id', $user->id);
+        }
+
+        $query->latest();
+
         if ($request->has('tipe') && $request->tipe != '') {
             $query->where('tipe', $request->tipe);
         }
@@ -24,7 +32,7 @@ class KnowledgeController extends Controller
             $statusMap = [
                 'diajukan' => 'Diajukan',
                 'diterima' => 'Disetujui',
-                'ditolak' => 'Ditolak'
+                'ditolak'  => 'Ditolak'
             ];
             if (isset($statusMap[strtolower($request->status)])) {
                 $query->where('status', $statusMap[strtolower($request->status)]);
@@ -41,16 +49,21 @@ class KnowledgeController extends Controller
 
         $knowledges = $query->paginate(10, ['*'], 'page_knowledges')->appends($request->all());
 
-        // Get drafts only for the logged-in user
-        $drafts = Knowledge::with(['category', 'user', 'tags'])
-            ->where('status', 'Draft')
-            ->where('user_id', Auth::id())
-            ->latest()
+        // Get drafts for logged-in user (or all drafts for admins)
+        $draftsQuery = Knowledge::with(['category', 'user', 'tags'])
+            ->where('status', 'Draft');
+
+        if (!in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) && $user->email !== 'superadmin@brin.go.id') {
+            $draftsQuery->where('user_id', $user->id);
+        }
+
+        $drafts = $draftsQuery->latest()
             ->paginate(5, ['*'], 'page_drafts')
             ->appends($request->all());
-        
+
         return view('knowledge.index', compact('knowledges', 'drafts'));
     }
+
     // 1. Menampilkan Form Upload
     public function create()
     {

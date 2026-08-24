@@ -78,7 +78,8 @@
                     <option value="" disabled {{ old('role', $user->role ?? '') == '' ? 'selected' : '' }}>-- Pilih Hak Akses --</option>
                     <option value="Admin Pusat" {{ old('role', $user->role ?? '') == 'Admin Pusat' ? 'selected' : '' }}>Admin Pusat</option>
                     <option value="Admin IPPD" {{ old('role', $user->role ?? '') == 'Admin IPPD' ? 'selected' : '' }}>Admin IPPD</option>
-                    <option value="Kreator Pengetahuan" {{ old('role', $user->role ?? '') == 'Kreator Pengetahuan' ? 'selected' : '' }}>Kreator Pengetahuan (Pengguna Umum)</option>
+                    <option value="Anggota" {{ old('role', $user->role ?? '') == 'Anggota' || old('role', $user->role ?? '') == 'Kreator Pengetahuan' ? 'selected' : '' }}>Anggota (Pengguna Umum)</option>
+
                     <option value="Analisis Pengetahuan" {{ old('role', $user->role ?? '') == 'Analisis Pengetahuan' ? 'selected' : '' }}>Analisis Pengetahuan</option>
                     <option value="Moderator" {{ old('role', $user->role ?? '') == 'Moderator' ? 'selected' : '' }}>Moderator</option>
                 </select>

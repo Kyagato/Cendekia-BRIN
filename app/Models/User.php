@@ -74,7 +74,7 @@ class User extends Authenticatable
 
     public function isCreator()
     {
-        return $this->role === 'Kreator Pengetahuan';
+        return in_array($this->role, ['Anggota', 'Kreator Pengetahuan']);
     }
 
     public function isAnalyst()
@@ -89,8 +89,7 @@ class User extends Authenticatable
 
     public function isMember()
     {
-        // Role Anggota kini menyatu dengan Kreator Pengetahuan
-        return $this->role === 'Kreator Pengetahuan';
+        return in_array($this->role, ['Anggota', 'Kreator Pengetahuan']);
     }
 
     public function isGuest()
@@ -105,6 +104,7 @@ class User extends Authenticatable
 
     public function canManageContent()
     {
-        return in_array($this->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Kreator Pengetahuan', 'Analisis Pengetahuan']);
+        return in_array($this->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Analisis Pengetahuan']);
     }
+
 }

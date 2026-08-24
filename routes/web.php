@@ -55,7 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: MANAJEMEN KONTEN PENGETAHUAN
     // Super Admin, Admin Pusat, Admin IPPD, Analisis Pengetahuan, Kreator Pengetahuan
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Analisis Pengetahuan,Analis Pengetahuan,Kreator Pengetahuan'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD,Analisis Pengetahuan,Analis Pengetahuan,Anggota,Kreator Pengetahuan,Moderator'])->group(function () {
         Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
         Route::get('/knowledge/create', [KnowledgeController::class, 'create'])->name('knowledge.create');
         Route::post('/knowledge', [KnowledgeController::class, 'store'])->name('knowledge.store');
@@ -63,6 +63,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/knowledge/{knowledge}', [KnowledgeController::class, 'update'])->name('knowledge.update');
         Route::delete('/knowledge/{knowledge}', [KnowledgeController::class, 'destroy'])->name('knowledge.destroy');
     });
+
+
 
     // Detail Knowledge (Read-only untuk publik/member)
     Route::get('/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('knowledge.show');

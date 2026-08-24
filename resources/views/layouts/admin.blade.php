@@ -50,8 +50,8 @@
                     </a>
                 @endif
 
-                {{-- Pengetahuan: semua kecuali Moderator murni --}}
-                @if(!$isModerator)
+                {{-- Pengetahuan: semua user login --}}
+                @if(auth()->check())
                     <a href="{{ route('knowledge.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('knowledge.*')
@@ -60,6 +60,7 @@
                         Pengetahuan
                     </a>
                 @endif
+
 
                 {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
                 @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan'])))
@@ -188,12 +189,13 @@
                   {{ request()->routeIs('admin.statistik') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Statistik</a>
         @endif
 
-        {{-- Pengetahuan: semua kecuali Moderator --}}
-        @if(!$isModerator)
+        {{-- Pengetahuan: semua user login --}}
+        @if(auth()->check())
         <a href="{{ route('knowledge.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('knowledge.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
         @endif
+
 
         {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
         @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan'])))

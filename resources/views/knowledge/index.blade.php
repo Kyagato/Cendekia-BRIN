@@ -121,27 +121,28 @@
                                         <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         <span>Lihat</span>
                                     </a>
-                                    {{-- Edit (Hanya Kreator & Admin) --}}
-                                    @if(in_array(auth()->user()->role, ['Kreator Pengetahuan', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
+                                    {{-- Edit --}}
+                                    @can('edit-knowledge', $item)
                                     <a href="{{ route('knowledge.edit', $item->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
                                         <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                         <span>Edit</span>
                                     </a>
-                                    @endif
-                                    {{-- Ubah (Hanya Analisis) --}}
+                                    @endcan
+                                    {{-- Validasi/Ubah --}}
                                     @if(in_array(auth()->user()->role, ['Analisis Pengetahuan', 'Analis Pengetahuan', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
                                     <a href="{{ route('validasi.show', $item->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
                                         <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
                                         <span>Ubah</span>
                                     </a>
                                     @endif
-                                    {{-- Hapus (Hanya Kreator) --}}
-                                    @if(auth()->user()->role == 'Kreator Pengetahuan')
+                                    {{-- Hapus --}}
+                                    @can('delete-knowledge', $item)
                                     <button type="button" @click="showDeleteModal = true; open = false" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                                         <svg class="w-4 h-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                         <span>Hapus</span>
                                     </button>
-                                    @endif
+                                    @endcan
+
                                 </div>
 
                                 {{-- Modal Konfirmasi Hapus --}}
@@ -192,7 +193,8 @@
     @endif
 </div>
 
-@if(in_array(auth()->user()->role, ['Kreator Pengetahuan', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
+@if(in_array(auth()->user()->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
+
 <!-- Table Draft Pengetahuan -->
 <div class="mt-8 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
     <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
@@ -243,8 +245,8 @@
                     <td class="py-3 px-6 text-sm text-slate-600 dark:text-slate-300">{{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}</td>
                     <td class="py-3 px-6 text-right">
                         <div class="flex items-center justify-end">
-                            <div x-data="{ open: false, showDeleteModal: false }" class="relative inline-block text-left" @mouseenter="open = true" @mouseleave="open = false">
-                                <button @click="open = !open" class="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition focus:outline-none">
+                            <div x-data="{ open: false, showDeleteModal: false }" class="relative inline-block text-left">
+                                <button @click="open = !open" @click.outside="open = false" class="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition focus:outline-none">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
                                 </button>
                                 <div x-show="open" x-cloak x-transition class="absolute right-0 z-20 mt-1 w-32 origin-top-right rounded-md bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 border border-slate-200 dark:border-slate-700 py-1">
@@ -252,17 +254,20 @@
                                         <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         <span>Lihat</span>
                                     </a>
+                                    @can('edit-knowledge', $item)
                                     <a href="{{ route('knowledge.edit', $item->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
                                         <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                                         <span>Edit</span>
                                     </a>
-                                    @if(auth()->user()->role == 'Kreator Pengetahuan')
+                                    @endcan
+                                    @can('delete-knowledge', $item)
                                     <button type="button" @click="showDeleteModal = true; open = false" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                                         <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                         <span>Hapus</span>
                                     </button>
-                                    @endif
+                                    @endcan
                                 </div>
+
 
                                 {{-- Modal Konfirmasi Hapus --}}
                                 <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">

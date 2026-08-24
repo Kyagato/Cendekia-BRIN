@@ -51,37 +51,39 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // ----- Gate: Membuat Konten/Pengetahuan -----
-        // Hanya Kreator Pengetahuan dan Admin yang bisa MEMBUAT konten baru.
+        // Anggota, Kreator Pengetahuan, Moderator, dan Admin bisa MEMBUAT konten baru.
         Gate::define('create-knowledge', function (User $user) {
             return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin IPPD', 'Kreator Pengetahuan',
+                'Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Moderator',
             ]);
         });
 
         // ----- Gate: Mengedit Konten Sendiri -----
-        // Kreator hanya bisa edit konten miliknya. Admin bisa edit semua.
+        // Anggota, Kreator & Moderator hanya bisa edit konten miliknya. Admin bisa edit semua.
         Gate::define('edit-knowledge', function (User $user, Knowledge $knowledge) {
             if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD'])) {
                 return true;
             }
-            // Kreator Pengetahuan hanya bisa edit miliknya sendiri
-            if ($user->role === 'Kreator Pengetahuan' && $knowledge->user_id === $user->id) {
+            // Anggota, Kreator Pengetahuan & Moderator hanya bisa edit miliknya sendiri
+            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator']) && $knowledge->user_id === $user->id) {
                 return true;
             }
             return false;
         });
 
         // ----- Gate: Menghapus Konten -----
-        // Kreator hanya bisa hapus konten miliknya. Admin bisa hapus semua.
+        // Anggota, Kreator & Moderator hanya bisa hapus konten miliknya. Admin bisa hapus semua.
         Gate::define('delete-knowledge', function (User $user, Knowledge $knowledge) {
             if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD'])) {
                 return true;
             }
-            if ($user->role === 'Kreator Pengetahuan' && $knowledge->user_id === $user->id) {
+            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator']) && $knowledge->user_id === $user->id) {
                 return true;
             }
             return false;
         });
+
+
 
         // ----- Gate: Validasi/Approve Konten -----
         // Hanya Analisis Pengetahuan dan Admin yang bisa approve/reject.
