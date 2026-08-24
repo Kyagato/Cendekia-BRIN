@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', 'Edit Pengetahuan')
 
 @section('breadcrumbs')
@@ -180,12 +180,12 @@
                         </div>
                     </div>
 
-                    {{-- Baris 2: Label & Status Akses --}}
+                    {{-- Baris 2: Tagline & Status Akses --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {{-- Label --}}
+                        {{-- Tagline --}}
                         <div>
-                            <label for="tags" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Label</label>
-                            <input type="text" id="tags" name="tags" value="{{ old('tags', $knowledge->tags) }}" placeholder="Pilih Tag (pisahkan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
+                            <label for="tags" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Tagline</label>
+                            <input type="text" id="tags" name="tags" value="{{ old('tags', $knowledge->tags ? $knowledge->tags->pluck('nama_label')->implode(', ') : '') }}" placeholder="Masukkan Tagline (pisahkan dengan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                         </div>
 
                         {{-- Status Akses --}}

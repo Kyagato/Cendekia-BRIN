@@ -180,13 +180,13 @@
                         </div>
                     </div>
 
-                    {{-- Label / Tags Input --}}
+                    {{-- Tagline Input --}}
                     <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900">
                         <div class="px-5 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Label / Tag</h3>
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Tagline</h3>
                         </div>
                         <div class="px-5 py-4">
-                            <input type="text" name="tags" value="{{ old('tags', $knowledge->tags ? $knowledge->tags->pluck('nama_label')->implode(', ') : '') }}" placeholder="Pisahkan dengan koma (contoh: iptek, BRIN)"
+                            <input type="text" name="tags" value="{{ old('tags', $knowledge->tags ? $knowledge->tags->pluck('nama_label')->implode(', ') : '') }}" placeholder="Masukkan Tagline (pisahkan dengan koma)"
                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:ring-red-600 focus:border-red-600 transition">
                         </div>
                     </div>
