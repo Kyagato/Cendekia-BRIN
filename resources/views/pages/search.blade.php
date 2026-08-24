@@ -110,7 +110,7 @@
                 @endif
                 @if(request('label'))
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300">
-                        Label: {{ request('label') }}
+                        Tagline: {{ request('label') }}
                         <a href="{{ request()->fullUrlWithoutQuery('label') }}" class="hover:text-green-900"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></a>
                     </span>
                 @endif
@@ -270,12 +270,12 @@
                 </div>
             </div>
 
-            <!-- Label Populer -->
+            <!-- Tagline Populer -->
             @if($popularTags->count() > 0)
             <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
                 <h3 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
-                    Label Populer
+                    Tagline Populer
                 </h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach($popularTags as $tag)

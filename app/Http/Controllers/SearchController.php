@@ -123,7 +123,10 @@ class SearchController extends Controller
             'knowledge' => fn($q) => $q->where('status', 'Disetujui')
         ])->get();
 
-        $popularTags = Tag::withCount('knowledge')
+        $popularTags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+            ->has('knowledge')
+            ->where('nama_label', 'not like', '%{%')
+            ->where('nama_label', 'not like', '%[%')
             ->orderByDesc('knowledge_count')
             ->take(20)
             ->get();

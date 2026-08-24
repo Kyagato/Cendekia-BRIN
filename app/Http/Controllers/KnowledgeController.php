@@ -220,7 +220,17 @@ class KnowledgeController extends Controller
 
     public function destroy(Knowledge $knowledge)
     {
+        $tags = $knowledge->tags;
+        $knowledge->tags()->detach();
         $knowledge->delete();
+
+        // Hapus tagline yang sudah tidak terikat pada artikel apapun (orphan tags)
+        foreach ($tags as $tag) {
+            if ($tag->knowledge()->count() === 0) {
+                $tag->delete();
+            }
+        }
+
         return redirect()->route('knowledge.index')->with('success', 'Pengetahuan berhasil dihapus.');
     }
 }

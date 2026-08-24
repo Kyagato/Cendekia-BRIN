@@ -214,11 +214,11 @@
             </div>
         </div>
 
-        <!-- Label Populer -->
+        <!-- Tagline Populer -->
         <div class="lg:col-span-1">
             <div class="flex items-center gap-3 mb-6">
                 <div class="h-8 w-2 bg-yellow-500 rounded-full"></div>
-                <h2 class="text-xl font-bold text-slate-800 dark:text-white">Label Populer</h2>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-white">Tagline Populer</h2>
             </div>
             
             <div class="flex flex-wrap gap-2">

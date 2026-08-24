@@ -37,7 +37,10 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
-        $popularTags = Tag::withCount('knowledge')
+        $popularTags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+            ->has('knowledge')
+            ->where('nama_label', 'not like', '%{%')
+            ->where('nama_label', 'not like', '%[%')
             ->orderByDesc('knowledge_count')
             ->take(12)
             ->get();
@@ -53,7 +56,13 @@ class HomeController extends Controller
     public function category(Request $request)
     {
         $categories = Category::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])->get();
-        $tags = Tag::withCount('knowledge')->orderByDesc('knowledge_count')->take(20)->get();
+        $tags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+            ->has('knowledge')
+            ->where('nama_label', 'not like', '%{%')
+            ->where('nama_label', 'not like', '%[%')
+            ->orderByDesc('knowledge_count')
+            ->take(20)
+            ->get();
 
         $query = Knowledge::with(['category', 'user', 'tags'])->where('status', 'Disetujui');
 
