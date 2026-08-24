@@ -34,14 +34,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('admin.statistik');
         }
 
-        if (in_array($user->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan'])) {
+        if (in_array($user->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Anggota', 'Kreator Pengetahuan'])) {
             return redirect()->route('knowledge.index');
         } elseif (in_array($user->role, ['Moderator'])) {
             return redirect()->route('moderator.forum.approval');
         }
 
-        return redirect()->route('home');
+        return redirect()->route('knowledge.index');
     })->name('dashboard');
+
 
     // ----- Profil (semua user login) -----
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
