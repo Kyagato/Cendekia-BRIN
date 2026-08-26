@@ -38,6 +38,14 @@
         results: [], 
         loading: false, 
         showResults: false,
+        shining: false,
+        triggerShine() {
+            this.shining = false;
+            this.$nextTick(() => {
+                this.shining = true;
+                setTimeout(() => { this.shining = false; }, 800);
+            });
+        },
         async fetchResults() {
             if(this.query.length < 2) {
                 this.results = [];
@@ -55,9 +63,52 @@
             this.loading = false;
         }
     }">
+    <style>
+        @keyframes shine-sweep {
+            0% {
+                transform: translateX(-200%) skewX(-25deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(350%) skewX(-25deg);
+                opacity: 0;
+            }
+        }
+        .search-shine-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.45) 50%, 
+                transparent 100%
+            );
+            pointer-events: none;
+            transform: translateX(-200%) skewX(-25deg);
+            z-index: 20;
+        }
+        .animate-shine {
+            animation: shine-sweep 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+    </style>
     <div class="max-w-4xl mx-auto">
-        <form action="{{ route('search.index') }}" method="GET" class="glass bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-2 rounded-2xl shadow-2xl border border-white/20 dark:border-slate-700 flex items-center relative">
-            <div class="pl-4 text-slate-500 dark:text-slate-400">
+        <form action="{{ route('search.index') }}" method="GET" 
+              class="glass bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-2 rounded-2xl shadow-2xl border border-white/20 dark:border-slate-700 flex items-center relative overflow-hidden transition-all duration-300 focus-within:ring-2 focus-within:ring-red-500/60 focus-within:border-red-500"
+              @click="triggerShine()">
+
+            <!-- Shine Sweep Flare Overlay -->
+            <div :class="shining ? 'animate-shine' : ''" class="search-shine-effect"></div>
+
+            <div class="pl-4 text-slate-500 dark:text-slate-400 relative z-10">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -66,19 +117,19 @@
                    name="q"
                    x-model="query" 
                    @input.debounce.300ms="fetchResults" 
-                   @focus="if(query.length > 0) showResults = true" 
+                   @focus="triggerShine(); if(query.length > 0) showResults = true" 
                    @click.away="showResults = false"
                    placeholder="Cari pengetahuan, dokumen, atau topik..." 
-                   class="w-full bg-transparent border-none focus:ring-0 text-slate-800 dark:text-slate-100 px-4 py-3 text-lg placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none">
+                   class="w-full bg-transparent border-none focus:ring-0 text-slate-800 dark:text-slate-100 px-4 py-3 text-lg placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none relative z-10">
             
-            <div x-show="loading" class="pr-4 text-primary-600 dark:text-primary-400" style="display: none;">
+            <div x-show="loading" class="pr-4 text-primary-600 dark:text-primary-400 relative z-10" style="display: none;">
                 <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
             </div>
             
-            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-xl font-semibold transition shadow-md hidden sm:block">
+            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-xl font-semibold transition shadow-md hidden sm:block relative z-10">
                 Cari
             </button>
         </form>
