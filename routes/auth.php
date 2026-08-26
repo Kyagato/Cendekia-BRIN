@@ -22,17 +22,24 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+    // Flow Lupa Password & Kode Autentikasi 4 Digit (OTP)
+    Route::get('forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showEmailForm'])
         ->name('password.request');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    Route::post('forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'sendOtp'])
         ->name('password.email');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
+    Route::get('forgot-password/verify', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showOtpForm'])
+        ->name('password.otp.show');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::post('forgot-password/verify', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'verifyOtp'])
+        ->name('password.otp.verify');
+
+    Route::get('forgot-password/reset', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showResetForm'])
+        ->name('password.otp.reset');
+
+    Route::post('forgot-password/reset', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'updatePassword'])
+        ->name('password.otp.update');
 });
 
 Route::middleware('auth')->group(function () {
