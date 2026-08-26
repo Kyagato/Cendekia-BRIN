@@ -76,12 +76,22 @@
                 <label for="role" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Role / Hak Akses</label>
                 <select id="role" name="role" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-slate-800 dark:text-slate-100 text-sm" required>
                     <option value="" disabled {{ old('role', $user->role ?? '') == '' ? 'selected' : '' }}>-- Pilih Hak Akses --</option>
-                    <option value="Admin Pusat" {{ old('role', $user->role ?? '') == 'Admin Pusat' ? 'selected' : '' }}>Admin Pusat</option>
-                    <option value="Admin IPPD" {{ old('role', $user->role ?? '') == 'Admin IPPD' ? 'selected' : '' }}>Admin IPPD</option>
-                    <option value="Anggota" {{ old('role', $user->role ?? '') == 'Anggota' || old('role', $user->role ?? '') == 'Kreator Pengetahuan' ? 'selected' : '' }}>Anggota (Pengguna Umum)</option>
-
-                    <option value="Analisis Pengetahuan" {{ old('role', $user->role ?? '') == 'Analisis Pengetahuan' ? 'selected' : '' }}>Analisis Pengetahuan</option>
-                    <option value="Moderator" {{ old('role', $user->role ?? '') == 'Moderator' ? 'selected' : '' }}>Moderator</option>
+                    @foreach($allowedRoles as $role)
+                        @php
+                            $roleLabel = match($role) {
+                                'Super Admin' => 'Super Admin',
+                                'Admin Pusat' => 'Admin Pusat',
+                                'Admin IPPD' => 'Admin IPPD',
+                                'Anggota' => 'Anggota (Pengguna Umum)',
+                                'Analisis Pengetahuan' => 'Analisis Pengetahuan',
+                                'Moderator' => 'Moderator',
+                                default => $role,
+                            };
+                            $currentRole = old('role', $user->role ?? '');
+                            $isSelected = ($currentRole === $role) || ($role === 'Anggota' && $currentRole === 'Kreator Pengetahuan');
+                        @endphp
+                        <option value="{{ $role }}" {{ $isSelected ? 'selected' : '' }}>{{ $roleLabel }}</option>
+                    @endforeach
                 </select>
             </div>
 

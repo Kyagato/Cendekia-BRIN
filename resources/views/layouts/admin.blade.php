@@ -32,15 +32,15 @@
 
                 <!-- Navigation Menu (Desktop) -->
                 @if(!request()->routeIs('profile.edit'))
-                <nav class="hidden md:flex items-center space-x-1">
+                <nav class="hidden md:flex items-center gap-3 lg:gap-4">
                 @php
                     $isModerator = auth()->check() && str_contains(auth()->user()->role, 'Moderator');
                     $isKreator  = auth()->check() && str_contains(auth()->user()->role, 'Kreator');
                     $moderatorRoles = ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator'];
                 @endphp
 
-                {{-- Statistik: Super Admin & Admin Pusat --}}
-                @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Pusat' || auth()->user()->email === 'superadmin@brin.go.id'))
+                {{-- Statistik: Super Admin, Admin Pusat, Admin IPPD --}}
+                @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
                     <a href="{{ route('admin.statistik') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.statistik')
@@ -86,8 +86,8 @@
                 @endif
 
 
-                {{-- Pengguna: hanya Super Admin --}}
-                @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id'))
+                {{-- Pengguna: Super Admin, Admin Pusat, Admin IPPD --}}
+                @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
                     <a href="{{ route('admin.users.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.users.*')
@@ -183,7 +183,7 @@
             $isKreator   = auth()->check() && str_contains(auth()->user()->role, 'Kreator');
         @endphp
 
-        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Pusat' || auth()->user()->email === 'superadmin@brin.go.id'))
+        @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
         <a href="{{ route('admin.statistik') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('admin.statistik') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Statistik</a>
@@ -211,7 +211,7 @@
                   {{ request()->routeIs('moderator.forum.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
         @endif
 
-        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id'))
+        @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
         <a href="{{ route('admin.users.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('admin.users.*') ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengguna</a>

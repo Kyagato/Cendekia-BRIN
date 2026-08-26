@@ -30,11 +30,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = auth()->user();
         if (!$user) return redirect('/login');
 
-        if ($user->role === 'Super Admin' || $user->email === 'superadmin@brin.go.id') {
+        if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || $user->email === 'superadmin@brin.go.id') {
             return redirect()->route('admin.statistik');
         }
 
-        if (in_array($user->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Anggota', 'Kreator Pengetahuan'])) {
+        if (in_array($user->role, ['Analisis Pengetahuan', 'Analis Pengetahuan', 'Anggota', 'Kreator Pengetahuan'])) {
             return redirect()->route('knowledge.index');
         } elseif (in_array($user->role, ['Moderator'])) {
             return redirect()->route('moderator.forum.approval');
@@ -201,18 +201,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // =============================================================
     // =============================================================
-    // ROLE: SUPER ADMIN ONLY
-    // Manajemen CRUD Pengguna (Strictly Super Admin)
+    // ROLE: SUPER ADMIN + ADMIN PUSAT + ADMIN IPPD
+    // Manajemen CRUD Pengguna
     // =============================================================
-    Route::middleware([\App\Http\Middleware\SuperAdminMiddleware::class])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD'])->group(function () {
         Route::resource('/admin/users', App\Http\Controllers\UserController::class, ['as' => 'admin']);
     });
 
     // =============================================================
-    // ROLE: SUPER ADMIN + ADMIN PUSAT ONLY
-    // Panel administrator tertinggi — kelola role, konfigurasi
+    // ROLE: SUPER ADMIN + ADMIN PUSAT + ADMIN IPPD
+    // Panel administrator — kelola statistik, role, konfigurasi
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin IPPD'])->group(function () {
         Route::get('/admin/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('admin.statistik');
         Route::get('/admin/roles', function () {
             return view('dashboard'); // TODO: Manajemen Role

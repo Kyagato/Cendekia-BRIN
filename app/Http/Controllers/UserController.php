@@ -11,11 +11,44 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     /**
+     * Get the list of roles the current admin is allowed to manage.
+     */
+    private function getAllowedRoles(): array
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'Super Admin' || $user->email === 'superadmin@brin.go.id') {
+            // Super Admin can manage ALL roles (including other Super Admins)
+            return ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator'];
+        }
+
+        if ($user->role === 'Admin Pusat') {
+            // Admin Pusat can manage: Admin IPPD, Anggota, Moderator, Analisis Pengetahuan
+            return ['Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator'];
+        }
+
+        if ($user->role === 'Admin IPPD') {
+            // Admin IPPD can manage: Anggota, Moderator, Analisis Pengetahuan
+            return ['Anggota', 'Analisis Pengetahuan', 'Moderator'];
+        }
+
+        return [];
+    }
+
+    /**
      * Display a listing of the users.
      */
     public function index(Request $request)
     {
+        $allowedRoles = $this->getAllowedRoles();
+        $user = auth()->user();
+
         $query = User::query();
+
+        // Non-Super Admin only see users with roles they can manage
+        if ($user->role !== 'Super Admin' && $user->email !== 'superadmin@brin.go.id') {
+            $query->whereIn('role', $allowedRoles);
+        }
 
         if ($request->has('q') && !empty($request->q)) {
             $searchTerm = $request->q;
@@ -27,8 +60,9 @@ class UserController extends Controller
         }
 
         $users = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $allowedRolesForView = $allowedRoles;
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'allowedRolesForView'));
     }
 
     /**
@@ -36,7 +70,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.form');
+        $allowedRoles = $this->getAllowedRoles();
+        return view('admin.users.form', compact('allowedRoles'));
     }
 
     /**
@@ -44,13 +79,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $allowedRoles = $this->getAllowedRoles();
+        $allowedRolesString = implode(',', $allowedRoles);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'gender' => 'required|in:L,P',
             'instansi' => 'nullable|string|max:255',
-            'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator',
+            'role' => "required|string|in:{$allowedRolesString}",
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -77,7 +115,17 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('admin.users.form', compact('user'));
+        $allowedRoles = $this->getAllowedRoles();
+
+        // Prevent editing users outside of allowed roles (except Super Admin can edit everyone)
+        $currentUser = auth()->user();
+        if ($currentUser->role !== 'Super Admin' && $currentUser->email !== 'superadmin@brin.go.id') {
+            if (!in_array($user->role, $allowedRoles)) {
+                abort(403, 'Anda tidak memiliki hak akses untuk mengedit pengguna ini.');
+            }
+        }
+
+        return view('admin.users.form', compact('user', 'allowedRoles'));
     }
 
     /**
@@ -85,6 +133,17 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $allowedRoles = $this->getAllowedRoles();
+        $allowedRolesString = implode(',', $allowedRoles);
+
+        // Prevent updating users outside of allowed roles
+        $currentUser = auth()->user();
+        if ($currentUser->role !== 'Super Admin' && $currentUser->email !== 'superadmin@brin.go.id') {
+            if (!in_array($user->role, $allowedRoles)) {
+                abort(403, 'Anda tidak memiliki hak akses untuk mengedit pengguna ini.');
+            }
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => [
@@ -97,7 +156,7 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8',
             'gender' => 'required|in:L,P',
             'instansi' => 'nullable|string|max:255',
-            'role' => 'required|string|in:Super Admin,Admin Pusat,Admin IPPD,Kreator Pengetahuan,Analisis Pengetahuan,Moderator',
+            'role' => "required|string|in:{$allowedRolesString}",
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -130,6 +189,15 @@ class UserController extends Controller
     {
         if (auth()->id() === $user->id) {
             return redirect()->route('admin.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        // Prevent deleting users outside of allowed roles
+        $allowedRoles = $this->getAllowedRoles();
+        $currentUser = auth()->user();
+        if ($currentUser->role !== 'Super Admin' && $currentUser->email !== 'superadmin@brin.go.id') {
+            if (!in_array($user->role, $allowedRoles)) {
+                return redirect()->route('admin.users.index')->with('error', 'Anda tidak memiliki hak akses untuk menghapus pengguna ini.');
+            }
         }
 
         if ($user->foto_profil) {

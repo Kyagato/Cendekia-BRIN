@@ -65,7 +65,10 @@
                     <td class="py-4 px-6">
                         @php
                             $roleClass = match($user->role) {
-                                'Super Admin', 'Admin Pusat' => 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
+                                'Super Admin' => 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
+                                'Admin Pusat' => 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
+                                'Admin IPPD' => 'bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-800',
+                                'Anggota' => 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
                                 'Kreator Pengetahuan' => 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
                                 'Analisis Pengetahuan' => 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800',
                                 'Moderator' => 'bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800',
@@ -78,6 +81,7 @@
                     </td>
                     <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2">
+                            @if(in_array($user->role, $allowedRolesForView) || auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id')
                             <a href="{{ route('admin.users.edit', $user->id) }}" class="inline-flex items-center px-3 py-1.5 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 rounded text-xs font-medium transition">
                                 Edit
                             </a>
@@ -88,6 +92,9 @@
                                     Hapus
                                 </button>
                             </form>
+                            @else
+                            <span class="text-xs text-slate-400 dark:text-slate-500 italic">Tidak ada aksi</span>
+                            @endif
                         </div>
                     </td>
                 </tr>
