@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Lupa Password — {{ config('app.name', 'Cendekia BRIN') }}</title>
+    <title>Verifikasi Kode Autentikasi — {{ config('app.name', 'Cendekia BRIN') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-slate-50 relative">
@@ -31,14 +31,14 @@
                     {{-- Ilustrasi --}}
                     <div class="relative z-10 flex-1 flex items-center justify-center py-8">
                         <div class="flex flex-col items-center justify-center text-center gap-4">
-                            <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center text-red-600 ring-8 ring-red-50/50 mb-2">
+                            <div class="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 ring-8 ring-emerald-50/50 mb-2">
                                 <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-6-7.036A11.959 11.959 0 0112 2.25c2.476 0 4.797.755 6.72 2.047a1.96 1.96 0 01.78 1.643l-.32 8.358a1.96 1.96 0 01-1.042 1.581l-5.638 3.132a1.96 1.96 0 01-1.92 0l-5.638-3.132A1.96 1.96 0 013.9 14.3l-.32-8.358a1.96 1.96 0 01.78-1.643z" />
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-slate-800 font-bold text-lg">Pemulihan Akun</h3>
-                                <p class="text-slate-500 text-sm max-w-xs mt-1">Sistem akan mengirimkan kode autentikasi 4 digit untuk memverifikasi kepemilikan akun Anda.</p>
+                                <h3 class="text-slate-800 font-bold text-lg">Verifikasi Autentikasi</h3>
+                                <p class="text-slate-500 text-sm max-w-xs mt-1">Masukkan 4 digit kode angka yang telah kami kirimkan ke email terdaftar Anda.</p>
                             </div>
                         </div>
                     </div>
@@ -49,49 +49,63 @@
                     </div>
                 </div>
 
-                {{-- ========== KOLOM KANAN: Form Input Email ========== --}}
+                {{-- ========== KOLOM KANAN: Form Input Kode OTP ========== --}}
                 <div class="flex flex-col p-8 sm:p-10 lg:p-12">
-                    {{-- Header: Back to Login --}}
+                    {{-- Header: Back to Email Step --}}
                     <div class="flex items-center justify-between mb-8">
-                        {{-- Mobile logo --}}
                         <a href="/" class="lg:hidden inline-flex items-center gap-2">
                             <span class="text-xl font-bold text-red-600">Cendekia</span>
                             <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[0.6rem] font-semibold rounded">BRIN</span>
                         </a>
                         <div class="flex items-center gap-3 ml-auto">
-                            <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-600 font-medium transition">
+                            <a href="{{ route('password.request') }}" class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-600 font-medium transition">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                                Kembali ke Login
+                                Ubah Email
                             </a>
                         </div>
                     </div>
 
                     {{-- Step Indicator --}}
                     <div class="flex items-center gap-2 mb-6">
-                        <span class="w-8 h-8 rounded-full bg-red-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">1</span>
-                        <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Langkah 1 dari 3: Email Akun</span>
+                        <span class="w-8 h-8 rounded-full bg-red-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">2</span>
+                        <span class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Langkah 2 dari 3: Verifikasi Kode</span>
                     </div>
 
                     {{-- Title --}}
                     <div class="mb-6">
-                        <h1 class="text-3xl font-bold text-slate-800 mb-2">Lupa Password?</h1>
+                        <h1 class="text-3xl font-bold text-slate-800 mb-2">Kode Autentikasi</h1>
                         <p class="text-slate-500 text-sm leading-relaxed">
-                            Masukkan alamat email akun Anda. Kami akan mengirimkan kode autentikasi 4 digit untuk mengatur ulang password.
+                            Masukkan 4 digit kode autentikasi yang telah dikirim ke <strong class="text-slate-800">{{ session('reset_email') }}</strong>.
                         </p>
                     </div>
 
+                    {{-- Notification Banner --}}
+                    @if(session('success_otp'))
+                        <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-start gap-3 shadow-sm">
+                            <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="font-bold text-emerald-900">Kode Dikirim!</p>
+                                <p class="text-emerald-700 mt-0.5">{{ session('success_otp') }}</p>
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- Form --}}
-                    <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+                    <form method="POST" action="{{ route('password.otp.verify') }}" class="space-y-6">
                         @csrf
 
-                        {{-- Email --}}
+                        {{-- OTP Input Box --}}
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-slate-800 mb-1.5">Alamat Email</label>
-                            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg text-slate-800 placeholder-slate-400 focus:border-red-600 focus:ring-red-600 focus:ring-1 transition duration-200"
-                                   placeholder="nama@brin.go.id">
-                            @error('email')
-                                <p class="mt-1.5 text-sm text-red-600 font-medium flex items-center gap-1">
+                            <label for="otp" class="block text-sm font-semibold text-slate-800 mb-2 text-center">Masukkan 4 Digit Kode OTP</label>
+                            <div class="max-w-xs mx-auto">
+                                <input id="otp" type="text" name="otp" maxlength="4" required autofocus autocomplete="off"
+                                       class="w-full px-4 py-3.5 border-2 border-slate-300 rounded-xl text-slate-800 placeholder-slate-300 focus:border-red-600 focus:ring-red-600 text-center font-mono text-3xl font-bold tracking-[0.6em] transition duration-200"
+                                       placeholder="••••">
+                            </div>
+                            @error('otp')
+                                <p class="mt-2 text-sm text-red-600 font-medium text-center flex items-center justify-center gap-1">
                                     <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     {{ $message }}
                                 </p>
@@ -101,10 +115,21 @@
                         {{-- Submit Button --}}
                         <button type="submit"
                                 class="w-full py-3.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold rounded-full shadow-lg shadow-red-600/30 hover:shadow-xl hover:shadow-red-600/40 transform hover:-translate-y-0.5 transition-all duration-200 uppercase tracking-wider text-sm flex justify-center items-center gap-2">
-                            <span>Kirim Kode Autentikasi</span>
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            <span>Verifikasi Kode & Lanjut</span>
                         </button>
                     </form>
+
+                    {{-- Resend Option --}}
+                    <div class="mt-6 text-center">
+                        <form method="POST" action="{{ route('password.email') }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="email" value="{{ session('reset_email') }}">
+                            <button type="submit" class="text-xs text-red-600 hover:text-red-700 font-semibold hover:underline bg-transparent border-none p-0 cursor-pointer">
+                                Tidak menerima kode? Kirim Ulang Kode OTP
+                            </button>
+                        </form>
+                    </div>
 
                     {{-- Footer --}}
                     <div class="mt-8 pt-6 border-t border-slate-100 text-center">
