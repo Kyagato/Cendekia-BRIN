@@ -27,19 +27,68 @@
     <!-- Action Bar -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
         <!-- Filters -->
-        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+        <div class="flex flex-wrap gap-2 w-full md:w-auto items-center" x-data="{ popOpen: false }">
             @php
                 $sort = request('sort', 'terbaru');
+                $isPopuler = in_array($sort, ['populer_umum', 'populer_tayangan', 'populer_komentar']);
+                $populerLabels = [
+                    'populer_umum'     => 'Populer Umum',
+                    'populer_tayangan' => 'Populer Tayangan',
+                    'populer_komentar' => 'Populer Komentar',
+                ];
+                $activePopulerLabel = $populerLabels[$sort] ?? 'Terpopuler';
             @endphp
+
+            {{-- Terbaru --}}
             <a href="{{ url('/forum?sort=terbaru') }}" class="px-4 py-2 rounded-full text-sm font-medium transition {{ $sort == 'terbaru' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
                 Terbaru
             </a>
-            <a href="{{ url('/forum?sort=terpopuler') }}" class="px-4 py-2 rounded-full text-sm font-medium transition {{ $sort == 'terpopuler' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
-                Terpopuler
-            </a>
-            <a href="{{ url('/forum?sort=belum_dijawab') }}" class="px-4 py-2 rounded-full text-sm font-medium transition {{ $sort == 'belum_dijawab' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
-                Belum Dijawab
-            </a>
+
+            {{-- Terpopuler Dropdown --}}
+            <div class="relative">
+                <button @click="popOpen = !popOpen" @click.away="popOpen = false" type="button"
+                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition cursor-pointer
+                               {{ $isPopuler ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
+                    {{ $isPopuler ? $activePopulerLabel : 'Terpopuler' }}
+                    <svg class="w-4 h-4 transition-transform" :class="popOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+
+                {{-- Dropdown Menu --}}
+                <div x-show="popOpen"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     class="absolute left-0 top-full mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 overflow-hidden"
+                     style="display: none;">
+
+                    <a href="{{ url('/forum?sort=populer_umum') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm transition {{ $sort == 'populer_umum' ? 'bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-semibold' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
+                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                        <div>
+                            <div class="font-medium">Populer Umum</div>
+                            <div class="text-xs text-slate-400 dark:text-slate-500">Gabungan komentar & tayangan</div>
+                        </div>
+                    </a>
+
+                    <a href="{{ url('/forum?sort=populer_tayangan') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm transition {{ $sort == 'populer_tayangan' ? 'bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-semibold' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
+                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        <div>
+                            <div class="font-medium">Populer Tayangan</div>
+                            <div class="text-xs text-slate-400 dark:text-slate-500">Berdasarkan jumlah tayangan</div>
+                        </div>
+                    </a>
+
+                    <a href="{{ url('/forum?sort=populer_komentar') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm transition {{ $sort == 'populer_komentar' ? 'bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-semibold' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">
+                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                        <div>
+                            <div class="font-medium">Populer Komentar</div>
+                            <div class="text-xs text-slate-400 dark:text-slate-500">Berdasarkan jumlah komentar</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
         
         <!-- Action Button -->
