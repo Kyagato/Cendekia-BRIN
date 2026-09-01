@@ -180,12 +180,49 @@
                         </div>
                     </div>
 
-                    {{-- Baris 2: Tagline & Status Akses --}}
+                    {{-- Baris 2: Tag & Status Akses --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {{-- Tagline --}}
-                        <div>
-                            <label for="tags" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Tagline</label>
-                            <input type="text" id="tags" name="tags" value="{{ old('tags', $knowledge->tags ? $knowledge->tags->pluck('nama_label')->implode(', ') : '') }}" placeholder="Masukkan Tagline (pisahkan dengan koma)" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
+                        {{-- Tag --}}
+                        @php
+                            $existingTags = old('tags')
+                                ? array_map('trim', explode(',', old('tags')))
+                                : ($knowledge->tags ? $knowledge->tags->pluck('nama_label')->toArray() : []);
+                        @endphp
+                        <div x-data="{
+                            tagInput: '',
+                            tags: {{ json_encode($existingTags) }},
+                            addTag() {
+                                let val = this.tagInput.trim().toLowerCase();
+                                if (val && !this.tags.includes(val)) {
+                                    this.tags.push(val);
+                                }
+                                this.tagInput = '';
+                            },
+                            removeTag(index) {
+                                this.tags.splice(index, 1);
+                            },
+                            get hiddenValue() {
+                                return this.tags.join(', ');
+                            }
+                        }">
+                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Tag</label>
+                            <input type="hidden" name="tags" :value="hiddenValue">
+                            <div class="flex flex-wrap items-center gap-2 min-h-[48px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-red-600 focus-within:border-red-600 transition">
+                                <template x-for="(tag, index) in tags" :key="index">
+                                    <span class="inline-flex items-center gap-1.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-semibold pl-3 pr-1.5 py-1.5 rounded-full">
+                                        <span x-text="tag"></span>
+                                        <button type="button" @click="removeTag(index)" class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-red-200 dark:bg-red-800 hover:bg-red-400 dark:hover:bg-red-600 text-red-700 dark:text-red-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </span>
+                                </template>
+                                <input type="text" x-model="tagInput"
+                                       @keydown.enter.prevent="addTag()"
+                                       @keydown.comma.prevent="addTag()"
+                                       @keydown.backspace="if (tagInput === '' && tags.length > 0) removeTag(tags.length - 1)"
+                                       placeholder="Ketik tag lalu tekan Enter"
+                                       class="flex-1 min-w-[120px] border-0 bg-transparent p-0 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-0 focus:outline-none">
+                            </div>
                         </div>
 
                         {{-- Status Akses --}}

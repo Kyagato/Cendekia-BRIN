@@ -180,14 +180,50 @@
                         </div>
                     </div>
 
-                    {{-- Tagline Input --}}
+                    {{-- Tag Input --}}
+                    @php
+                        $validasiTags = old('tags')
+                            ? array_map('trim', explode(',', old('tags')))
+                            : ($knowledge->tags ? $knowledge->tags->pluck('nama_label')->toArray() : []);
+                    @endphp
                     <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900">
                         <div class="px-5 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Tagline</h3>
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Tag</h3>
                         </div>
-                        <div class="px-5 py-4">
-                            <input type="text" name="tags" value="{{ old('tags', $knowledge->tags ? $knowledge->tags->pluck('nama_label')->implode(', ') : '') }}" placeholder="Masukkan Tagline (pisahkan dengan koma)"
-                                   class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:ring-red-600 focus:border-red-600 transition">
+                        <div class="px-5 py-4" x-data="{
+                            tagInput: '',
+                            tags: {{ json_encode($validasiTags) }},
+                            addTag() {
+                                let val = this.tagInput.trim().toLowerCase();
+                                if (val && !this.tags.includes(val)) {
+                                    this.tags.push(val);
+                                }
+                                this.tagInput = '';
+                            },
+                            removeTag(index) {
+                                this.tags.splice(index, 1);
+                            },
+                            get hiddenValue() {
+                                return this.tags.join(', ');
+                            }
+                        }">
+                            <input type="hidden" name="tags" :value="hiddenValue">
+                            <div class="flex flex-wrap items-center gap-2 min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-red-600 focus-within:border-red-600 transition">
+                                <template x-for="(tag, index) in tags" :key="index">
+                                    <span class="inline-flex items-center gap-1.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-semibold pl-3 pr-1.5 py-1.5 rounded-full">
+                                        <span x-text="tag"></span>
+                                        <button type="button" @click="removeTag(index)" class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-red-200 dark:bg-red-800 hover:bg-red-400 dark:hover:bg-red-600 text-red-700 dark:text-red-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </span>
+                                </template>
+                                <input type="text" x-model="tagInput"
+                                       @keydown.enter.prevent="addTag()"
+                                       @keydown.comma.prevent="addTag()"
+                                       @keydown.backspace="if (tagInput === '' && tags.length > 0) removeTag(tags.length - 1)"
+                                       placeholder="Ketik tag lalu tekan Enter"
+                                       class="flex-1 min-w-[100px] border-0 bg-transparent p-0 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-0 focus:outline-none">
+                            </div>
                         </div>
                     </div>
 
