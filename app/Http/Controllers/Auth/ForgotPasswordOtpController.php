@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Mail\SendOtpMail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class ForgotPasswordOtpController extends Controller
@@ -20,7 +22,7 @@ class ForgotPasswordOtpController extends Controller
     }
 
     /**
-     * Step 1 Submit: Verifikasi Email & Kirim Kode Autentikasi 4 Digit (OTP)
+     * Step 1 Submit: Verifikasi Email & Kirim Kode Autentikasi 4 Digit (OTP) melalui Email
      */
     public function sendOtp(Request $request): RedirectResponse
     {
@@ -41,8 +43,18 @@ class ForgotPasswordOtpController extends Controller
             'otp_verified' => false,
         ]);
 
+        $user = User::where('email', $request->email)->first();
+
+        // Kirim email berisi kode autentikasi 4 digit
+        try {
+            Mail::to($request->email)->send(new SendOtpMail($otp, $user->name ?? 'Pengguna'));
+        } catch (\Exception $e) {
+            // Log error jika pengiriman email bermasalah
+            \Illuminate\Support\Facades\Log::error("Gagal mengirim email OTP: " . $e->getMessage());
+        }
+
         return redirect()->route('password.otp.show')
-            ->with('success_otp', "Kode autentikasi 4 digit telah dikirim ke email {$request->email}! (Kode OTP: {$otp})");
+            ->with('success_otp', "Kode autentikasi 4 digit telah dikirimkan ke email {$request->email}. Silakan periksa kotak masuk atau folder spam email Anda.");
     }
 
     /**

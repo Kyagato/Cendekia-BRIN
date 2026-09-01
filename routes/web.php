@@ -18,6 +18,7 @@ Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 
 // Search API (publik) & Halaman Pencarian Utama
 Route::get('/api/search', [App\Http\Controllers\SearchController::class, 'apiSearch'])->name('search.api');
+Route::get('/api/search/autocomplete', [App\Http\Controllers\SearchController::class, 'autocomplete'])->name('search.autocomplete');
 Route::get('/cari', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 
 // =================================================================

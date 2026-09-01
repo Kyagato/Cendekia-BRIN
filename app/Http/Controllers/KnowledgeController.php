@@ -64,6 +64,26 @@ class KnowledgeController extends Controller
         return view('knowledge.index', compact('knowledges', 'drafts'));
     }
 
+    /**
+     * Cek apakah user yang sedang login memiliki hak otomatis disetujui
+     * (Role: Super Admin, Admin Pusat, Admin IPPD, Analisis Pengetahuan / Analis Pengetahuan)
+     */
+    private function isAutoApproveUser(): bool
+    {
+        $user = Auth::user();
+        if (!$user) return false;
+
+        $autoApproveRoles = [
+            'Super Admin',
+            'Admin Pusat',
+            'Admin IPPD',
+            'Analisis Pengetahuan',
+            'Analis Pengetahuan',
+        ];
+
+        return in_array($user->role, $autoApproveRoles) || $user->email === 'superadmin@brin.go.id';
+    }
+
     // 1. Menampilkan Form Upload
     public function create()
     {
@@ -100,8 +120,12 @@ class KnowledgeController extends Controller
         }
 
         $status = $request->input('status', 'Diajukan');
-        if (!in_array($status, ['Draft', 'Diajukan'])) {
-            $status = 'Diajukan';
+        if ($status !== 'Draft') {
+            if ($this->isAutoApproveUser()) {
+                $status = 'Disetujui';
+            } else {
+                $status = 'Diajukan';
+            }
         }
 
         // C. Simpan ke tabel Knowledge
@@ -138,8 +162,16 @@ class KnowledgeController extends Controller
             $knowledge->tags()->sync($tagIds);
         }
 
-        // E. Kembali ke halaman sebelumnya dengan pesan sukses
-        return redirect()->route('knowledge.index')->with('success', 'Pengetahuan berhasil diajukan dan menunggu validasi.');
+        // E. Kembali ke halaman sebelumnya dengan pesan sukses yang sesuai
+        if ($status === 'Disetujui') {
+            $message = 'Pengetahuan berhasil ditambahkan dan langsung berstatus disetujui.';
+        } elseif ($status === 'Draft') {
+            $message = 'Pengetahuan berhasil disimpan sebagai draft.';
+        } else {
+            $message = 'Pengetahuan berhasil diajukan dan menunggu validasi.';
+        }
+
+        return redirect()->route('knowledge.index')->with('success', $message);
     }
 
     public function show(Knowledge $knowledge)
@@ -178,8 +210,12 @@ class KnowledgeController extends Controller
             'url_teks' => 'nullable|url|max:255',
         ]);
 
-        // Determine new status: if currently Draft, re-submit as "Diajukan"
-        $newStatus = ($knowledge->status === 'Draft') ? 'Diajukan' : $knowledge->status;
+        // Determine new status: jika user berole auto-approval (Super Admin, Admin Pusat, Admin IPPD, Analis Pengetahuan), langsung set ke Disetujui
+        if ($this->isAutoApproveUser()) {
+            $newStatus = 'Disetujui';
+        } else {
+            $newStatus = ($knowledge->status === 'Draft') ? 'Diajukan' : $knowledge->status;
+        }
 
         $updateData = [
             'category_id' => $request->category_id,

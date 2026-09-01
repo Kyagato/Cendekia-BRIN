@@ -114,13 +114,37 @@ class HomeController extends Controller
         return view('pages.faq', compact('faqs'));
     }
 
-    public function forum()
+    public function forum(Request $request)
     {
-        $threads = ForumThread::with(['user', 'category'])
+        $sort = $request->get('sort', 'terbaru');
+
+        $query = ForumThread::with(['user', 'category'])
             ->withCount('replies')
-            ->where('status', 'approved')
-            ->latest()
-            ->paginate(15);
+            ->where('status', 'approved');
+
+        switch ($sort) {
+            case 'populer_umum':
+                // Populer Umum: berdasarkan gabungan views_count + replies_count
+                $query->orderByRaw('(views_count + (SELECT COUNT(*) FROM forum_replies WHERE forum_replies.thread_id = forum_threads.id)) DESC');
+                break;
+
+            case 'populer_tayangan':
+                // Populer berdasarkan Tayangan: berdasarkan views_count
+                $query->orderByDesc('views_count');
+                break;
+
+            case 'populer_komentar':
+                // Populer berdasarkan Komentar: berdasarkan replies_count
+                $query->orderByDesc('replies_count');
+                break;
+
+            case 'terbaru':
+            default:
+                $query->latest();
+                break;
+        }
+
+        $threads = $query->paginate(15)->withQueryString();
 
         return view('pages.forum', compact('threads'));
     }

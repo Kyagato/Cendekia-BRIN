@@ -11,6 +11,30 @@ use Illuminate\Http\Request;
 class SearchController extends Controller
 {
     /**
+     * API: Autocomplete saran judul pengetahuan
+     * Endpoint: GET /api/search/autocomplete?q=...
+     * Hanya mencocokkan judul yang DIMULAI dengan huruf yang diketik user
+     */
+    public function autocomplete(Request $request)
+    {
+        if (!$request->filled('q') || strlen($request->q) < 1) {
+            return response()->json([]);
+        }
+
+        $search = $request->q;
+
+        $results = Knowledge::where('status', 'Disetujui')
+            ->where('judul', 'like', "{$search}%")
+            ->select('id', 'judul', 'tipe', 'category_id')
+            ->with('category:id,nama_kategori')
+            ->orderBy('judul')
+            ->take(8)
+            ->get();
+
+        return response()->json($results);
+    }
+
+    /**
      * API: Pencarian cepat (autocomplete/live search dari navbar & homepage)
      * Endpoint: GET /api/search?q=...&tipe=...&kategori=...
      */

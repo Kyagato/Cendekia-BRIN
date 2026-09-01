@@ -45,11 +45,95 @@
         <form action="{{ route('search.index') }}" method="GET" class="flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div class="flex-grow w-full flex flex-col md:flex-row gap-4">
                 <!-- Search Input -->
-                <div class="relative w-full md:w-96">
+                <!-- Search Input with Autocomplete -->
+                <div class="relative w-full md:w-96" x-data="{
+                    query: '{{ request('q') ?? request('search') }}',
+                    suggestions: [],
+                    showSuggestions: false,
+                    selectedIndex: -1,
+                    debounceTimer: null,
+                    fetchSuggestions() {
+                        clearTimeout(this.debounceTimer);
+                        if (this.query.length < 2) {
+                            this.suggestions = [];
+                            this.showSuggestions = false;
+                            return;
+                        }
+                        this.debounceTimer = setTimeout(() => {
+                            fetch('/api/search/autocomplete?q=' + encodeURIComponent(this.query))
+                                .then(r => r.json())
+                                .then(data => {
+                                    this.suggestions = data.slice(0, 8);
+                                    this.showSuggestions = this.suggestions.length > 0;
+                                    this.selectedIndex = -1;
+                                })
+                                .catch(() => { this.suggestions = []; this.showSuggestions = false; });
+                        }, 250);
+                    },
+                    selectSuggestion(item) {
+                        this.query = item.judul;
+                        this.showSuggestions = false;
+                        this.$refs.searchInput.form.submit();
+                    },
+                    handleKeydown(e) {
+                        if (!this.showSuggestions) return;
+                        if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            this.selectedIndex = Math.min(this.selectedIndex + 1, this.suggestions.length - 1);
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+                        } else if (e.key === 'Enter' && this.selectedIndex >= 0) {
+                            e.preventDefault();
+                            this.selectSuggestion(this.suggestions[this.selectedIndex]);
+                        } else if (e.key === 'Escape') {
+                            this.showSuggestions = false;
+                        }
+                    }
+                }" @click.away="showSuggestions = false">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
-                    <input type="text" name="q" value="{{ request('q') ?? request('search') }}" placeholder="Cari di repositori..." class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition">
+                    <input type="text" name="q"
+                           x-ref="searchInput"
+                           x-model="query"
+                           @input="fetchSuggestions()"
+                           @keydown="handleKeydown($event)"
+                           @focus="if (suggestions.length > 0) showSuggestions = true"
+                           placeholder="Cari di repositori..."
+                           autocomplete="off"
+                           class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition">
+
+                    <!-- Autocomplete Dropdown -->
+                    <div x-show="showSuggestions"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden max-h-80 overflow-y-auto"
+                         style="display: none;">
+                        <template x-for="(item, index) in suggestions" :key="item.id">
+                            <button type="button"
+                                    @click="selectSuggestion(item)"
+                                    @mouseenter="selectedIndex = index"
+                                    :class="selectedIndex === index ? 'bg-primary-50 dark:bg-primary-900/30' : ''"
+                                    class="w-full text-left px-4 py-2.5 flex items-start gap-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-b-0">
+                                <!-- Icon tipe -->
+                                <div class="shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate" x-text="item.judul"></div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
+                                        <span x-text="item.tipe" class="bg-slate-100 dark:bg-slate-600 px-1.5 py-0.5 rounded text-xs"></span>
+                                        <span x-show="item.category" x-text="item.category?.nama_kategori"></span>
+                                    </div>
+                                </div>
+                            </button>
+                        </template>
+                    </div>
                 </div>
                 
                 <!-- Category Select -->
