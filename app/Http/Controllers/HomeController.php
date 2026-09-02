@@ -110,7 +110,7 @@ class HomeController extends Controller
 
     public function faq(Request $request)
     {
-        $faqs = Faq::orderBy('kategori_faq')->orderBy('urutan')->get()->groupBy('kategori_faq');
+        $faqs = Faq::whereNotNull('pertanyaan')->orderBy('kategori_faq')->orderBy('urutan')->get()->groupBy('kategori_faq');
         return view('pages.faq', compact('faqs'));
     }
 

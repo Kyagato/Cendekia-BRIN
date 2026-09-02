@@ -192,9 +192,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/kategori', function () {
             return view('dashboard'); // TODO: CRUD Kategori
         })->name('admin.kategori');
-        Route::get('/admin/faq', function () {
-            return view('dashboard'); // TODO: CRUD FAQ
-        })->name('admin.faq');
+        Route::resource('/admin/faq', App\Http\Controllers\FaqController::class, ['as' => 'admin']);
+        Route::post('/admin/faq-section', [App\Http\Controllers\FaqController::class, 'storeSection'])->name('admin.faq.storeSection');
+        Route::put('/admin/faq-section/update', [App\Http\Controllers\FaqController::class, 'updateSection'])->name('admin.faq.updateSection');
+        Route::delete('/admin/faq-section', [App\Http\Controllers\FaqController::class, 'destroySection'])->name('admin.faq.destroySection');
         Route::get('/admin/laporan', function () {
             return view('dashboard'); // TODO: Halaman laporan & analitik
         })->name('admin.laporan');

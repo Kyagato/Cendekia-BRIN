@@ -85,6 +85,18 @@
                 @endif
 
 
+                {{-- Edit FAQs: Super Admin, Admin Pusat, Admin IPPD --}}
+                @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+                    <a href="{{ route('admin.faq.index') }}"
+                       class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
+                              {{ request()->routeIs('admin.faq.*')
+                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
+                        Edit FAQs
+                    </a>
+                @endif
+
+
                 {{-- Pengguna: Super Admin, Admin Pusat, Admin IPPD --}}
                 @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
                     <a href="{{ route('admin.users.index') }}"
@@ -208,6 +220,12 @@
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('moderator.forum.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
+        @endif
+
+        @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+        <a href="{{ route('admin.faq.index') }}"
+           class="block px-3 py-2 rounded-lg text-base font-semibold transition
+                  {{ request()->routeIs('admin.faq.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Edit FAQs</a>
         @endif
 
         @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
