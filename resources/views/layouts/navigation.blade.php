@@ -8,8 +8,7 @@
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
                         <x-application-logo class="block h-9 w-auto fill-current text-primary-600 dark:text-primary-400" />
                         <div class="flex flex-col hidden sm:flex">
-                            <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-white leading-tight">Cendekia</span>
-                            <span class="text-[0.6rem] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">BRIN</span>
+                            <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-white leading-tight">MojoPedia</span>
                         </div>
                     </a>
                 </div>
@@ -20,7 +19,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     
-                    <!-- Menu Tambahan untuk Cendekia BRIN -->
+                    <!-- Menu Tambahan untuk MojoPedia -->
                     @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan']))
                     <x-nav-link :href="route('knowledge.index')" :active="request()->routeIs('knowledge.*')">
                         {{ __('Repositori') }}

@@ -4,8 +4,7 @@
             <!-- Column 1: Brand -->
             <div class="space-y-4">
                 <a href="/" class="flex items-center gap-2 group">
-                    <span class="text-2xl font-bold tracking-tight text-white group-hover:text-primary-200 transition">Cendekia</span>
-                    <span class="px-2 py-1 bg-primary-700 text-primary-100 text-xs font-semibold rounded shadow-sm">BRIN</span>
+                    <span class="text-2xl font-bold tracking-tight text-white group-hover:text-primary-200 transition">MojoPedia</span>
                 </a>
                 <p class="text-slate-400 text-sm leading-relaxed">
                     Sistem Informasi Manajemen Pengetahuan BRIN adalah platform sentral untuk mengelola, berbagi, dan menemukan aset pengetahuan, riset, serta inovasi nasional.

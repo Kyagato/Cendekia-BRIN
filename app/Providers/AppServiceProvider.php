@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // ============================================================
-        // GATES — Otorisasi Berbasis Role untuk Cendekia BRIN
+        // GATES — Otorisasi Berbasis Role untuk MojoPedia
         // ============================================================
 
         // ----- Gate: Akses Panel Admin -----

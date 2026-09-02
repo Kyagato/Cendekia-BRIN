@@ -31,7 +31,7 @@ class ForgotPasswordOtpController extends Controller
         ], [
             'email.required' => 'Alamat email wajib diisi.',
             'email.email'    => 'Format email tidak valid.',
-            'email.exists'   => 'Alamat email ini tidak terdaftar dalam sistem Cendekia BRIN.',
+            'email.exists'   => 'Alamat email ini tidak terdaftar dalam sistem MojoPedia.',
         ]);
 
         // Generate 4-digit numeric OTP code

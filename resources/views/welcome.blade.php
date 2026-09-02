@@ -12,7 +12,7 @@
 
     <div class="container mx-auto px-4 relative z-10 text-center">
         <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight drop-shadow-sm">
-            <span class="text-black dark:text-white">Cendekia BRIN</span>
+            <span class="text-black dark:text-white">MojoPedia</span>
         </h1>
         <h2 class="text-2xl md:text-3xl font-semibold text-white/90 mb-6 drop-shadow">
             Sistem Informasi Manajemen Pengetahuan

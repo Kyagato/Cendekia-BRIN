@@ -4,8 +4,7 @@
             <!-- Left side: Logo -->
             <div class="flex-shrink-0 flex items-center">
                 <a href="/" class="flex items-center gap-2 group">
-                    <span class="text-2xl font-bold tracking-tight gradient-text group-hover:opacity-80 transition">Cendekia</span>
-                    <span class="px-2 py-1 bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 text-xs font-semibold rounded shadow-sm">BRIN</span>
+                    <span class="text-2xl font-bold tracking-tight gradient-text group-hover:opacity-80 transition">MojoPedia</span>
                 </a>
             </div>
 

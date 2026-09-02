@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Daftar — {{ config('app.name', 'Cendekia BRIN') }}</title>
+    <title>Daftar — {{ config('app.name', 'MojoPedia') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-slate-50">
@@ -23,8 +23,7 @@
                     {{-- Logo --}}
                     <div class="relative z-10">
                         <a href="/" class="inline-flex items-center gap-2 group">
-                            <span class="text-2xl font-bold text-red-600 tracking-tight">Cendekia</span>
-                            <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded">BRIN</span>
+                            <span class="text-2xl font-bold text-red-600 tracking-tight">MojoPedia</span>
                         </a>
                     </div>
 
@@ -41,7 +40,7 @@
                             </svg>
                             <div>
                                 <p class="text-slate-500 font-medium">Bergabunglah Bersama Kami</p>
-                                <p class="text-slate-400 text-sm">Daftarkan akun Cendekia BRIN Anda</p>
+                                <p class="text-slate-400 text-sm">Daftarkan akun MojoPedia Anda</p>
                             </div>
                         </div>
                     </div>
@@ -58,8 +57,7 @@
                     <div class="flex items-center justify-between mb-8">
                         {{-- Mobile logo --}}
                         <a href="/" class="lg:hidden inline-flex items-center gap-2">
-                            <span class="text-xl font-bold text-red-600">Cendekia</span>
-                            <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[0.6rem] font-semibold rounded">BRIN</span>
+                            <span class="text-xl font-bold text-red-600">MojoPedia</span>
                         </a>
                         <div class="flex items-center gap-3 ml-auto">
                             <span class="text-sm text-slate-400 hidden sm:inline">Sudah punya akun?</span>
@@ -72,7 +70,7 @@
                     {{-- Title --}}
                     <div class="mb-6">
                         <h1 class="text-3xl font-bold text-slate-800 mb-2">Buat Akun Baru</h1>
-                        <p class="text-slate-400">Daftarkan diri Anda di Cendekia BRIN</p>
+                        <p class="text-slate-400">Daftarkan diri Anda di MojoPedia</p>
                     </div>
 
                     {{-- Form --}}
@@ -147,7 +145,7 @@
 
                     {{-- Footer --}}
                     <div class="mt-6 pt-5 border-t border-slate-100 text-center">
-                        <p class="text-xs text-slate-400">&copy; {{ date('Y') }} Cendekia BRIN — Badan Riset dan Inovasi Nasional</p>
+                        <p class="text-xs text-slate-400">&copy; {{ date('Y') }} MojoPedia — Badan Riset dan Inovasi Nasional</p>
                     </div>
                 </div>
 

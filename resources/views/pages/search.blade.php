@@ -19,7 +19,7 @@
             </ol>
         </nav>
         <h1 class="text-4xl font-bold text-white mb-2">Pencarian Pengetahuan</h1>
-        <p class="text-lg text-white/80">Temukan dokumen, artikel, panduan, dan diskusi di seluruh repositori Cendekia BRIN.</p>
+        <p class="text-lg text-white/80">Temukan dokumen, artikel, panduan, dan diskusi di seluruh repositori MojoPedia.</p>
     </div>
 </section>
 

@@ -9,7 +9,7 @@
         <meta name="user-authenticated" content="1">
     @endauth
 
-    <title>@yield('title', 'Cendekia BRIN') — Sistem Informasi Manajemen Pengetahuan BRIN</title>
+    <title>@yield('title', 'MojoPedia') — Sistem Informasi Manajemen Pengetahuan BRIN</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])

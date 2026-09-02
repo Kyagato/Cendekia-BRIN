@@ -20,7 +20,7 @@
                 </li>
             </ol>
         </nav>
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Tentang Cendekia BRIN</h1>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Tentang MojoPedia</h1>
         <p class="text-xl text-white/80 max-w-2xl mx-auto">Membangun ekosistem pengetahuan yang kolaboratif dan inovatif</p>
     </div>
 </section>
@@ -29,10 +29,10 @@
 <section class="py-16 container mx-auto px-4">
     <div class="flex flex-col lg:flex-row items-center gap-12">
         <div class="lg:w-1/2 scroll-reveal">
-            <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-6">Apa itu <span class="text-primary-600 dark:text-primary-400">Cendekia BRIN?</span></h2>
+            <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-6">Apa itu <span class="text-primary-600 dark:text-primary-400">MojoPedia?</span></h2>
             <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
                 <p>
-                    Cendekia BRIN (Sistem Informasi Manajemen Pengetahuan) adalah platform repositori digital strategis yang dikembangkan oleh Badan Riset dan Inovasi Nasional. Platform ini bertujuan untuk mengelola, menyimpan, dan mendistribusikan aset pengetahuan yang berharga.
+                    MojoPedia (Sistem Informasi Manajemen Pengetahuan) adalah platform repositori digital strategis yang dikembangkan oleh Badan Riset dan Inovasi Nasional. Platform ini bertujuan untuk mengelola, menyimpan, dan mendistribusikan aset pengetahuan yang berharga.
                 </p>
                 <p>
                     Melalui SIMP@N, para periset, akademisi, dan masyarakat umum dapat dengan mudah menemukan berbagai bentuk pengetahuan—mulai dari dokumen riset, video pembelajaran, galeri gambar, hingga arsip audio—dalam satu portal yang terintegrasi dan mudah diakses.
@@ -129,7 +129,7 @@
             <div class="w-20 h-20 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white">
                 <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             </div>
-            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Tim Pengembang Cendekia BRIN</h3>
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Tim Pengembang MojoPedia</h3>
             <p class="text-slate-600 dark:text-slate-400 mb-6">Badan Riset dan Inovasi Nasional</p>
             
             <a href="mailto:dev@simpanbrin.go.id" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-semibold transition">

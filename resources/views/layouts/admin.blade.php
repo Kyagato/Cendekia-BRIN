@@ -11,7 +11,7 @@
         <meta name="user-authenticated" content="1">
     @endauth
 
-    <title>@yield('title', 'Admin - Cendekia BRIN')</title>
+    <title>@yield('title', 'Admin - MojoPedia')</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -26,8 +26,7 @@
             <div class="flex items-center gap-8">
                 <!-- Logo -->
                 <a href="{{ url('/') }}" class="flex items-center gap-2 group shrink-0">
-                    <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">Cendekia</span>
-                    <span class="px-2 py-0.5 bg-primary-600 text-white text-xs font-bold rounded shadow-sm">BRIN</span>
+                    <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">MojoPedia</span>
                 </a>
 
                 <!-- Navigation Menu (Desktop) -->

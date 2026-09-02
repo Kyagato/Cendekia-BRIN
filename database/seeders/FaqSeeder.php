@@ -15,13 +15,13 @@ class FaqSeeder extends Seeder
     {
         $faqs = [
             [
-                'pertanyaan' => 'Apa itu Cendekia BRIN?',
-                'jawaban' => 'Cendekia BRIN adalah platform Knowledge Management System untuk mengelola pengetahuan.',
+                'pertanyaan' => 'Apa itu MojoPedia?',
+                'jawaban' => 'MojoPedia adalah platform Knowledge Management System untuk mengelola pengetahuan.',
                 'kategori_faq' => 'Umum',
                 'urutan' => 1,
             ],
             [
-                'pertanyaan' => 'Siapa yang dapat menggunakan Cendekia BRIN?',
+                'pertanyaan' => 'Siapa yang dapat menggunakan MojoPedia?',
                 'jawaban' => 'Seluruh pegawai BRIN dan instansi terkait.',
                 'kategori_faq' => 'Umum',
                 'urutan' => 2,

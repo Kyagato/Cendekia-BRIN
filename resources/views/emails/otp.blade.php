@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kode Autentikasi Cendekia BRIN</title>
+    <title>Kode Autentikasi MojoPedia</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -88,7 +88,7 @@
 <body>
     <div class="email-card">
         <div class="email-header">
-            <h1>Cendekia BRIN</h1>
+            <h1>MojoPedia</h1>
             <p>Badan Riset dan Inovasi Nasional</p>
         </div>
         <div class="email-body">
@@ -99,14 +99,14 @@
                 {{ $otp }}
             </div>
 
-            <p>Masukkan kode ini pada halaman verifikasi di situs Cendekia BRIN.</p>
+            <p>Masukkan kode ini pada halaman verifikasi di situs MojoPedia.</p>
             
             <div class="warning-text">
                 🔒 Demi keamanan akun Anda, jangan berikan kode 4 digit ini kepada siapa pun. Kode ini hanya berlaku selama 15 menit.
             </div>
         </div>
         <div class="email-footer">
-            &copy; {{ date('Y') }} Cendekia BRIN — Sistem Informasi Manajemen Pengetahuan. All rights reserved.
+            &copy; {{ date('Y') }} MojoPedia — Sistem Informasi Manajemen Pengetahuan. All rights reserved.
         </div>
     </div>
 </body>
