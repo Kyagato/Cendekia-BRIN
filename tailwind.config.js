@@ -41,7 +41,7 @@ export default {
                 }
             },
             fontFamily: {
-                sans: ['Plus Jakarta Sans', 'Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',
