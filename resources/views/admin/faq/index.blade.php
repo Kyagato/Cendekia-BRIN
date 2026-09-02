@@ -62,9 +62,9 @@
         <div class="flex items-center gap-2">
             <!-- Tombol Tambah Bagian Baru -->
             <button @click="openCreateSectionModal()" 
-                    class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
-                Tambah Bagian Baru
+                    class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition whitespace-nowrap shrink-0">
+                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
+                <span>Tambah Bagian Baru</span>
             </button>
         </div>
     </div>
@@ -90,47 +90,35 @@
                 @endphp
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                     {{-- Section Header --}}
-                    <div class="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex flex-wrap justify-between items-center gap-3">
-                        <div class="flex items-center gap-3">
+                    <div class="px-6 py-4 bg-slate-100 dark:bg-slate-700 border-b border-slate-200 dark:border-slate-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="flex items-center gap-3 flex-wrap">
                             <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                             <h2 class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                 <span class="text-slate-700 dark:text-slate-200">Bagian:</span>
                                 <span class="text-red-600 dark:text-red-400 font-extrabold text-lg">{{ $bagian }}</span>
                             </h2>
-                            <span class="text-xs bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-full font-bold">
+                            <span class="text-xs bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-100 px-2.5 py-1 rounded-full font-bold whitespace-nowrap">
                                 {{ $validQuestions->count() }} Pertanyaan
                             </span>
                         </div>
 
                         {{-- Action Buttons Per Bagian --}}
-                        <div class="flex items-center gap-2">
-                            <!-- Edit Nama Bagian -->
+                        <div class="flex items-center gap-2 shrink-0">
+                            <!-- Edit Nama Bagian dengan Outline Merah -->
                             <button @click="openEditSectionModal('{{ addslashes($bagian) }}')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold rounded-lg transition shadow-sm"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-red-600 dark:border-red-500 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-slate-700 text-xs font-bold rounded-lg transition shadow-sm whitespace-nowrap"
                                     title="Edit nama bagian ini">
-                                <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                Edit Bagian
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                <span>Edit Bagian</span>
                             </button>
 
-                            <!-- Tambah Judul Baru di Bagian Ini -->
+                            <!-- Tambah Judul Baru di Bagian Ini (Mendatar, Tanpa Plus Icon) -->
                             <button @click="openCreateModal('{{ addslashes($bagian) }}')"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition shadow-sm"
+                                    class="inline-flex items-center justify-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition shadow-sm whitespace-nowrap"
                                     title="Tambah pertanyaan baru langsung ke Bagian {{ $bagian }}">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
-                                Tambah Judul Baru
+                                <span>Tambah Judul Baru</span>
                             </button>
 
-                            <!-- Hapus Bagian -->
-                            <form action="{{ route('admin.faq.destroySection') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus bagian {{ addslashes($bagian) }} dan seluruh pertanyaan di dalamnya?')">
-                                @csrf
-                                @method('DELETE')
-                                <input type="hidden" name="kategori_faq" value="{{ $bagian }}">
-                                <button type="submit" 
-                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-red-600 hover:text-white dark:hover:bg-red-600 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-lg transition shadow-sm"
-                                        title="Hapus bagian ini beserta seluruh pertanyaan di dalamnya">
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                </button>
-                            </form>
                         </div>
                     </div>
 
@@ -138,7 +126,7 @@
                     @if($validQuestions->count() > 0)
                         <div class="divide-y divide-slate-100 dark:divide-slate-700">
                             @foreach($validQuestions as $faq)
-                                <div class="p-6 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                <div class="p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition flex flex-col md:flex-row md:items-start justify-between gap-4">
                                     <div class="space-y-2 flex-1">
                                         <div class="flex items-center gap-2">
                                             <h3 class="font-bold text-slate-900 dark:text-white text-base leading-snug">
@@ -149,16 +137,16 @@
                                             {{ $faq->jawaban }}
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-2 shrink-0 self-end md:self-start pt-2 md:pt-0">
+                                    <div class="flex items-center gap-2 shrink-0 md:pt-1">
                                         <button @click="openEditModal({{ json_encode($faq) }})" 
-                                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition border border-slate-300 dark:border-slate-500 shadow-sm">
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white text-xs font-bold rounded-lg transition border border-slate-300 dark:border-slate-600 shadow-sm whitespace-nowrap">
                                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                             Edit
                                         </button>
                                         <form action="{{ route('admin.faq.destroy', $faq->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pertanyaan ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition shadow-sm">
+                                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition shadow-sm whitespace-nowrap">
                                                 <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                 Hapus
                                             </button>
