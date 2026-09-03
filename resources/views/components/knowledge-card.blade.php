@@ -21,7 +21,7 @@
             <div class="flex items-start justify-between gap-4 mt-2 mb-2">
                 <div class="flex-grow min-w-0">
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2 line-clamp-2 leading-snug">
-                        <a href="{{ url('/knowledge/'.$item->id) }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition">{{ $item->judul }}</a>
+                        <a href="{{ url('/knowledge/'.$item->id . (request()->is('kategori*') ? '?from=kategori' : '')) }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition">{{ $item->judul }}</a>
                     </h3>
                     <p class="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">
                         {{ Str::limit(strip_tags($item->deskripsi), 65) }}

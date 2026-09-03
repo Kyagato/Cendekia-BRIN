@@ -21,6 +21,9 @@ Route::get('/api/search', [App\Http\Controllers\SearchController::class, 'apiSea
 Route::get('/api/search/autocomplete', [App\Http\Controllers\SearchController::class, 'autocomplete'])->name('search.autocomplete');
 Route::get('/cari', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 
+// Detail Pengetahuan (Layout Publik — untuk Beranda & Kategori)
+Route::get('/knowledge/{id}', [HomeController::class, 'knowledgeShow'])->name('knowledge.show')->whereNumber('id');
+
 // =================================================================
 // AUTHENTICATED ROUTES — Semua user yang sudah login
 // =================================================================
@@ -68,8 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    // Detail Knowledge (Read-only untuk publik/member)
-    Route::get('/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('knowledge.show');
+    // Detail Knowledge (Dashboard Admin Preview — layout admin)
+    Route::get('/dashboard/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('admin.knowledge.show');
 
     // =============================================================
     // ROLE: ANALISIS PENGETAHUAN + ADMIN

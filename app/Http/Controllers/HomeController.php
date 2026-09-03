@@ -170,6 +170,37 @@ class HomeController extends Controller
         return response()->json($results);
     }
 
+    /**
+     * Tampilan publik detail pengetahuan (layout public, bukan dashboard).
+     * Dipanggil dari beranda, kategori, dan halaman pencarian.
+     */
+    public function knowledgeShow($id)
+    {
+        $knowledge = Knowledge::with(['category', 'user', 'tags', 'threads.user'])->findOrFail($id);
+
+        // Hanya pengetahuan yang sudah Disetujui yang boleh dilihat publik
+        if ($knowledge->status !== 'Disetujui') {
+            $user = auth()->user();
+            $canView = $user && (
+                $user->id === $knowledge->user_id ||
+                in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan']) ||
+                $user->email === 'superadmin@brin.go.id'
+            );
+            if (!$canView) {
+                abort(404);
+            }
+        }
+
+        $knowledge->increment('views_count');
+
+        // Estimasi waktu baca (200 kata/menit)
+        $fullText = ($knowledge->deskripsi ?? '') . ' ' . ($knowledge->detail ?? '');
+        $wordCount = str_word_count(strip_tags($fullText));
+        $readingTime = max(1, (int) ceil($wordCount / 200));
+
+        return view('pages.knowledge-show', compact('knowledge', 'readingTime'));
+    }
+
     public function toggleDarkMode(Request $request)
     {
         if (auth()->check()) {
