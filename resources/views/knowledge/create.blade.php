@@ -104,32 +104,15 @@
                     {{-- Ringkasan --}}
                     <div>
                         <label for="deskripsi" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Ringkasan</label>
-                        {{-- Toolbar --}}
-                        <div class="border border-slate-300 dark:border-slate-600 border-b-0 rounded-t-lg bg-slate-50 dark:bg-slate-800 p-2 flex gap-2 flex-wrap text-slate-600 dark:text-slate-400">
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded font-bold transition">B</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded italic transition">I</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded underline transition">U</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded line-through transition">S</button>
-                            <div class="w-px h-5 bg-slate-300 dark:bg-slate-600 my-auto mx-1"></div>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg></button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"/></svg></button>
-                        </div>
-                        <textarea id="deskripsi" name="deskripsi" rows="4" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" placeholder="Tuliskan ringkasan pengetahuan di sini...">{{ old('deskripsi') }}</textarea>
+                        <x-rich-editor name="deskripsi" id="deskripsi" :value="old('deskripsi')" placeholder="Tuliskan ringkasan pengetahuan di sini..." :rows="4" />
                         @error('deskripsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Detail --}}
                     <div>
                         <label for="detail" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Detail</label>
-                        {{-- Toolbar --}}
-                        <div class="border border-slate-300 dark:border-slate-600 border-b-0 rounded-t-lg bg-slate-50 dark:bg-slate-800 p-2 flex gap-2 flex-wrap text-slate-600 dark:text-slate-400">
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded font-bold transition">B</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded italic transition">I</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded underline transition">U</button>
-                            <button type="button" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded line-through transition">S</button>
-                        </div>
-                        <textarea id="detail" name="detail" rows="6" class="w-full px-4 py-3 rounded-b-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" placeholder="Tuliskan detail pengetahuan di sini...">{{ old('detail') }}</textarea>
+                        <x-rich-editor name="detail" id="detail" :value="old('detail')" placeholder="Tuliskan detail pengetahuan di sini..." :rows="6" />
+                        @error('detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                 </div>

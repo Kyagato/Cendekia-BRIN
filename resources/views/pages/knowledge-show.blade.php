@@ -57,12 +57,19 @@
             {{-- Kolom Kiri: Konten --}}
             <div style="flex: 1 1 70%; min-width: 300px; max-width: 74%; shrink: 1;" class="space-y-10">
 
+                <style>
+                    .rich-editor-content ul { list-style-type: disc !important; padding-left: 1.5rem !important; margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+                    .rich-editor-content ol { list-style-type: decimal !important; padding-left: 1.5rem !important; margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+                    .rich-editor-content ol[style*="lower-alpha"] { list-style-type: lower-alpha !important; }
+                    .rich-editor-content li { display: list-item !important; }
+                </style>
+
                 {{-- Ringkasan --}}
                 @if($knowledge->deskripsi)
                 <section id="ringkasan" class="scroll-mt-28">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Ringkasan</h2>
-                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base text-justify break-words [overflow-wrap:anywhere]">
-                        {!! nl2br(e($knowledge->deskripsi)) !!}
+                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
+                        {!! $knowledge->deskripsi !!}
                     </div>
                 </section>
                 @endif
@@ -71,8 +78,8 @@
                 @if($knowledge->detail)
                 <section id="detail" class="scroll-mt-28">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Detil</h2>
-                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base text-justify break-words [overflow-wrap:anywhere]">
-                        {!! nl2br(e($knowledge->detail)) !!}
+                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
+                        {!! $knowledge->detail !!}
                     </div>
                 </section>
                 @endif
@@ -134,7 +141,7 @@
                             @if($knowledge->deskripsi)
                             <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4">
                                 <dt class="font-semibold text-slate-900 dark:text-slate-100">Deskripsi</dt>
-                                <dd class="text-slate-600 dark:text-slate-300 text-justify break-words">{!! nl2br(e($knowledge->deskripsi)) !!}</dd>
+                                <dd class="text-slate-600 dark:text-slate-300 break-words">{!! $knowledge->deskripsi !!}</dd>
                             </div>
                             @endif
                             <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4">
