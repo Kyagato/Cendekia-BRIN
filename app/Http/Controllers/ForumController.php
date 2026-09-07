@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
+use Inertia\Inertia;
+
 class ForumController extends Controller
 {
     // Halaman list forum sudah ada di HomeController@forum
@@ -66,17 +68,17 @@ class ForumController extends Controller
     {
         // Increment view count
         $thread->increment('views_count');
-        
+
         $thread->load(['user', 'category', 'knowledge.category']);
-        
+
         // Load only top-level replies (no parent), with their nested replies & user info
         $replies = $thread->replies()
             ->whereNull('parent_id')
             ->with(['user', 'replies.user', 'replies.replies.user'])
             ->latest()
             ->paginate(15);
-        
-        return view('pages.forum-show', compact('thread', 'replies'));
+
+        return Inertia::render('Forum/Show', compact('thread', 'replies'));
     }
 
     // 4. Tambah Balasan (Reply) — supports nested replies
