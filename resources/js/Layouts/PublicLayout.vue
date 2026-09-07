@@ -41,7 +41,7 @@
           </button>
 
           <!-- Logged In User Dropdown -->
-          <div v-if="user" class="relative" @mouseleave="userMenuOpen = false">
+          <div v-if="user" class="relative" ref="dropdownRef">
             <button @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-red-600 dark:hover:text-red-400 transition focus:outline-none">
               <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden shrink-0 ring-2 ring-red-500/20">
                 <img v-if="user.foto_profil" :src="`/storage/${user.foto_profil}`" :alt="user.name" class="w-full h-full object-cover">
@@ -102,12 +102,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Link, usePage, router } from '@inertiajs/vue3';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const userMenuOpen = ref(false);
+const dropdownRef = ref(null);
 
 const isDark = ref(false);
 
@@ -119,6 +120,13 @@ const toggleDarkMode = () => {
   } else {
     document.documentElement.classList.remove('dark');
     localStorage.setItem('darkMode', 'false');
+  }
+};
+
+// Tutup dropdown jika klik di luar area dropdown
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    userMenuOpen.value = false;
   }
 };
 
@@ -137,6 +145,13 @@ onMounted(() => {
   } else {
     document.documentElement.classList.remove('dark');
   }
+
+  // Pasang listener click-outside
+  document.addEventListener('mousedown', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleClickOutside);
 });
 
 const logout = () => {
