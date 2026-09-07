@@ -18,7 +18,7 @@
             Sistem Informasi Manajemen Pengetahuan
         </h2>
         <p class="text-lg md:text-xl text-white/80 max-w-3xl mx-auto mb-10 leading-relaxed font-light">
-            Platform terpadu untuk mengelola, berbagi, dan menemukan pengetahuan, dokumen, serta informasi strategis di lingkungan Badan Riset dan Inovasi Nasional.
+            Website terpadu untuk mengelola, berbagi, dan menemukan pengetahuan, dokumen, serta informasi strategis di lingkungan Pemerintah Kabupaten Mojokerto.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="{{ url('/kategori') }}" class="w-full sm:w-auto px-8 py-4 bg-white text-primary-700 hover:bg-primary-50 rounded-xl font-bold transition shadow-lg hover:shadow-xl transform hover:-translate-y-1">

@@ -32,10 +32,10 @@
             <h2 class="text-3xl font-bold text-slate-800 dark:text-white mb-6">Apa itu <span class="text-primary-600 dark:text-primary-400">MojoPedia?</span></h2>
             <div class="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed text-lg">
                 <p>
-                    MojoPedia (Sistem Informasi Manajemen Pengetahuan) adalah platform repositori digital strategis yang dikembangkan oleh Badan Riset dan Inovasi Nasional. Platform ini bertujuan untuk mengelola, menyimpan, dan mendistribusikan aset pengetahuan yang berharga.
+                    MojoPedia (Sistem Informasi Manajemen Pengetahuan) adalah platform repositori digital strategis yang dikembangkan oleh Diskominfo Pemerintah Kabupaten Mojokerto. Platform ini bertujuan untuk mengelola, menyimpan, dan mendistribusikan aset pengetahuan yang berharga.
                 </p>
                 <p>
-                    Melalui SIMP@N, para periset, akademisi, dan masyarakat umum dapat dengan mudah menemukan berbagai bentuk pengetahuan—mulai dari dokumen riset, video pembelajaran, galeri gambar, hingga arsip audio—dalam satu portal yang terintegrasi dan mudah diakses.
+                    Melalui MojoPedia, para periset, akademisi, dan masyarakat umum dapat dengan mudah menemukan berbagai bentuk pengetahuan mulai dari dokumen riset, video pembelajaran, galeri gambar, hingga arsip audio dalam satu portal yang terintegrasi dan mudah diakses.
                 </p>
             </div>
         </div>
@@ -47,7 +47,8 @@
                 <div class="relative z-30 w-full h-full bg-white dark:bg-slate-900 rounded-xl flex items-center justify-center p-8">
                     <div class="text-center">
                         <svg class="w-24 h-24 text-primary-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+   
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                         </svg>
                         <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Pusat Pengetahuan Terpadu</h3>
                     </div>
@@ -130,7 +131,7 @@
                 <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             </div>
             <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Tim Pengembang MojoPedia</h3>
-            <p class="text-slate-600 dark:text-slate-400 mb-6">Badan Riset dan Inovasi Nasional</p>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">Pemerintah Kabupaten Mojokerto</p>
             
             <a href="mailto:dev@simpanbrin.go.id" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl font-semibold transition">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>

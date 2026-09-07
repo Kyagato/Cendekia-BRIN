@@ -7,7 +7,7 @@
                     <span class="text-2xl font-bold tracking-tight text-white group-hover:text-primary-200 transition">MojoPedia</span>
                 </a>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    Sistem Informasi Manajemen Pengetahuan BRIN adalah platform sentral untuk mengelola, berbagi, dan menemukan aset pengetahuan, riset, serta inovasi nasional.
+                    Sistem Informasi Manajemen Pengetahuan Dinas Komunikasi & Informatika Kabupaten Mojokerto adalah platform sentral untuk mengelola, berbagi, dan menemukan aset pengetahuan, riset, serta inovasi daerah.
                 </p>
             </div>
 
@@ -39,15 +39,15 @@
                 <ul class="space-y-3">
                     <li class="flex items-start gap-3 text-sm text-slate-400">
                         <svg class="w-5 h-5 text-secondary-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        <span>info@brin.go.id</span>
+                        <span>diskominfo@mojokertokab.go.id</span>
                     </li>
                     <li class="flex items-start gap-3 text-sm text-slate-400">
                         <svg class="w-5 h-5 text-secondary-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
-                        <a href="https://www.brin.go.id" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">www.brin.go.id</a>
+                        <a href="https://diskominfo.mojokertokab.go.id" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">diskominfo.mojokertokab.go.id</a>
                     </li>
                     <li class="flex items-start gap-3 text-sm text-slate-400">
                         <svg class="w-5 h-5 text-secondary-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span>Jakarta, Indonesia</span>
+                        <span>Kabupaten Mojokerto, Jawa Timur</span>
                     </li>
                 </ul>
             </div>
@@ -55,7 +55,7 @@
 
         <div class="pt-8 mt-8 border-t border-primary-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-sm text-slate-500">
-                &copy; {{ date('Y') == 2026 ? '2026' : '2026 - ' . date('Y') }} Badan Riset dan Inovasi Nasional (BRIN). All rights reserved.
+                &copy; {{ date('Y') == 2026 ? '2026' : '2026 - ' . date('Y') }} Dinas Komunikasi & Informatika Kabupaten Mojokerto. All rights reserved.
             </p>
             <div class="flex space-x-4">
                 <!-- Social links placeholders -->
