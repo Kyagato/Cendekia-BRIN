@@ -64,30 +64,67 @@
                     .rich-editor-content li { display: list-item !important; }
                 </style>
 
-                {{-- Ringkasan --}}
-                @if($knowledge->deskripsi)
-                <section id="ringkasan" class="scroll-mt-28">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Ringkasan</h2>
-                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
-                        {!! $knowledge->deskripsi !!}
-                    </div>
+                {{-- Media Preview dari URL (Video/Gambar/Audio) - Di atas Ringkasan --}}
+                @if($knowledge->url_teks)
+                <section class="mb-2">
+                    @php
+                        $mediaUrl = $knowledge->url_teks;
+                        $youtubeId = null;
+                        // Deteksi YouTube URL dan extract video ID
+                        if (preg_match('/(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $mediaUrl, $ytMatch)) {
+                            $youtubeId = $ytMatch[1];
+                        }
+                    @endphp
+
+                    @if($youtubeId)
+                        {{-- YouTube Embed --}}
+                        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-black">
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+                                <iframe
+                                    src="https://www.youtube.com/embed/{{ $youtubeId }}"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+                        </div>
+                    @elseif($knowledge->tipe == 'Video')
+                        {{-- Video biasa (non-YouTube) --}}
+                        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-black">
+                            <video controls class="w-full max-h-[500px]">
+                                <source src="{{ $mediaUrl }}">
+                                Browser Anda tidak mendukung pemutar video.
+                            </video>
+                        </div>
+                    @elseif($knowledge->tipe == 'Gambar')
+                        {{-- Gambar dari URL --}}
+                        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                            <img src="{{ $mediaUrl }}" alt="{{ $knowledge->judul }}" class="w-full max-h-[550px] object-contain mx-auto">
+                        </div>
+                    @elseif($knowledge->tipe == 'Audio')
+                        {{-- Audio dari URL atau uploaded file path --}}
+                        @php
+                            $audioSrc = str_starts_with($mediaUrl, 'http://') || str_starts_with($mediaUrl, 'https://') ? $mediaUrl : asset('storage/' . $mediaUrl);
+                        @endphp
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <audio controls class="w-full">
+                                <source src="{{ $audioSrc }}">
+                                Browser Anda tidak mendukung pemutar audio.
+                            </audio>
+                        </div>
+                    @endif
                 </section>
                 @endif
 
-                {{-- Detil --}}
-                @if($knowledge->detail)
-                <section id="detail" class="scroll-mt-28">
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Detil</h2>
-                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
-                        {!! $knowledge->detail !!}
-                    </div>
-                </section>
-                @endif
-
-                {{-- Media Preview --}}
-                @if($knowledge->file_path)
-                <section>
-                    @if($knowledge->tipe == 'Gambar')
+                {{-- Media Preview dari file_path (uploaded file / thumbnail) --}}
+                @if($knowledge->file_path && $knowledge->file_path !== $knowledge->url_teks)
+                <section class="mb-2">
+                    @php
+                        $filePathExt = strtolower(pathinfo($knowledge->file_path, PATHINFO_EXTENSION));
+                        $isImageFile = in_array($filePathExt, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                    @endphp
+                    @if($knowledge->tipe == 'Gambar' || $isImageFile)
                         <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                             <img src="{{ asset('storage/' . $knowledge->file_path) }}" alt="{{ $knowledge->judul }}" class="w-full max-h-[550px] object-contain mx-auto">
                         </div>
@@ -107,13 +144,23 @@
                 </section>
                 @endif
 
-                {{-- URL Teks --}}
-                @if($knowledge->url_teks)
-                <section>
-                    <a href="{{ $knowledge->url_teks }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm text-red-600 dark:text-red-400 hover:underline font-medium break-all">
-                        <svg class="w-4 h-4 shrink-0" width="16" height="16" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                        {{ $knowledge->url_teks }}
-                    </a>
+                {{-- Ringkasan --}}
+                @if($knowledge->deskripsi)
+                <section id="ringkasan" class="scroll-mt-28">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Ringkasan</h2>
+                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
+                        {!! $knowledge->deskripsi !!}
+                    </div>
+                </section>
+                @endif
+
+                {{-- Detil --}}
+                @if($knowledge->detail)
+                <section id="detail" class="scroll-mt-28">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Detail</h2>
+                    <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-base break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
+                        {!! $knowledge->detail !!}
+                    </div>
                 </section>
                 @endif
 

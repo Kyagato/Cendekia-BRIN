@@ -40,6 +40,13 @@
         if (this.$refs.hiddenInput) {
             this.$refs.hiddenInput.value = this.content || '';
         }
+        // Pastikan sync sebelum form disubmit
+        const form = this.$el.closest('form');
+        if (form) {
+            form.addEventListener('submit', () => {
+                this.sync();
+            });
+        }
     },
     exec(cmd, arg = null) {
         this.$refs.editor.focus();

@@ -30,7 +30,11 @@
 
                 <!-- Box Thumbnail Kecil (Sejajar dengan Judul, Kanan Mentok) -->
                 <div class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 shadow-sm flex items-center justify-center">
-                    @if($item->file_path)
+                    @php
+                        $ext = $item->file_path ? strtolower(pathinfo($item->file_path, PATHINFO_EXTENSION)) : '';
+                        $isImageFile = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                    @endphp
+                    @if($item->file_path && $isImageFile)
                         <img src="{{ asset('storage/' . $item->file_path) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-750">

@@ -43,6 +43,22 @@
 
         {{-- Main Card --}}
         <div class="bg-white dark:bg-slate-800 shadow-md rounded-xl p-8 border border-transparent dark:border-slate-700">
+
+            {{-- Validation Errors Summary --}}
+            @if($errors->any())
+            <div class="mb-6 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                <div class="flex items-center gap-2 text-red-800 dark:text-red-300 font-semibold text-sm mb-2">
+                    <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+                    Terdapat kesalahan pada formulir:
+                </div>
+                <ul class="list-disc list-inside text-sm text-red-700 dark:text-red-400 space-y-1">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
                 {{-- ===== LEFT COLUMN (7/12) ===== --}}
@@ -79,12 +95,64 @@
                         @error('tipe') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Dynamic URL field --}}
+                    {{-- Dynamic: Upload Gambar / Upload Audio / URL field --}}
                     <div>
-                        <label for="url_teks" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
-                            Url <span x-text="formatType"></span>
-                        </label>
-                        <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks') }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
+                        {{-- Upload Gambar (hanya muncul saat format = Gambar) --}}
+                        <template x-if="formatType === 'Gambar'">
+                            <div x-data="{ imgFileName: '' }">
+                                <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Upload Gambar</label>
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" onclick="document.getElementById('gambar_upload').click()">
+                                    <div class="space-y-1 text-center">
+                                        <svg x-show="!imgFileName" class="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                        <svg x-cloak x-show="imgFileName" class="mx-auto h-10 w-10 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
+                                            <label for="gambar_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300">
+                                                <span x-show="!imgFileName">Pilih file gambar</span>
+                                                <span x-cloak x-show="imgFileName" x-text="imgFileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[250px] inline-block"></span>
+                                                <input id="gambar_upload" name="file_upload" type="file" accept="image/*" class="sr-only" @change="imgFileName = $event.target.files[0] ? $event.target.files[0].name : ''">
+                                            </label>
+                                        </div>
+                                        <p x-show="!imgFileName" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PNG, JPG, GIF, WEBP — Maks 5MB</p>
+                                        <p x-cloak x-show="imgFileName" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Gambar siap diupload</p>
+                                    </div>
+                                </div>
+                                @error('file_upload') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </template>
+
+                        {{-- Upload Audio (hanya muncul saat format = Audio) --}}
+                        <template x-if="formatType === 'Audio'">
+                            <div x-data="{ audioFileName: '' }">
+                                <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Upload Audio</label>
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" onclick="document.getElementById('audio_upload').click()">
+                                    <div class="space-y-1 text-center">
+                                        <svg x-show="!audioFileName" class="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" /></svg>
+                                        <svg x-cloak x-show="audioFileName" class="mx-auto h-10 w-10 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
+                                            <label for="audio_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300">
+                                                <span x-show="!audioFileName">Pilih file audio</span>
+                                                <span x-cloak x-show="audioFileName" x-text="audioFileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[250px] inline-block"></span>
+                                                <input id="audio_upload" name="audio_file" type="file" accept="audio/*" class="sr-only" @change="audioFileName = $event.target.files[0] ? $event.target.files[0].name : ''">
+                                            </label>
+                                        </div>
+                                        <p x-show="!audioFileName" class="text-xs text-slate-500 dark:text-slate-400 mt-1">MP3, WAV, OGG, M4A, AAC, FLAC — Maks 10MB</p>
+                                        <p x-cloak x-show="audioFileName" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Audio siap diupload</p>
+                                    </div>
+                                </div>
+                                @error('audio_file') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </template>
+
+                        {{-- URL field (muncul saat format = Video, Text) --}}
+                        <template x-if="formatType !== 'Gambar' && formatType !== 'Audio'">
+                            <div>
+                                <label for="url_teks" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
+                                    Url <span x-text="formatType"></span>
+                                </label>
+                                <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks') }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
+                                @error('url_teks') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </template>
                     </div>
 
                     {{-- Penulis & Kolaborator --}}
@@ -211,8 +279,8 @@
                         </label>
                     </div>
 
-                    {{-- Thumbnail Upload --}}
-                    <div x-data="{ fileName: '' }">
+                    {{-- Thumbnail Upload (tersembunyi hanya saat format Gambar karena upload gambar ada di kolom kiri) --}}
+                    <div x-show="formatType !== 'Gambar'" x-data="{ fileName: '' }">
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Thumbnail / File Lampiran</label>
                         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" onclick="document.getElementById('file_upload').click()">
                             <div class="space-y-1 text-center">
@@ -226,7 +294,7 @@
                                     <label for="file_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
                                         <span x-show="!fileName">Unggah file thumbnail</span>
                                         <span x-cloak x-show="fileName" x-text="fileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[200px] inline-block"></span>
-                                        <input id="file_upload" name="file_upload" type="file" class="sr-only" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''">
+                                        <input id="file_upload" name="file_upload" type="file" class="sr-only" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''" :disabled="formatType === 'Gambar'">
                                     </label>
                                 </div>
                                 <p x-show="!fileName" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PNG, JPG, GIF up to 50MB</p>
