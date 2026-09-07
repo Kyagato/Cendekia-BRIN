@@ -35,7 +35,7 @@ class ModeratorForumController extends Controller
             'rejected' => ForumThread::where('status', 'rejected')->count(),
         ];
 
-        return Inertia::render('Moderator/ForumApproval', compact('threads', 'status', 'counts'));
+        return view('moderator.forum.approval', compact('threads', 'status', 'counts'));
     }
 
     /**
