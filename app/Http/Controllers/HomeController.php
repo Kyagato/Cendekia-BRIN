@@ -9,6 +9,8 @@ use App\Models\Knowledge;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
+use Inertia\Inertia;
+
 class HomeController extends Controller
 {
     public function index()
@@ -45,12 +47,12 @@ class HomeController extends Controller
             ->take(12)
             ->get();
 
-        return view('welcome', compact('featuredKnowledges', 'mostViewed', 'latest', 'popularCategories', 'popularTags'));
+        return Inertia::render('Home', compact('featuredKnowledges', 'mostViewed', 'latest', 'popularCategories', 'popularTags'));
     }
 
     public function about()
     {
-        return view('pages.about');
+        return Inertia::render('About');
     }
 
     public function category(Request $request)
@@ -93,7 +95,7 @@ class HomeController extends Controller
 
         $knowledge = $query->latest()->paginate(12);
 
-        return view('pages.category', compact('categories', 'tags', 'knowledge'));
+        return Inertia::render('Category/Index', compact('categories', 'tags', 'knowledge'));
     }
 
     public function categoryShow($id)
@@ -111,7 +113,7 @@ class HomeController extends Controller
     public function faq(Request $request)
     {
         $faqs = Faq::orderBy('kategori_faq')->orderBy('urutan')->get()->groupBy('kategori_faq');
-        return view('pages.faq', compact('faqs'));
+        return Inertia::render('Faq', compact('faqs'));
     }
 
     public function forum(Request $request)
@@ -146,7 +148,7 @@ class HomeController extends Controller
 
         $threads = $query->paginate(15)->withQueryString();
 
-        return view('pages.forum', compact('threads'));
+        return Inertia::render('Forum/Index', compact('threads', 'sort'));
     }
 
     public function search(Request $request)

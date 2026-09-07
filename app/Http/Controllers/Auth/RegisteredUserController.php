@@ -13,14 +13,17 @@ use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
+
 class RegisteredUserController extends Controller
 {
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('auth.register');
+        return Inertia::render('Auth/Register');
     }
 
     /**

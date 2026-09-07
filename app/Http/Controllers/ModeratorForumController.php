@@ -6,6 +6,8 @@ use App\Models\ForumThread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use Inertia\Inertia;
+
 class ModeratorForumController extends Controller
 {
     /**
@@ -33,7 +35,7 @@ class ModeratorForumController extends Controller
             'rejected' => ForumThread::where('status', 'rejected')->count(),
         ];
 
-        return view('moderator.forum.approval', compact('threads', 'status', 'counts'));
+        return Inertia::render('Moderator/ForumApproval', compact('threads', 'status', 'counts'));
     }
 
     /**

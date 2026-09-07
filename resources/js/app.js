@@ -1,14 +1,15 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
+import { createApp, h } from 'vue';
+import { createInertiaApp } from '@inertiajs/vue3';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
-// Dark Mode Store
+// Dark Mode Store for Alpine (Legacy Blade support)
 Alpine.store('darkMode', {
     on: false,
     init() {
-        // Check localStorage first, then check user preference from meta tag
         const saved = localStorage.getItem('darkMode');
         const userPref = document.querySelector('meta[name="user-dark-mode"]');
-        
         if (saved !== null) {
             this.on = saved === 'true';
         } else if (userPref) {
@@ -22,8 +23,6 @@ Alpine.store('darkMode', {
         this.on = !this.on;
         localStorage.setItem('darkMode', this.on);
         this.apply();
-        
-        // Sync to database if authenticated
         const token = document.querySelector('meta[name="csrf-token"]');
         if (token && document.querySelector('meta[name="user-authenticated"]')) {
             fetch('/toggle-dark-mode', {
@@ -45,23 +44,19 @@ Alpine.store('darkMode', {
     }
 });
 
-// Scroll Reveal Observer
-document.addEventListener('DOMContentLoaded', () => {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-fade-in');
-                entry.target.style.opacity = '1';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.scroll-reveal').forEach(el => {
-        el.style.opacity = '0';
-        observer.observe(el);
-    });
-});
-
 window.Alpine = Alpine;
 Alpine.start();
+
+// Initialize Inertia Vue 3 App
+createInertiaApp({
+    title: (title) => title ? `${title} - MojoPedia` : 'MojoPedia',
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
+    setup({ el, App, props, plugin }) {
+        return createApp({ render: () => h(App, props) })
+            .use(plugin)
+            .mount(el);
+    },
+    progress: {
+        color: '#dc2626', // BRIN Crimson Red progress bar
+    },
+});

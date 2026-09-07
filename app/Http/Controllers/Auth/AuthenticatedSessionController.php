@@ -9,14 +9,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
+
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(): InertiaResponse
     {
-        return view('auth.login');
+        return Inertia::render('Auth/Login');
     }
 
     /**

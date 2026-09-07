@@ -5,11 +5,17 @@ use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Knowledge;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 // =================================================================
 // PUBLIC ROUTES — Bisa diakses tanpa login (termasuk Guest)
 // =================================================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/vue-test', function () {
+    return Inertia::render('Welcome', [
+        'appName' => 'Cendekia BRIN Vue SPA'
+    ]);
+})->name('vue.test');
 Route::get('/tentang', [HomeController::class, 'about'])->name('about');
 Route::get('/kategori', [HomeController::class, 'category'])->name('category.index');
 Route::get('/kategori/{id}', [HomeController::class, 'categoryShow'])->name('category.show');
