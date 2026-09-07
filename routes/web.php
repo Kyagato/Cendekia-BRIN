@@ -20,6 +20,7 @@ Route::get('/tentang', [HomeController::class, 'about'])->name('about');
 Route::get('/kategori', [HomeController::class, 'category'])->name('category.index');
 Route::get('/kategori/{id}', [HomeController::class, 'categoryShow'])->name('category.show');
 Route::get('/forum', [HomeController::class, 'forum'])->name('forum.index');
+Route::get('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 
 // Search API (publik) & Halaman Pencarian Utama
@@ -168,7 +169,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =============================================================
     Route::get('/forum/create', [App\Http\Controllers\ForumController::class, 'create'])->name('forum.create');
     Route::post('/forum', [App\Http\Controllers\ForumController::class, 'store'])->name('forum.store');
-    Route::get('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
     Route::post('/forum/{thread}/reply', [App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
 
     // =============================================================

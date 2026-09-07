@@ -85,7 +85,8 @@
             v-for="thread in threads.data" 
             :key="thread.id"
             :class="thread.is_pinned ? 'border-yellow-500' : 'border-slate-100 dark:border-slate-700'"
-            class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border card-hover transition mb-4"
+            class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border card-hover transition mb-4 cursor-pointer"
+            @click="router.visit(`/forum/${thread.id}`)"
           >
             <div class="flex items-start gap-4">
               <!-- Avatar -->
@@ -146,7 +147,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 
 const props = defineProps({
