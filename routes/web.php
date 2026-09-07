@@ -27,6 +27,9 @@ Route::get('/api/search', [App\Http\Controllers\SearchController::class, 'apiSea
 Route::get('/api/search/autocomplete', [App\Http\Controllers\SearchController::class, 'autocomplete'])->name('search.autocomplete');
 Route::get('/cari', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 
+// Detail Pengetahuan (Layout Publik — untuk Beranda & Kategori)
+Route::get('/knowledge/{id}', [HomeController::class, 'knowledgeShow'])->name('knowledge.show')->whereNumber('id');
+
 // =================================================================
 // AUTHENTICATED ROUTES — Semua user yang sudah login
 // =================================================================
@@ -74,8 +77,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    // Detail Knowledge (Read-only untuk publik/member)
-    Route::get('/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('knowledge.show');
+    // Detail Knowledge (Dashboard Admin Preview — layout admin)
+    Route::get('/dashboard/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('admin.knowledge.show');
 
     // =============================================================
     // ROLE: ANALISIS PENGETAHUAN + ADMIN
@@ -198,9 +201,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/kategori', function () {
             return view('dashboard'); // TODO: CRUD Kategori
         })->name('admin.kategori');
-        Route::get('/admin/faq', function () {
-            return view('dashboard'); // TODO: CRUD FAQ
-        })->name('admin.faq');
+        Route::resource('/admin/faq', App\Http\Controllers\FaqController::class, ['as' => 'admin']);
+        Route::post('/admin/faq-section', [App\Http\Controllers\FaqController::class, 'storeSection'])->name('admin.faq.storeSection');
+        Route::put('/admin/faq-section/update', [App\Http\Controllers\FaqController::class, 'updateSection'])->name('admin.faq.updateSection');
+        Route::delete('/admin/faq-section', [App\Http\Controllers\FaqController::class, 'destroySection'])->name('admin.faq.destroySection');
         Route::get('/admin/laporan', function () {
             return view('dashboard'); // TODO: Halaman laporan & analitik
         })->name('admin.laporan');

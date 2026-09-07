@@ -96,8 +96,8 @@
                     @if($knowledge->deskripsi)
                     <div>
                         <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2 uppercase tracking-wider">Ringkasan</h2>
-                        <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-sm bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-700 break-words [overflow-wrap:anywhere]">
-                            {!! nl2br(e($knowledge->deskripsi)) !!}
+                        <div class="text-slate-700 dark:text-slate-300 leading-relaxed text-sm bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border border-slate-200 dark:border-slate-700 break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
+                            {!! $knowledge->deskripsi !!}
                         </div>
                     </div>
                     @endif
@@ -106,8 +106,8 @@
                     @if($knowledge->detail)
                     <div>
                         <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2 uppercase tracking-wider">Detail</h2>
-                        <div class="prose prose-sm max-w-none text-slate-700 dark:text-slate-300 leading-relaxed break-words [overflow-wrap:anywhere]">
-                            {!! nl2br(e($knowledge->detail)) !!}
+                        <div class="prose prose-sm max-w-none text-slate-700 dark:text-slate-300 leading-relaxed break-words [overflow-wrap:anywhere] prose dark:prose-invert max-w-none rich-editor-content">
+                            {!! $knowledge->detail !!}
                         </div>
                     </div>
                     @endif

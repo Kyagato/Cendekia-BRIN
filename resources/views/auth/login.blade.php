@@ -84,14 +84,14 @@
                             </svg>
                             <div>
                                 <p class="text-slate-500 font-medium">Sistem Informasi</p>
-                                <p class="text-slate-400 text-sm">Manajemen Pengetahuan BRIN</p>
+                                <p class="text-slate-400 text-sm">Manajemen Pengetahuan Pemerintah Kabupaten Mojokerto</p>
                             </div>
                         </div>
                     </div>
 
                     {{-- Tagline --}}
                     <div class="relative z-10">
-                        <p class="text-sm text-slate-400">Platform terpadu untuk mengelola dan berbagi pengetahuan di lingkungan BRIN.</p>
+                        <p class="text-sm text-slate-400">Platform terpadu untuk mengelola dan berbagi pengetahuan di lingkungan Pemerintah Kabupaten Mojokerto.</p>
                     </div>
                 </div>
 
@@ -178,7 +178,7 @@
 
                     {{-- Footer --}}
                     <div class="mt-8 pt-6 border-t border-slate-100 text-center">
-                        <p class="text-xs text-slate-400">&copy; {{ date('Y') }} MojoPedia — Badan Riset dan Inovasi Nasional</p>
+                        <p class="text-xs text-slate-400">&copy; {{ date('Y') }} MojoPedia — Pemerintah Kabupaten Mojokerto</p>
                     </div>
                 </div>
 

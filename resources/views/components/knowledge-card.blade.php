@@ -21,7 +21,7 @@
             <div class="flex items-start justify-between gap-4 mt-2 mb-2">
                 <div class="flex-grow min-w-0">
                     <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2 line-clamp-2 leading-snug">
-                        <a href="{{ url('/knowledge/'.$item->id) }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition">{{ $item->judul }}</a>
+                        <a href="{{ url('/knowledge/'.$item->id . (request()->is('kategori*') ? '?from=kategori' : '')) }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition">{{ $item->judul }}</a>
                     </h3>
                     <p class="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">
                         {{ Str::limit(strip_tags($item->deskripsi), 65) }}
@@ -30,7 +30,11 @@
 
                 <!-- Box Thumbnail Kecil (Sejajar dengan Judul, Kanan Mentok) -->
                 <div class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 shadow-sm flex items-center justify-center">
-                    @if($item->file_path)
+                    @php
+                        $ext = $item->file_path ? strtolower(pathinfo($item->file_path, PATHINFO_EXTENSION)) : '';
+                        $isImageFile = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                    @endphp
+                    @if($item->file_path && $isImageFile)
                         <img src="{{ asset('storage/' . $item->file_path) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-750">
