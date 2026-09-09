@@ -54,7 +54,7 @@
                   required 
                   autofocus 
                   autocomplete="username"
-                  placeholder="nama@brin.go.id"
+                  placeholder="nama@gmail.com"
                   class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:border-red-500 focus:outline-none text-sm transition"
                 />
                 <span v-if="form.errors.email" class="text-red-400 text-xs mt-1 block">{{ form.errors.email }}</span>
