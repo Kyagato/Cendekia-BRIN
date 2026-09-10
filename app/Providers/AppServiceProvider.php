@@ -6,6 +6,9 @@ use App\Models\Knowledge;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Keycloak\KeycloakExtendSocialite;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -114,5 +117,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('member-actions', function (User $user) {
             return $user->role !== 'Guest';
         });
+
+        // Keycloak SSO Socialite Provider
+        Event::listen(SocialiteWasCalled::class, KeycloakExtendSocialite::class);
     }
 }

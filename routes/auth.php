@@ -17,10 +17,10 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
+    Route::get('login', [\App\Http\Controllers\Auth\KeycloakController::class, 'redirect'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [\App\Http\Controllers\Auth\KeycloakController::class, 'redirect']);
 
     // Flow Lupa Password & Kode Autentikasi 4 Digit (OTP)
     Route::get('forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showEmailForm'])

@@ -235,3 +235,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// =================================================================
+// KEYCLOAK SSO AUTHENTICATION
+// =================================================================
+use App\Http\Controllers\Auth\KeycloakController;
+
+// Callback setelah user berhasil login di Keycloak
+Route::get('/auth/keycloak/callback', [KeycloakController::class, 'callback'])->name('keycloak.callback');
+
+// Logout dari Laravel + Keycloak sekaligus
+Route::post('/keycloak/logout', [KeycloakController::class, 'logout'])->name('keycloak.logout');

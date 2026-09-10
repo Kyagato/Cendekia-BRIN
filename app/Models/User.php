@@ -27,6 +27,8 @@ class User extends Authenticatable
         'role',
         'foto_profil',
         'dark_mode',
+        'keycloak_id',
+        'email_verified_at',
     ];
 
     /**
