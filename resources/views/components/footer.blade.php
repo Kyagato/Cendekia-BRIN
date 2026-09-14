@@ -1,73 +1,148 @@
-<footer class="bg-gradient-to-b from-primary-900 to-primary-950 text-white pt-12 pb-8 border-t border-primary-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-            <!-- Column 1: Brand -->
-            <div class="space-y-4">
-                <a href="/" class="flex items-center gap-2 group">
-                    <span class="text-2xl font-bold tracking-tight text-white group-hover:text-primary-200 transition">MojoPedia</span>
-                </a>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Sistem Informasi Manajemen Pengetahuan Dinas Komunikasi & Informatika Kabupaten Mojokerto adalah platform sentral untuk mengelola, berbagi, dan menemukan aset pengetahuan, riset, serta inovasi daerah.
+<div class="bg-slate-50 dark:bg-slate-900 py-16 relative overflow-hidden font-sans transition-colors duration-300">
+    
+    <!-- Background Watermark Text (Optional, for aesthetics) -->
+    <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none flex justify-center pointer-events-none opacity-[0.03] dark:opacity-[0.02] select-none" style="font-size: 14vw; font-weight: 900; color: #0f172a; transform: translateY(30%);">
+        MOJOKERTO
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <!-- Floating Card -->
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] border border-slate-100 dark:border-slate-700 p-8 sm:p-12 lg:p-14 transition-colors duration-300">
+            
+            <!-- Grid Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
+                
+                <!-- Column 1: Brand (Spans 5 cols) -->
+                <div class="lg:col-span-5">
+                    <div class="flex items-start gap-5">
+                        <!-- Logo -->
+                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <img src="/images/logo-kominfo.png" alt="Logo Kabupaten Mojokerto" class="w-full h-full object-contain drop-shadow-sm" />
+                        </div>
+                        <div class="mt-1">
+                            <h4 class="text-[10px] font-bold text-blue-600 dark:text-blue-400 tracking-[0.2em] uppercase mb-1.5 transition-colors">Website Resmi</h4>
+                            <h2 class="text-[26px] font-serif font-bold text-slate-900 dark:text-white leading-tight transition-colors">
+                                Dinas komunikasi dan<br>informatika
+                            </h2>
+                            <p class="text-[13px] italic text-slate-500 dark:text-slate-400 mt-2 font-serif transition-colors">Kabupaten Mojokerto</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-slate-600 dark:text-slate-300 mt-8 max-w-sm transition-colors">
+                        Dinas komunikasi dan informatika website diskominfo
+                    </p>
+                    
+                    <!-- Socials -->
+                    <div class="flex items-center gap-3 mt-6">
+                        <a href="#" class="w-10 h-10 rounded-full border border-blue-100 dark:border-slate-600 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full border border-blue-100 dark:border-slate-600 flex items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Navigasi (Spans 3 cols) -->
+                <div class="lg:col-span-3">
+                    <h4 class="text-[10px] font-bold text-blue-600 dark:text-blue-400 tracking-[0.2em] uppercase mb-6 transition-colors">Navigasi</h4>
+                    <ul class="space-y-4">
+                        @php
+                            $navItems = [
+                                ['label' => 'Beranda', 'url' => '/', 'arrow' => false],
+                                ['label' => 'Tentang', 'url' => '/tentang', 'arrow' => false],
+                                ['label' => 'Kategori', 'url' => '/kategori', 'arrow' => false],
+                                ['label' => 'Forum', 'url' => '/forum', 'arrow' => false],
+                                ['label' => 'FAQs', 'url' => '/faq', 'arrow' => false],
+                            ];
+                        @endphp
+                        @foreach($navItems as $item)
+                        <li>
+                            <a href="{{ $item['url'] }}" class="flex items-center group">
+                                <span class="w-1 h-1 rounded-full bg-blue-400 dark:bg-blue-500 mr-3 group-hover:bg-blue-600 dark:group-hover:bg-blue-300 transition-colors"></span>
+                                <span class="text-sm text-slate-600 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ $item['label'] }}</span>
+                                @if($item['arrow'])
+                                <svg class="w-3 h-3 ml-auto text-slate-300 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                @endif
+                            </a>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Column 3: Hubungi Kami (Spans 4 cols) -->
+                <div class="lg:col-span-4">
+                    <h4 class="text-[10px] font-bold text-blue-600 dark:text-blue-400 tracking-[0.2em] uppercase mb-6 transition-colors">Hubungi Kami</h4>
+                    <div class="space-y-6">
+                        
+                        <!-- Address -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </div>
+                            <div class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed pt-1 transition-colors">
+                                Jl. RA. Basuni Nomor 14, Jampirogo, Kecamatan Sooko, Kabupaten Mojokerto, Kode Pos 61361, Jawa Timur.
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            </div>
+                            <div class="pt-0.5">
+                                <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1 transition-colors">Telepon</span>
+                                <div class="flex items-center gap-2 group cursor-pointer" onclick="navigator.clipboard.writeText('(0321) 391268')">
+                                    <span class="text-sm text-slate-600 dark:text-slate-300 transition-colors">(0321) 391268</span>
+                                    <svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <div class="pt-0.5">
+                                <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1 transition-colors">Email</span>
+                                <div class="flex items-center gap-2 group cursor-pointer" onclick="navigator.clipboard.writeText('diskominfo@mojokertokab.go.id')">
+                                    <span class="text-sm text-slate-600 dark:text-slate-300 transition-colors">diskominfo@mojokertokab.go.id</span>
+                                    <svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider & Copyright -->
+            <div class="mt-14 pt-8 border-t border-blue-50 dark:border-slate-700 text-center transition-colors">
+                <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.15em] transition-colors">
+                    &copy; {{ date('Y') }} DISKOMINFO KABUPATEN MOJOKERTO
                 </p>
-            </div>
-
-            <!-- Column 2: Navigasi Cepat -->
-            <div>
-                <h3 class="text-lg font-semibold mb-4 text-slate-200">Navigasi Cepat</h3>
-                <ul class="space-y-2">
-                    <li><a href="/" class="text-slate-400 hover:text-white transition text-sm flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary-500"></span> Beranda</a></li>
-                    <li><a href="/tentang" class="text-slate-400 hover:text-white transition text-sm flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary-500"></span> Tentang</a></li>
-                    <li><a href="/kategori" class="text-slate-400 hover:text-white transition text-sm flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary-500"></span> Kategori</a></li>
-                    <li><a href="/forum" class="text-slate-400 hover:text-white transition text-sm flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary-500"></span> Forum</a></li>
-                    <li><a href="/faq" class="text-slate-400 hover:text-white transition text-sm flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary-500"></span> FAQs</a></li>
-                </ul>
-            </div>
-
-            <!-- Column 3: Informasi -->
-            <div>
-                <h3 class="text-lg font-semibold mb-4 text-slate-200">Informasi</h3>
-                <ul class="space-y-2">
-                    <li><a href="/panduan" class="text-slate-400 hover:text-white transition text-sm hover:translate-x-1 transform inline-block">Panduan Penggunaan</a></li>
-                    <li><a href="/privasi" class="text-slate-400 hover:text-white transition text-sm hover:translate-x-1 transform inline-block">Kebijakan Privasi</a></li>
-                    <li><a href="/syarat" class="text-slate-400 hover:text-white transition text-sm hover:translate-x-1 transform inline-block">Syarat & Ketentuan</a></li>
-                </ul>
-            </div>
-
-            <!-- Column 4: Kontak -->
-            <div>
-                <h3 class="text-lg font-semibold mb-4 text-slate-200">Kontak</h3>
-                <ul class="space-y-3">
-                    <li class="flex items-start gap-3 text-sm text-slate-400">
-                        <svg class="w-5 h-5 text-secondary-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        <span>diskominfo@mojokertokab.go.id</span>
-                    </li>
-                    <li class="flex items-start gap-3 text-sm text-slate-400">
-                        <svg class="w-5 h-5 text-secondary-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
-                        <a href="https://diskominfo.mojokertokab.go.id" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">diskominfo.mojokertokab.go.id</a>
-                    </li>
-                    <li class="flex items-start gap-3 text-sm text-slate-400">
-                        <svg class="w-5 h-5 text-secondary-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span>Kabupaten Mojokerto, Jawa Timur</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="pt-8 mt-8 border-t border-primary-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-sm text-slate-500">
-                &copy; {{ date('Y') == 2026 ? '2026' : '2026 - ' . date('Y') }} Dinas Komunikasi & Informatika Kabupaten Mojokerto. All rights reserved.
-            </p>
-            <div class="flex space-x-4">
-                <!-- Social links placeholders -->
-                <a href="#" class="text-slate-500 hover:text-white transition">
-                    <span class="sr-only">Twitter</span>
-                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg>
-                </a>
-                <a href="#" class="text-slate-500 hover:text-white transition">
-                    <span class="sr-only">Instagram</span>
-                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path></svg>
-                </a>
             </div>
         </div>
     </div>
-</footer>
+
+      <!-- Scroll to Top Button -->
+      <button id="scrollToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white dark:bg-slate-800 border-[1.5px] border-blue-600 dark:border-blue-400 flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 hover:shadow-[0_4px_15px_rgb(37,99,235,0.2)] transition-all duration-300 focus:outline-none shadow-sm group opacity-0 pointer-events-none translate-y-4">
+          <svg class="w-4 h-4 mb-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+          <span class="text-[8px] font-bold uppercase tracking-wider">Top</span>
+      </button>
+</div>
+<script>
+    window.addEventListener('scroll', function() {
+        const btn = document.getElementById('scrollToTopBtn');
+        if (btn) {
+            if (window.scrollY > 300) {
+                btn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+                btn.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                btn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+                btn.classList.remove('opacity-100', 'translate-y-0');
+            }
+        }
+    });
+</script>
