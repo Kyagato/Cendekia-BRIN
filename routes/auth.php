@@ -22,6 +22,12 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [\App\Http\Controllers\Auth\KeycloakController::class, 'redirect']);
 
+    // Keycloak SSO Routes
+    Route::get('auth/keycloak/redirect', [\App\Http\Controllers\Auth\KeycloakController::class, 'redirect'])
+        ->name('keycloak.redirect');
+    Route::get('auth/keycloak/callback', [\App\Http\Controllers\Auth\KeycloakController::class, 'callback'])
+        ->name('keycloak.callback');
+
     // Flow Lupa Password & Kode Autentikasi 4 Digit (OTP)
     Route::get('forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showEmailForm'])
         ->name('password.request');

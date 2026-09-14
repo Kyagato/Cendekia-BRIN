@@ -1,67 +1,84 @@
 <template>
-  <div class="min-h-screen bg-slate-900 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans">
-    <div class="w-full max-w-5xl bg-slate-800 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+  <div class="min-h-screen bg-[#0f172a] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans">
+    <div class="w-full max-w-5xl bg-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-800">
       <div class="grid grid-cols-1 lg:grid-cols-2">
 
         <!-- Left Branding Column -->
-        <div class="hidden lg:flex flex-col justify-between bg-slate-950 p-10 relative overflow-hidden min-h-[550px]">
+        <div class="hidden lg:flex flex-col justify-between bg-[#1e3a8a] p-10 relative overflow-hidden min-h-[550px]">
+
           <div class="relative z-10">
-            <Link href="/" class="inline-flex items-center gap-2">
-              <span class="text-2xl font-bold bg-gradient-to-r from-red-500 via-rose-400 to-amber-400 bg-clip-text text-transparent">MojoPedia</span>
+            <Link href="/" class="inline-flex items-center gap-3 group">
+              <div class="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-sm">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <span class="text-xl font-extrabold tracking-tight text-white">Mojo<span class="text-[#93c5fd]">Pedia</span></span>
             </Link>
           </div>
 
           <div class="relative z-10 text-center space-y-4">
-            <div class="w-20 h-20 bg-red-600/20 text-red-500 rounded-full flex items-center justify-center mx-auto border border-red-500/30 shadow-lg">
-              <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+            <div class="w-16 h-16 bg-white/10 text-white rounded-xl flex items-center justify-center mx-auto border border-white/20 shadow-sm backdrop-blur-sm">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
             </div>
-            <h3 class="text-xl font-bold text-white">Pusat Manajemen Pengetahuan BRIN</h3>
-            <p class="text-xs text-slate-400 max-w-sm mx-auto">Platform terpadu untuk mengelola, berbagi, dan menemukan pengetahuan strategis.</p>
+            <h3 class="text-xl font-bold text-white tracking-tight">Sistem Manajemen Pengetahuan</h3>
+            <p class="text-xs text-blue-100 max-w-sm mx-auto leading-relaxed">Platform digital terpadu untuk mengelola, berbagi, dan menemukan aset pengetahuan pemerintahan strategis.</p>
           </div>
 
-          <div class="relative z-10 text-xs text-slate-500">
-            &copy; 2026 MojoPedia — Badan Riset dan Inovasi Nasional.
+          <div class="relative z-10 text-[11px] text-blue-200">
+            &copy; 2026 MojoPedia. Digital Governance System.
           </div>
         </div>
 
         <!-- Right Form Column -->
-        <div class="flex flex-col p-8 sm:p-10 lg:p-12 justify-between">
+        <div class="flex flex-col p-8 sm:p-10 lg:p-12 justify-between bg-slate-900">
           <div>
             <div class="flex items-center justify-between mb-8">
               <Link href="/" class="lg:hidden inline-flex items-center gap-2">
-                <span class="text-xl font-bold text-red-500">MojoPedia</span>
+                <span class="text-xl font-bold text-white">Mojo<span class="text-[#2563eb]">Pedia</span></span>
               </Link>
               <div class="flex items-center gap-3 ml-auto text-xs">
                 <span class="text-slate-400 hidden sm:inline">Belum punya akun?</span>
-                <Link href="/register" class="px-4 py-1.5 border border-red-500 text-red-400 font-bold uppercase tracking-wider rounded-full hover:bg-red-600 hover:text-white transition">
+                <Link href="/register" class="px-3 py-1.5 border border-blue-500/40 text-blue-400 font-semibold tracking-wide rounded-lg hover:bg-[#2563eb] hover:text-white transition">
                   Daftar
                 </Link>
               </div>
             </div>
 
             <div class="mb-6">
-              <h1 class="text-3xl font-bold text-white mb-2">Selamat Datang!</h1>
-              <p class="text-slate-400 text-sm">Masuk ke akun MojoPedia Anda</p>
+              <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1.5 tracking-tight">Selamat Datang!</h1>
+              <p class="text-slate-400 text-xs sm:text-sm">Masuk ke akun MojoPedia Anda</p>
             </div>
 
-            <form @submit.prevent="submit" class="space-y-5">
+            <!-- Flash Error Notification -->
+            <div v-if="$page.props.flash?.error" class="mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-lg flex items-center gap-2.5 shadow-sm">
+              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>{{ $page.props.flash.error }}</span>
+            </div>
+
+            <!-- Flash Success Notification -->
+            <div v-if="$page.props.flash?.success" class="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-lg flex items-center gap-2.5 shadow-sm">
+              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>{{ $page.props.flash.success }}</span>
+            </div>
+
+            <form @submit.prevent="submit" class="space-y-4">
               <div>
-                <label for="email" class="block text-xs font-semibold text-slate-300 mb-1.5">Email</label>
+                <label for="email" class="block text-xs font-semibold text-slate-300 mb-1.5">Alamat Email</label>
                 <input 
                   id="email" 
                   v-model="form.email" 
                   type="email" 
                   required 
                   autofocus 
-                  autocomplete="username"
                   placeholder="nama@gmail.com"
-                  class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:border-red-500 focus:outline-none text-sm transition"
+                  class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent text-sm transition"
                 />
-                <span v-if="form.errors.email" class="text-red-400 text-xs mt-1 block">{{ form.errors.email }}</span>
+                <span v-if="form.errors.email" class="text-rose-400 text-xs mt-1 block">{{ form.errors.email }}</span>
               </div>
 
               <div>
-                <label for="password" class="block text-xs font-semibold text-slate-300 mb-1.5">Password</label>
+                <label for="password" class="block text-xs font-semibold text-slate-300 mb-1.5">Kata Sandi</label>
                 <div class="relative">
                   <input 
                     id="password" 
@@ -69,13 +86,13 @@
                     :type="showPassword ? 'text' : 'password'" 
                     required 
                     autocomplete="current-password"
-                    placeholder="Masukkan password Anda"
-                    class="w-full px-4 py-3 pr-12 bg-slate-900 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:border-red-500 focus:outline-none text-sm transition"
+                    placeholder="Masukkan kata sandi Anda"
+                    class="w-full px-3.5 py-2.5 pr-11 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent text-sm transition"
                   />
                   <button 
                     type="button" 
                     @click="showPassword = !showPassword"
-                    class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-200 transition"
+                    class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-200 transition"
                     tabindex="-1"
                   >
                     <!-- Eye icon (show) -->
@@ -89,23 +106,23 @@
                     </svg>
                   </button>
                 </div>
-                <span v-if="form.errors.password" class="text-red-400 text-xs mt-1 block">{{ form.errors.password }}</span>
+                <span v-if="form.errors.password" class="text-rose-400 text-xs mt-1 block">{{ form.errors.password }}</span>
               </div>
 
-              <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center justify-between text-xs pt-1">
                 <label class="inline-flex items-center gap-2 text-slate-400 cursor-pointer">
-                  <input type="checkbox" v-model="form.remember" class="rounded border-slate-700 bg-slate-900 text-red-600 focus:ring-0">
+                  <input type="checkbox" v-model="form.remember" class="rounded border-slate-700 bg-slate-950 text-[#2563eb] focus:ring-0">
                   <span>Ingat saya</span>
                 </label>
-                <Link href="/forgot-password" class="text-red-400 hover:underline">
-                  Lupa password?
+                <Link href="/forgot-password" class="text-blue-400 hover:underline">
+                  Lupa kata sandi?
                 </Link>
               </div>
 
               <button 
                 type="submit" 
                 :disabled="form.processing"
-                class="w-full py-3.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold rounded-xl shadow-lg transition uppercase tracking-wider text-xs flex items-center justify-center gap-2"
+                class="w-full py-2.5 mt-2 bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-semibold rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
               >
                 <svg v-if="form.processing" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -113,6 +130,24 @@
                 </svg>
                 <span>{{ form.processing ? 'Memproses...' : 'Masuk' }}</span>
               </button>
+
+              <!-- Divider -->
+              <div class="relative flex py-2 items-center">
+                <div class="flex-grow border-t border-slate-800"></div>
+                <span class="flex-shrink mx-3 text-slate-500 text-xs uppercase font-medium">Atau</span>
+                <div class="flex-grow border-t border-slate-800"></div>
+              </div>
+
+              <!-- Tombol Keycloak SSO -->
+              <a 
+                href="/auth/keycloak/redirect" 
+                class="w-full py-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 hover:border-blue-500 text-slate-200 font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center justify-center gap-2.5 group"
+              >
+                <svg class="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                <span>Masuk dengan Keycloak SSO</span>
+              </a>
             </form>
           </div>
         </div>

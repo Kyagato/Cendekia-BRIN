@@ -57,6 +57,6 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        color: '#dc2626', // BRIN Crimson Red progress bar
+        color: '#2563eb', // MojoPedia Digital Governance Primary Blue
     },
 });

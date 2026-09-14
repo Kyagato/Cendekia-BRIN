@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Support\Facades\Event::listen(
+            \SocialiteProviders\Manager\SocialiteWasCalled::class,
+            \SocialiteProviders\Keycloak\KeycloakExtendSocialite::class.'@handle'
+        );
         // ============================================================
         // GATES — Otorisasi Berbasis Role untuk MojoPedia
         // ============================================================

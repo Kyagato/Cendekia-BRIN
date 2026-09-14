@@ -16,17 +16,53 @@ export default {
         extend: {
             colors: {
                 primary: {
-                    50: '#fef2f2',
-                    100: '#fee2e2',
-                    200: '#fecaca',
-                    300: '#fca5a5',
-                    400: '#f87171',
-                    500: '#ef4444',
-                    600: '#dc2626',
-                    700: '#b91c1c',
-                    800: '#991b1b',
-                    900: '#7f1d1d',
-                    950: '#450a0a'
+                    50: '#eff6ff',
+                    100: '#dbeafe',
+                    200: '#bfdbfe',
+                    300: '#93c5fd',
+                    400: '#60a5fa',
+                    500: '#3b82f6',
+                    600: '#2563eb', // Primary Vivid
+                    700: '#1d4ed8',
+                    800: '#1e40af', // Secondary Deep
+                    900: '#1e3a8a', // Hero Deep
+                    950: '#0f172a'  // Hero Dark
+                },
+                simpan: {
+                    surface: '#f8f9ff',
+                    'surface-dim': '#cbdbf5',
+                    'surface-container-lowest': '#ffffff',
+                    'surface-container-low': '#eff4ff',
+                    'surface-container': '#e5eeff',
+                    'surface-container-high': '#dce9ff',
+                    'surface-container-highest': '#d3e4fe',
+                    'on-surface': '#0b1c30',
+                    'on-surface-variant': '#434655',
+                    outline: '#737686',
+                    'outline-variant': '#c3c6d7',
+                    primary: '#004ac6',
+                    'primary-container': '#2563eb',
+                    secondary: '#1e40af',
+                    'hero-dark': '#0f172a',
+                    'hero-deep': '#1e3a8a',
+                    'hero-vivid': '#2563eb',
+                    canvas: '#f8fafc',
+                    subtle: '#f1f5f9',
+                    card: '#ffffff',
+                    border: '#e2e8f0',
+                    'text-primary': '#0f172a',
+                    'text-secondary': '#475569',
+                    'text-muted': '#94a3b8',
+                    'tag-teks-bg': '#eff6ff',
+                    'tag-teks': '#2563eb',
+                    'tag-video-bg': '#fef2f2',
+                    'tag-video': '#dc2626',
+                    'tag-audio-bg': '#f0fdf4',
+                    'tag-audio': '#16a34a',
+                    'tag-gambar-bg': '#fefce8',
+                    'tag-gambar': '#ca8a04',
+                    'badge-neutral-bg': '#f1f5f9',
+                    'badge-neutral': '#475569',
                 },
                 secondary: {
                     50: '#f8fafc',
@@ -43,7 +79,7 @@ export default {
                 }
             },
             fontFamily: {
-                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['"Plus Jakarta Sans"', 'Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
             },
             animation: {
                 'fade-in': 'fadeIn 0.5s ease-out',

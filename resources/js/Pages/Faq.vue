@@ -1,63 +1,67 @@
 <template>
   <PublicLayout>
     <!-- Header -->
-    <section class="py-16 bg-gradient-to-br from-slate-900 via-red-950 to-slate-900 text-center">
-      <div class="container mx-auto px-4">
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow">Pertanyaan yang Sering Diajukan</h1>
-        <p class="text-xl text-white/80 max-w-2xl mx-auto">Temukan jawaban cepat untuk pertanyaan umum seputar MojoPedia</p>
+    <section class="relative py-14 bg-[#1e3a8a] text-white overflow-hidden">
+
+      <div class="container mx-auto px-4 relative z-10 text-center">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">Pertanyaan yang Sering Diajukan (FAQ)</h1>
+        <p class="text-base text-blue-100 max-w-2xl mx-auto">Panduan operasional, tata kelola, dan jawaban atas pertanyaan umum seputar MojoPedia</p>
       </div>
     </section>
 
-    <section class="py-12 container mx-auto px-4 -mt-12 relative z-10">
+    <section class="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Search Bar -->
-      <div class="max-w-2xl mx-auto mb-16">
-        <div class="glass bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-2 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 flex items-center">
-          <div class="pl-4 text-slate-500">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      <div class="max-w-2xl mx-auto mb-12">
+        <div class="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-[#e2e8f0] dark:border-slate-800 p-1.5 flex items-center focus-within:ring-2 focus-within:ring-[#2563eb] transition-all">
+          <div class="pl-3.5 pr-2 text-[#94a3b8]">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           </div>
-          <input v-model="searchFaq" type="text" placeholder="Cari pertanyaan Anda di sini..." class="w-full bg-transparent border-none focus:ring-0 text-slate-800 dark:text-slate-200 px-4 py-3 text-lg placeholder-gray-400">
+          <input v-model="searchFaq" type="text" placeholder="Ketik kata kunci pertanyaan..." class="w-full bg-transparent border-none text-[#0f172a] dark:text-slate-100 px-2 py-2 text-sm focus:outline-none focus:ring-0 placeholder-[#94a3b8]">
         </div>
       </div>
 
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-3xl mx-auto">
         <div v-if="faqs && Object.keys(faqs).length > 0">
-          <div v-for="(items, kategori) in faqs" :key="kategori" class="mb-12">
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-6 border-b border-slate-200 dark:border-slate-700 pb-2">{{ kategori }}</h2>
+          <div v-for="(items, kategori) in faqs" :key="kategori" class="mb-10">
+            <div class="flex items-center gap-2 mb-4 pb-2 border-b border-[#e2e8f0] dark:border-slate-800">
+              <div class="w-1.5 h-5 bg-[#2563eb] rounded-full"></div>
+              <h2 class="text-lg font-bold text-[#0f172a] dark:text-white">{{ kategori }}</h2>
+            </div>
 
-            <div class="space-y-4">
+            <div class="space-y-3">
               <div 
                 v-for="faq in items" 
-                :key="faq.id"
+                :key="faq.id" 
                 v-show="isFaqVisible(faq)"
-                class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden transition-all duration-200"
+                class="bg-white dark:bg-slate-900 rounded-lg border border-[#e2e8f0] dark:border-slate-800 overflow-hidden transition-all card-hover"
               >
-                <button @click="toggleFaq(faq.id)" class="w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none">
-                  <span class="font-bold text-lg text-slate-800 dark:text-slate-100 pr-4" :class="openFaqs[faq.id] ? 'text-red-500' : ''">{{ faq.pertanyaan }}</span>
-                  <svg class="w-6 h-6 text-slate-500 transform transition-transform duration-200 shrink-0" :class="openFaqs[faq.id] ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button @click="toggleFaq(faq.id)" class="w-full px-5 py-4 text-left flex justify-between items-center focus:outline-none hover:bg-[#eff6ff]/50 dark:hover:bg-slate-800 transition-colors">
+                  <span class="font-semibold text-sm sm:text-base text-[#0f172a] dark:text-slate-100 pr-4" :class="openFaqs[faq.id] ? 'text-[#2563eb] dark:text-blue-400' : ''">{{ faq.pertanyaan }}</span>
+                  <svg class="w-5 h-5 text-[#94a3b8] transform transition-transform duration-200 shrink-0" :class="openFaqs[faq.id] ? 'rotate-180 text-[#2563eb]' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <div v-if="openFaqs[faq.id]" class="px-6 pb-5 text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-700 pt-4 mt-2 whitespace-pre-line">
+                <div v-if="openFaqs[faq.id]" class="px-5 pb-5 text-[#475569] dark:text-slate-300 text-sm leading-relaxed border-t border-[#f1f5f9] dark:border-slate-800 pt-3 whitespace-pre-line">
                   {{ faq.jawaban }}
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div v-else class="text-center py-12 text-slate-500 dark:text-slate-400">
-          Belum ada FAQ yang tersedia.
+        <div v-else class="text-center py-12 text-[#94a3b8] text-sm">
+          Belum ada data pertanyaan untuk kategori ini.
         </div>
       </div>
     </section>
 
     <!-- Support Section -->
-    <section class="py-12 bg-slate-950/50">
-      <div class="container mx-auto px-4 text-center max-w-2xl">
-        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-4">Masih punya pertanyaan?</h3>
-        <p class="text-slate-600 dark:text-slate-400 mb-8">Tim dukungan kami siap membantu Anda menyelesaikan kendala atau pertanyaan yang tidak ada di daftar FAQ.</p>
-        <a href="mailto:support@simpanbrin.go.id" class="inline-flex items-center gap-2 bg-white dark:bg-slate-800 text-red-500 font-bold px-8 py-3 rounded-xl shadow-md border border-slate-100 dark:border-slate-700 hover:shadow-lg transition">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-          Hubungi Support
+    <section class="py-12 bg-[#f1f5f9]/60 dark:bg-slate-900/60 border-t border-[#e2e8f0] dark:border-slate-800">
+      <div class="container mx-auto px-4 text-center max-w-xl">
+        <h3 class="text-xl font-bold text-[#0f172a] dark:text-white mb-2">Butuh Bantuan Lebih Lanjut?</h3>
+        <p class="text-[#475569] dark:text-slate-400 text-xs sm:text-sm mb-6">Tim helpdesk MojoPedia siap membantu kendala teknis atau pengunggahan berkas.</p>
+        <a href="mailto:diskominfo@mojokertokab.go.id" class="inline-flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition shadow-sm">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+          Hubungi Helpdesk MojoPedia
         </a>
       </div>
     </section>
