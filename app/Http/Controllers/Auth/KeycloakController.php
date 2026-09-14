@@ -73,18 +73,39 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                 ->orWhere('email', $keycloakUser->getEmail())
                 ->first();
 
+            // Ekstrak role dari Keycloak (realm_access.roles atau roles)
+            $rawUser = $keycloakUser->getRaw();
+            $kcRoles = $rawUser['realm_access']['roles'] ?? ($rawUser['roles'] ?? []);
+
+            $assignedRole = null;
+            if (in_array('Super Admin', $kcRoles) || in_array('super_admin', $kcRoles)) {
+                $assignedRole = 'Super Admin';
+            } elseif (in_array('Admin Pusat', $kcRoles) || in_array('admin_pusat', $kcRoles)) {
+                $assignedRole = 'Admin Pusat';
+            } elseif (in_array('Admin IPPD', $kcRoles) || in_array('admin_ippd', $kcRoles)) {
+                $assignedRole = 'Admin IPPD';
+            } elseif (in_array('Moderator', $kcRoles) || in_array('moderator', $kcRoles)) {
+                $assignedRole = 'Moderator';
+            } elseif (in_array('Analisis Pengetahuan', $kcRoles) || in_array('analisis_pengetahuan', $kcRoles)) {
+                $assignedRole = 'Analisis Pengetahuan';
+            }
+
             if ($user) {
-                $user->update([
+                $updateData = [
                     'keycloak_id' => $keycloakUser->getId(),
                     'name' => $keycloakUser->getName() ?? $user->name,
                     'email_verified_at' => $user->email_verified_at ?? now(),
-                ]);
+                ];
+                if ($assignedRole) {
+                    $updateData['role'] = $assignedRole;
+                }
+                $user->update($updateData);
             } else {
                 $user = User::create([
                     'name' => $keycloakUser->getName() ?? $keycloakUser->getNickname() ?? 'Keycloak User',
                     'email' => $keycloakUser->getEmail(),
                     'keycloak_id' => $keycloakUser->getId(),
-                    'role' => 'Anggota',
+                    'role' => $assignedRole ?? 'Anggota',
                     'email_verified_at' => now(),
                 ]);
             }

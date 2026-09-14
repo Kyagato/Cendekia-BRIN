@@ -1,0 +1,274 @@
+/* ==========================================================================
+   MojoPedia Custom Keycloak Login Theme
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* --- Page Background --- */
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 50%, #1e293b 100%) !important;
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    color: #1e293b !important;
+}
+
+/* --- Container Alignment --- */
+#kc-container {
+    width: 100% !important;
+    max-width: 460px !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+}
+
+#kc-container-wrapper {
+    width: 100% !important;
+}
+
+/* --- Brand Header / Logo --- */
+#kc-header {
+    text-align: center !important;
+    margin-bottom: 24px !important;
+}
+
+#kc-header-wrapper {
+    font-size: 32px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em !important;
+    color: #ffffff !important;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+#kc-header-wrapper::before {
+    content: "MojoPedia" !important;
+}
+
+/* Hide default Keycloak header text if replaced */
+#kc-header-wrapper {
+    font-size: 0 !important;
+}
+#kc-header-wrapper::before {
+    font-size: 32px !important;
+}
+
+/* --- Login Card Container --- */
+.card-pf, #kc-content {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+    padding: 36px 32px !important;
+    margin: 0 auto !important;
+}
+
+/* --- Page Title Inside Card --- */
+#kc-page-title {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-align: center !important;
+    margin-top: 0 !important;
+    margin-bottom: 24px !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* --- Form Controls & Labels --- */
+.form-group {
+    margin-bottom: 20px !important;
+}
+
+label, .control-label {
+    display: block !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+}
+
+.form-control, input[type="text"], input[type="password"], input[type="email"] {
+    width: 100% !important;
+    height: 44px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    font-family: inherit !important;
+    color: #0f172a !important;
+    background-color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.form-control:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+    background-color: #ffffff !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15) !important;
+    outline: none !important;
+}
+
+/* --- Buttons --- */
+.btn-primary, #kc-login, input[type="submit"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 46px !important;
+    background-color: #dc2626 !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-family: inherit !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2), 0 2px 4px -1px rgba(220, 38, 38, 0.1) !important;
+}
+
+.btn-primary:hover, #kc-login:hover, input[type="submit"]:hover {
+    background-color: #b91c1c !important;
+    box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-primary:active, #kc-login:active, input[type="submit"]:active {
+    transform: translateY(0) !important;
+    background-color: #991b1b !important;
+}
+
+/* --- Checkbox & Links Row --- */
+#kc-form-options {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 24px !important;
+    font-size: 13px !important;
+}
+
+.checkbox label {
+    text-transform: none !important;
+    font-weight: 500 !important;
+    color: #475569 !important;
+    cursor: pointer !important;
+}
+
+/* --- Links Styling --- */
+a, #kc-registration a, #kc-form-options a {
+    color: #dc2626 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: color 0.15s ease !important;
+}
+
+a:hover, #kc-registration a:hover, #kc-form-options a:hover {
+    color: #991b1b !important;
+    text-decoration: underline !important;
+}
+
+/* --- Registration Prompt Footer --- */
+#kc-registration {
+    margin-top: 24px !important;
+    padding-top: 20px !important;
+    border-top: 1px solid #e2e8f0 !important;
+    text-align: center !important;
+    font-size: 13.5px !important;
+    color: #64748b !important;
+}
+
+/* --- Alert Messages (Errors / Info) --- */
+.alert, .alert-error, .alert-warning, .alert-success, .alert-info {
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.alert-error {
+    background-color: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+    color: #991b1b !important;
+}
+
+.alert-warning {
+    background-color: #fffbeb !important;
+    border: 1px solid #fde68a !important;
+    color: #92400e !important;
+}
+
+.alert-success {
+    background-color: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    color: #166534 !important;
+}
+
+.alert-info {
+    background-color: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #1e40af !important;
+}
+
+/* --- Social Login Providers --- */
+#kc-social-providers {
+    margin-top: 20px !important;
+}
+
+#kc-social-providers ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+
+.zocial, #kc-social-providers a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 42px !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    color: #334155 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.zocial:hover, #kc-social-providers a:hover {
+    background-color: #f8fafc !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+    text-decoration: none !important;
+}
+
+/* --- Footer Clean Up --- */
+#kc-info-wrapper {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-top: 16px !important;
+    font-size: 13px !important;
+    color: #64748b !important;
+    text-align: center !important;
+}
