@@ -3,8 +3,18 @@
         <div class="flex justify-between h-16 items-center">
             <!-- Left side: Logo -->
             <div class="flex-shrink-0 flex items-center">
-                <a href="/" class="flex items-center gap-2 group">
-                    <span class="text-2xl font-bold tracking-tight gradient-text group-hover:opacity-80 transition">MojoPedia</span>
+                <a href="/" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <img src="/images/logo-mojokerto-nav.png" alt="Logo Kabupaten Mojokerto" class="w-full h-full object-contain drop-shadow-sm" />
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                            Mojo<span class="text-primary-600">Pedia</span>
+                        </span>
+                        <span class="text-[10px] font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">
+                            Digital Mojokerto System
+                        </span>
+                    </div>
                 </a>
             </div>
 

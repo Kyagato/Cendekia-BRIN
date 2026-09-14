@@ -7,7 +7,7 @@
         <!-- Brand Pill Badge -->
         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#dbeafe] text-xs font-semibold tracking-wide uppercase mb-6 shadow-sm">
           <span class="w-2 h-2 rounded-full bg-[#60a5fa] animate-pulse"></span>
-          MojoPedia • Digital Governance & Knowledge System
+          MojoPedia • Digital Mojokerto System
         </div>
 
         <!-- Hero Headline -->

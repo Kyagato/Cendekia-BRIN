@@ -18,7 +18,7 @@
           </ol>
         </nav>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">Tentang MojoPedia</h1>
-        <p class="text-base text-blue-100 max-w-2xl mx-auto">Sistem Manajemen Pengetahuan — Digital Governance System</p>
+        <p class="text-base text-blue-100 max-w-2xl mx-auto">Sistem Manajemen Pengetahuan — Digital Mojokerto System</p>
       </div>
     </section>
 
