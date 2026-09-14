@@ -4,11 +4,6 @@
     <section class="relative bg-[#1e3a8a] text-white pt-16 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
 
       <div class="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 text-center">
-        <!-- Brand Pill Badge -->
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#dbeafe] text-xs font-semibold tracking-wide uppercase mb-6 shadow-sm">
-          <span class="w-2 h-2 rounded-full bg-[#60a5fa] animate-pulse"></span>
-          MojoPedia • Digital Mojokerto System
-        </div>
 
         <!-- Hero Headline -->
         <h1 class="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-white tracking-[-0.02em] leading-tight lg:leading-[52px] mb-4">
@@ -80,16 +75,19 @@
         <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-blue-100">
           <span class="text-blue-200 font-medium">Format:</span>
           <a href="/cari?tipe=Teks" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-blue-300"></span> Dokumen Teks
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-300"></span> Teks
           </a>
           <a href="/cari?tipe=Video" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Video Kajian
+            <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Video
+          </a>
+          <a href="/cari?tipe=Audio" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Audio
           </a>
           <a href="/cari?tipe=Gambar" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Infografis
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Gambar
           </a>
           <a href="/kategori" class="px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white font-semibold transition">
-            Lihat Semua Direktori &rarr;
+            Lihat Semua Direktori
           </a>
         </div>
       </div>
