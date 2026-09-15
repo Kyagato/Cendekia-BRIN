@@ -12,6 +12,7 @@
     @endauth
 
     <title>@yield('title', 'Admin - MojoPedia')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-mojopedia.png') }}">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -26,6 +27,7 @@
             <div class="flex items-center gap-8">
                 <!-- Logo -->
                 <a href="{{ url('/') }}" class="flex items-center gap-2 group shrink-0">
+                    <img src="{{ asset('images/logo-mojopedia.png') }}" alt="MojoPedia" class="w-8 h-8 object-contain" />
                     <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">MojoPedia</span>
                 </a>
 

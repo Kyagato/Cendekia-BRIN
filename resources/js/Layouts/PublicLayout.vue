@@ -8,7 +8,7 @@
           <Link href="/" class="flex items-center gap-3 group">
             <!-- Institutional Emblem / Icon -->
             <div class="w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <img src="/images/logo-mojokerto-nav.png" alt="Logo Kabupaten Mojokerto" class="w-full h-full object-contain drop-shadow-sm" />
+              <img src="/images/logo-mojopedia.png" alt="Logo MojoPedia" class="w-full h-full object-contain drop-shadow-sm" />
             </div>
             <div class="flex flex-col">
               <span class="text-xl font-extrabold tracking-tight text-[#0f172a] dark:text-white leading-tight">

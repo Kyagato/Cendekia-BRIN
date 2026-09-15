@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Buat Password Baru — {{ config('app.name', 'MojoPedia') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-mojopedia.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-slate-50 relative">
@@ -22,7 +23,10 @@
 
                     {{-- Logo --}}
                     <div class="relative z-10">
-                        <a href="/" class="inline-flex items-center gap-2 group">
+                        <a href="/" class="inline-flex items-center gap-3 group">
+                            <div class="w-10 h-10 flex items-center justify-center">
+                                <img src="{{ asset('images/logo-mojopedia.png') }}" alt="Logo MojoPedia" class="w-full h-full object-contain drop-shadow-sm" />
+                            </div>
                             <span class="text-2xl font-bold text-red-600 tracking-tight">MojoPedia</span>
                         </a>
                     </div>

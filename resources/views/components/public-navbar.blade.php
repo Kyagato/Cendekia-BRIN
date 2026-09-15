@@ -5,7 +5,7 @@
             <div class="flex-shrink-0 flex items-center">
                 <a href="/" class="flex items-center gap-3 group">
                     <div class="w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform">
-                        <img src="/images/logo-mojokerto-nav.png" alt="Logo Kabupaten Mojokerto" class="w-full h-full object-contain drop-shadow-sm" />
+                        <img src="{{ asset('images/logo-mojopedia.png') }}" alt="Logo MojoPedia" class="w-full h-full object-contain drop-shadow-sm" />
                     </div>
                     <div class="flex flex-col">
                         <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">

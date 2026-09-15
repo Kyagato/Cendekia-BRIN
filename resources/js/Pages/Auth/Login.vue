@@ -8,18 +8,16 @@
 
           <div class="relative z-10">
             <Link href="/" class="inline-flex items-center gap-3 group">
-              <div class="w-9 h-9 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-sm">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
+              <div class="w-10 h-10 flex items-center justify-center">
+                <img src="/images/logo-mojopedia.png" alt="Logo MojoPedia" class="w-full h-full object-contain drop-shadow-sm" />
               </div>
               <span class="text-xl font-extrabold tracking-tight text-white">Mojo<span class="text-[#93c5fd]">Pedia</span></span>
             </Link>
           </div>
 
           <div class="relative z-10 text-center space-y-4">
-            <div class="w-16 h-16 bg-white/10 text-white rounded-xl flex items-center justify-center mx-auto border border-white/20 shadow-sm backdrop-blur-sm">
-              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+            <div class="w-20 h-20 flex items-center justify-center mx-auto drop-shadow-md">
+              <img src="/images/logo-mojopedia.png" alt="Logo MojoPedia" class="w-full h-full object-contain" />
             </div>
             <h3 class="text-xl font-bold text-white tracking-tight">Sistem Manajemen Pengetahuan</h3>
             <p class="text-xs text-blue-100 max-w-sm mx-auto leading-relaxed">Platform digital terpadu untuk mengelola, berbagi, dan menemukan aset pengetahuan pemerintahan strategis.</p>
