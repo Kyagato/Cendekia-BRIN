@@ -6,7 +6,7 @@
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
     <li>
-        <a href="{{ route('knowledge.index') }}" class="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition">Pengetahuan</a>
+        <a href="{{ route('knowledge.index') }}" class="text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Pengetahuan</a>
     </li>
     <li>
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
@@ -29,12 +29,12 @@
                 </a>
                 <input type="hidden" name="status" id="knowledge_status" value="Diajukan">
 
-                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Draft'" class="px-5 py-2.5 border-2 border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Draft'" class="px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg text-sm font-medium transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
                     Simpan sebagai Draft
                 </button>
 
-                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Diajukan'" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
+                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Diajukan'" class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                     Simpan & Ajukan
                 </button>
@@ -67,7 +67,7 @@
                     {{-- Judul --}}
                     <div>
                         <label for="judul" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Judul</label>
-                        <input type="text" id="judul" name="judul" value="{{ old('judul') }}" placeholder="Masukkan judul pengetahuan" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" required>
+                        <input type="text" id="judul" name="judul" value="{{ old('judul') }}" placeholder="Masukkan judul pengetahuan" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-primary-600 focus:border-primary-600 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" required>
                         @error('judul') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -76,19 +76,19 @@
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">Format</label>
                         <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Gambar" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <input type="radio" name="tipe" value="Gambar" x-model="formatType" class="text-primary-600 focus:ring-primary-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
                                 <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Gambar</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Video" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <input type="radio" name="tipe" value="Video" x-model="formatType" class="text-primary-600 focus:ring-primary-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
                                 <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Video</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Audio" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <input type="radio" name="tipe" value="Audio" x-model="formatType" class="text-primary-600 focus:ring-primary-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
                                 <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Audio</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer group">
-                                <input type="radio" name="tipe" value="Teks" x-model="formatType" class="text-red-600 focus:ring-red-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
+                                <input type="radio" name="tipe" value="Teks" x-model="formatType" class="text-primary-600 focus:ring-primary-600 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 w-4 h-4" required>
                                 <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition">Text</span>
                             </label>
                         </div>
@@ -106,7 +106,7 @@
                                         <svg x-show="!imgFileName" class="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
                                         <svg x-cloak x-show="imgFileName" class="mx-auto h-10 w-10 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                         <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
-                                            <label for="gambar_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300">
+                                            <label for="gambar_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300">
                                                 <span x-show="!imgFileName">Pilih file gambar</span>
                                                 <span x-cloak x-show="imgFileName" x-text="imgFileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[250px] inline-block"></span>
                                                 <input id="gambar_upload" name="file_upload" type="file" accept="image/*" class="sr-only" @change="imgFileName = $event.target.files[0] ? $event.target.files[0].name : ''">
@@ -129,7 +129,7 @@
                                         <svg x-show="!audioFileName" class="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" /></svg>
                                         <svg x-cloak x-show="audioFileName" class="mx-auto h-10 w-10 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                         <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
-                                            <label for="audio_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300">
+                                            <label for="audio_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300">
                                                 <span x-show="!audioFileName">Pilih file audio</span>
                                                 <span x-cloak x-show="audioFileName" x-text="audioFileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[250px] inline-block"></span>
                                                 <input id="audio_upload" name="audio_file" type="file" accept="audio/*" class="sr-only" @change="audioFileName = $event.target.files[0] ? $event.target.files[0].name : ''">
@@ -149,7 +149,7 @@
                                 <label for="url_teks" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">
                                     Url <span x-text="formatType"></span>
                                 </label>
-                                <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks') }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
+                                <input type="url" id="url_teks" name="url_teks" value="{{ old('url_teks') }}" :placeholder="'Masukkan url ' + formatType" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-primary-600 focus:border-primary-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                                 @error('url_teks') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                         </template>
@@ -159,12 +159,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="penulis" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Penulis</label>
-                            <input type="text" id="penulis" name="penulis" value="{{ old('penulis', Auth::user()->name) }}" placeholder="Masukkan nama penulis" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" required>
+                            <input type="text" id="penulis" name="penulis" value="{{ old('penulis', Auth::user()->name) }}" placeholder="Masukkan nama penulis" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500" required>
                             @error('penulis') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label for="kolaborator" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Kolaborator</label>
-                            <input type="text" id="kolaborator" name="kolaborator" value="{{ old('kolaborator') }}" placeholder="Masukkan nama kolaborator" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
+                            <input type="text" id="kolaborator" name="kolaborator" value="{{ old('kolaborator') }}" placeholder="Masukkan nama kolaborator" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                             @error('kolaborator') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                         <div>
                             <label for="category_id" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Kategori</label>
                             <div class="relative">
-                                <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100" required>
+                                <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100" required>
                                     <option value="" disabled selected>Pilih Kategori</option>
                                     @foreach ($categories as $kategori)
                                         <option value="{{ $kategori->id }}" {{ old('category_id') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
@@ -204,14 +204,14 @@
                                     <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
                             </div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Klik menu <a href="{{ route('category.index') }}" class="text-red-600 dark:text-red-400 hover:underline">Kategori</a> untuk melihat detil kategori.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Klik menu <a href="{{ route('category.index') }}" class="text-primary-600 dark:text-primary-400 hover:underline">Kategori</a> untuk melihat detil kategori.</p>
                             @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         {{-- Tanggal Terbit --}}
                         <div>
                             <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Tanggal Terbit</label>
-                            <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit') }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300">
+                            <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit') }}" class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300">
                         </div>
                     </div>
 
@@ -237,11 +237,11 @@
                         }">
                             <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Tag</label>
                             <input type="hidden" name="tags" :value="hiddenValue">
-                            <div class="flex flex-wrap items-center gap-2 min-h-[48px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-red-600 focus-within:border-red-600 transition">
+                            <div class="flex flex-wrap items-center gap-2 min-h-[48px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-primary-600 focus-within:border-primary-600 transition">
                                 <template x-for="(tag, index) in tags" :key="index">
-                                    <span class="inline-flex items-center gap-1.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-semibold pl-3 pr-1.5 py-1.5 rounded-full">
+                                    <span class="inline-flex items-center gap-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-semibold pl-3 pr-1.5 py-1.5 rounded-full">
                                         <span x-text="tag"></span>
-                                        <button type="button" @click="removeTag(index)" class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-red-200 dark:bg-red-800 hover:bg-red-400 dark:hover:bg-red-600 text-red-700 dark:text-red-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
+                                        <button type="button" @click="removeTag(index)" class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-primary-200 dark:bg-primary-800 hover:bg-primary-400 dark:hover:bg-primary-600 text-primary-700 dark:text-primary-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
                                             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </span>
@@ -259,7 +259,7 @@
                         <div>
                             <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Status Akses</label>
                             <div class="relative">
-                                <select name="status_akses" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-red-600 focus:border-red-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                                <select name="status_akses" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
                                     <option value="" disabled selected>Pilih status</option>
                                     <option value="public" {{ old('status_akses') == 'public' ? 'selected' : '' }}>Publik</option>
                                     <option value="private" {{ old('status_akses') == 'private' ? 'selected' : '' }}>Private</option>
@@ -274,7 +274,7 @@
                     {{-- Unggulan --}}
                     <div class="flex items-center gap-3 py-3 border-b border-slate-100 dark:border-slate-700">
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="unggulan" value="1" class="w-5 h-5 text-red-600 bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded focus:ring-red-600 focus:ring-2" {{ old('unggulan') ? 'checked' : '' }}>
+                            <input type="checkbox" name="unggulan" value="1" class="w-5 h-5 text-primary-600 bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-600 rounded focus:ring-primary-600 focus:ring-2" {{ old('unggulan') ? 'checked' : '' }}>
                             <span class="ml-2 text-sm font-bold text-slate-800 dark:text-slate-200">Jadikan Pengetahuan Unggulan</span>
                         </label>
                     </div>
@@ -291,7 +291,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
-                                    <label for="file_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
+                                    <label for="file_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                                         <span x-show="!fileName">Unggah file thumbnail</span>
                                         <span x-cloak x-show="fileName" x-text="fileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[200px] inline-block"></span>
                                         <input id="file_upload" name="file_upload" type="file" class="sr-only" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''" :disabled="formatType === 'Gambar'">

@@ -45,7 +45,7 @@
                     <a href="{{ route('admin.statistik') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.statistik')
-                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Statistik
                     </a>
@@ -56,7 +56,7 @@
                     <a href="{{ route('knowledge.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('knowledge.*')
-                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Pengetahuan
                     </a>
@@ -68,7 +68,7 @@
                     <a href="{{ route('validasi.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('validasi.*')
-                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Validasi
                     </a>
@@ -80,7 +80,7 @@
                     <a href="{{ route('moderator.forum.approval') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('moderator.forum.*')
-                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Atur Forum
                     </a>
@@ -92,7 +92,7 @@
                     <a href="{{ route('admin.faq.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.faq.*')
-                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Edit FAQs
                     </a>
@@ -104,7 +104,7 @@
                     <a href="{{ route('admin.users.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.users.*')
-                                  ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Pengguna
                     </a>
@@ -199,14 +199,14 @@
         @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
         <a href="{{ route('admin.statistik') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('admin.statistik') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Statistik</a>
+                  {{ request()->routeIs('admin.statistik') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Statistik</a>
         @endif
 
         {{-- Pengetahuan: semua user login --}}
         @if(auth()->check())
         <a href="{{ route('knowledge.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('knowledge.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
+                  {{ request()->routeIs('knowledge.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
         @endif
 
 
@@ -214,26 +214,26 @@
         @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan'])))
         <a href="{{ route('validasi.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('validasi.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Validasi</a>
+                  {{ request()->routeIs('validasi.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Validasi</a>
         @endif
 
 
         @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin IPPD', 'Moderator'])))
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('moderator.forum.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
+                  {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
         @endif
 
         @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
         <a href="{{ route('admin.faq.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('admin.faq.*') ? 'bg-red-50 dark:bg-slate-700 text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Edit FAQs</a>
+                  {{ request()->routeIs('admin.faq.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Edit FAQs</a>
         @endif
 
         @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
         <a href="{{ route('admin.users.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('admin.users.*') ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengguna</a>
+                  {{ request()->routeIs('admin.users.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengguna</a>
         @endif
     </div>
     @endif

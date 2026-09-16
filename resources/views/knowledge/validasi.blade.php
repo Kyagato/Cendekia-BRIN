@@ -6,7 +6,7 @@
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
     <li>
-        <a href="{{ route('validasi.index') }}" class="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition">Validasi</a>
+        <a href="{{ route('validasi.index') }}" class="text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Validasi</a>
     </li>
     <li>
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
@@ -51,7 +51,7 @@
                     <div>
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Judul Artikel <span class="text-red-500">*</span></label>
                         <input type="text" name="judul" value="{{ old('judul', $knowledge->judul) }}" required
-                               class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-semibold text-sm focus:ring-2 focus:ring-red-600 focus:border-red-600 transition">
+                               class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-semibold text-sm focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition">
                     </div>
 
                     {{-- Format / Tipe --}}
@@ -60,7 +60,7 @@
                         <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
                             @foreach(['Teks', 'Gambar', 'Video', 'Audio'] as $fmt)
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="tipe" value="{{ $fmt }}" {{ old('tipe', $knowledge->tipe) === $fmt ? 'checked' : '' }} class="text-red-600 focus:ring-red-600 w-4 h-4">
+                                <input type="radio" name="tipe" value="{{ $fmt }}" {{ old('tipe', $knowledge->tipe) === $fmt ? 'checked' : '' }} class="text-primary-600 focus:ring-primary-600 w-4 h-4">
                                 <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ $fmt }}</span>
                             </label>
                             @endforeach
@@ -71,7 +71,7 @@
                     <div>
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">URL {{ $knowledge->tipe }}</label>
                         <input type="text" name="url_teks" value="{{ old('url_teks', $knowledge->url_teks) }}" placeholder="https://..."
-                               class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-red-600 focus:border-red-600 transition">
+                               class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition">
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pastikan URL dapat diakses dengan baik</p>
                     </div>
 
@@ -80,12 +80,12 @@
                         <div>
                             <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Penulis</label>
                             <input type="text" name="penulis" value="{{ old('penulis', $knowledge->penulis) }}" placeholder="Nama penulis..."
-                                   class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-red-600 focus:border-red-600 transition">
+                                   class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Kolaborator</label>
                             <input type="text" name="kolaborator" value="{{ old('kolaborator', $knowledge->kolaborator) }}" placeholder="Nama kolaborator..."
-                                   class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-red-600 focus:border-red-600 transition">
+                                   class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-100 font-medium focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition">
                         </div>
                     </div>
 
@@ -93,14 +93,14 @@
                     <div>
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Ringkasan</label>
                         <textarea name="deskripsi" rows="3" placeholder="Tuliskan ringkasan singkat..."
-                                  class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm leading-relaxed focus:ring-2 focus:ring-red-600 focus:border-red-600 transition resize-y">{{ old('deskripsi', $knowledge->deskripsi) }}</textarea>
+                                  class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm leading-relaxed focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition resize-y">{{ old('deskripsi', $knowledge->deskripsi) }}</textarea>
                     </div>
 
                     {{-- Detail --}}
                     <div>
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Detail Konten</label>
                         <textarea name="detail" rows="6" placeholder="Tuliskan detail konten secara lengkap..."
-                                  class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm leading-relaxed focus:ring-2 focus:ring-red-600 focus:border-red-600 transition resize-y">{{ old('detail', $knowledge->detail) }}</textarea>
+                                  class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm leading-relaxed focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition resize-y">{{ old('detail', $knowledge->detail) }}</textarea>
                     </div>
 
                     {{-- Upload Thumbnail / File --}}

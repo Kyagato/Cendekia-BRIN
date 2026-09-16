@@ -6,7 +6,7 @@
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
     <li>
-        <a href="{{ route('knowledge.index') }}" class="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500 transition">Pengetahuan</a>
+        <a href="{{ route('knowledge.index') }}" class="text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition">Pengetahuan</a>
     </li>
     <li>
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
@@ -34,7 +34,7 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 Kembali
             </a>
-            <a href="{{ route('knowledge.edit', $knowledge->id) }}" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
+            <a href="{{ route('knowledge.edit', $knowledge->id) }}" class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 Edit
             </a>
@@ -73,7 +73,7 @@
             </span>
 
             {{-- Kategori (Tanpa icon, sejajar dengan badge lainnya) --}}
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 whitespace-nowrap">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800 whitespace-nowrap">
                 {{ $knowledge->category->nama_kategori ?? '-' }}
             </span>
 
@@ -116,7 +116,7 @@
                     @if($knowledge->url_teks)
                     <div>
                         <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 mb-2 uppercase tracking-wider">URL {{ $knowledge->tipe }}</h2>
-                        <a href="{{ $knowledge->url_teks }}" target="_blank" class="inline-flex items-center gap-2 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:underline break-all">
+                        <a href="{{ $knowledge->url_teks }}" target="_blank" class="inline-flex items-center gap-2 text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline break-all">
                             <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                             {{ $knowledge->url_teks }}
                         </a>
@@ -164,15 +164,15 @@
                     {{-- Forum Diskusi Terkait --}}
                     <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-700 space-y-4 shadow-sm">
                         <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                            <svg class="w-4 h-4 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                            <svg class="w-4 h-4 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                             Diskusi Forum
                         </h3>
                         
                         @if($knowledge->threads && $knowledge->threads->count() > 0)
                             <div class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
                                 @foreach($knowledge->threads as $thread)
-                                <a href="{{ route('forum.show', $thread->id) }}" class="block p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:border-red-200 dark:hover:border-red-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
-                                    <div class="font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 hover:text-red-600 dark:hover:text-red-400 transition">{{ $thread->judul }}</div>
+                                <a href="{{ route('forum.show', $thread->id) }}" class="block p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:border-primary-200 dark:hover:border-primary-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm">
+                                    <div class="font-semibold text-slate-800 dark:text-slate-200 line-clamp-1 hover:text-primary-600 dark:hover:text-primary-400 transition">{{ $thread->judul }}</div>
                                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex justify-between">
                                         <span>Oleh: {{ $thread->user->name ?? 'Anonim' }}</span>
                                         <span>{{ $thread->created_at?->diffForHumans() }}</span>
@@ -184,7 +184,7 @@
                             <p class="text-xs text-slate-400 dark:text-slate-500">Belum ada diskusi forum terkait pengetahuan ini.</p>
                         @endif
                         
-                        <a href="{{ route('forum.create', ['knowledge_id' => $knowledge->id]) }}" class="w-full text-center block px-4 py-2.5 bg-red-50 dark:bg-slate-800 border border-red-200 dark:border-slate-700 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition">
+                        <a href="{{ route('forum.create', ['knowledge_id' => $knowledge->id]) }}" class="w-full text-center block px-4 py-2.5 bg-primary-50 dark:bg-slate-800 border border-primary-200 dark:border-slate-700 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-slate-700 rounded-lg text-sm font-semibold transition">
                             Mulai Diskusi Baru
                         </a>
                     </div>
