@@ -89,13 +89,22 @@ class HomeController extends Controller
         }
 
         if ($request->filled('q')) {
-            $query->where('judul', 'like', '%' . $request->q . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $request->q . '%');
+            $searchTerm = $request->q;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('judul', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
+            });
         }
 
-        $knowledge = $query->latest()->paginate(12);
+        $filters = $request->only(['q', 'tipe', 'kategori', 'instansi', 'label']);
+        $knowledge = $query->latest()->paginate(12)->withQueryString();
 
-        return Inertia::render('Category/Index', compact('categories', 'tags', 'knowledge'));
+        return Inertia::render('Category/Index', [
+            'categories' => $categories,
+            'tags' => $tags,
+            'knowledge' => $knowledge,
+            'filters' => $filters,
+        ]);
     }
 
     public function categoryShow($id)
