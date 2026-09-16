@@ -41,31 +41,120 @@
               />
             </div>
 
-            <!-- Tipe Select -->
-            <div class="w-full md:w-auto">
-              <select 
-                v-model="selectedTipe" 
-                class="w-full md:w-auto min-w-[150px] bg-[#f8fafc] dark:bg-slate-800 border border-[#cbd5e1] dark:border-slate-700 text-[#0f172a] dark:text-slate-100 rounded-lg text-xs sm:text-sm pl-3.5 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2563eb] transition cursor-pointer"
+            <!-- Tipe Custom Dropdown -->
+            <div class="relative w-full md:w-auto" ref="tipeDropdownRef">
+              <button 
+                type="button" 
+                @click="isTipeOpen = !isTipeOpen; isKategoriOpen = false"
+                class="relative group w-full md:w-auto min-w-[160px] flex items-center justify-between gap-3 px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-800 border border-[#cbd5e1] dark:border-slate-700 rounded-lg text-xs sm:text-sm text-left transition cursor-pointer shadow-sm overflow-hidden"
               >
-                <option value="">Semua Tipe</option>
-                <option value="Teks">Teks</option>
-                <option value="Video">Video</option>
-                <option value="Gambar">Gambar</option>
-                <option value="Audio">Audio</option>
-              </select>
+                <!-- Animated outline from left to right on hover or when open -->
+                <span 
+                  class="absolute inset-0 rounded-lg border-2 border-[#2563eb] pointer-events-none transition-[clip-path] duration-300 ease-out [clip-path:polygon(0_0,0_0,0_100%,0_100%)] group-hover:[clip-path:polygon(0_0,100%_0,100%_100%,0_100%)]"
+                  :class="{ '[clip-path:polygon(0_0,100%_0,100%_100%,0_100%)]': isTipeOpen }"
+                ></span>
+
+                <!-- Text without left icon -->
+                <span class="truncate text-[#0f172a] dark:text-slate-100 font-medium relative z-10">
+                  {{ selectedTipeLabel }}
+                </span>
+
+                <!-- Downward arrow that rotates upward when opened -->
+                <svg 
+                  class="w-4 h-4 text-[#64748b] dark:text-slate-400 transition-transform duration-300 shrink-0 relative z-10" 
+                  :class="{ 'rotate-180 text-[#2563eb] dark:text-blue-400': isTipeOpen }" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div 
+                v-show="isTipeOpen" 
+                class="absolute left-0 z-30 mt-1.5 w-full min-w-[170px] bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-[#e2e8f0] dark:border-slate-700 py-1.5 focus:outline-none"
+              >
+                <button 
+                  type="button" 
+                  @click="selectTipe('')"
+                  class="w-full text-left px-4 py-2 text-xs sm:text-sm transition flex items-center justify-between"
+                  :class="selectedTipe === '' ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-bold' : 'text-[#334155] dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>Semua Tipe</span>
+                  <svg v-if="selectedTipe === ''" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button 
+                  v-for="t in ['Teks', 'Video', 'Gambar', 'Audio']" 
+                  :key="t"
+                  type="button" 
+                  @click="selectTipe(t)"
+                  class="w-full text-left px-4 py-2 text-xs sm:text-sm transition flex items-center justify-between"
+                  :class="selectedTipe === t ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-bold' : 'text-[#334155] dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>{{ t }}</span>
+                  <svg v-if="selectedTipe === t" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+              </div>
             </div>
 
-            <!-- Kategori Select (Lebih panjang dan padding kanan lega agar tidak menabrak ikon panah) -->
-            <div class="w-full md:w-auto">
-              <select 
-                v-model="selectedKategori" 
-                class="w-full md:w-auto min-w-[240px] md:min-w-[280px] lg:min-w-[320px] max-w-full bg-[#f8fafc] dark:bg-slate-800 border border-[#cbd5e1] dark:border-slate-700 text-[#0f172a] dark:text-slate-100 rounded-lg text-xs sm:text-sm pl-3.5 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2563eb] transition cursor-pointer"
+            <!-- Kategori Custom Dropdown -->
+            <div class="relative w-full md:w-auto" ref="kategoriDropdownRef">
+              <button 
+                type="button" 
+                @click="isKategoriOpen = !isKategoriOpen; isTipeOpen = false"
+                class="relative group w-full md:w-auto min-w-[240px] md:min-w-[280px] lg:min-w-[320px] max-w-full flex items-center justify-between gap-3 px-4 py-2.5 bg-[#f8fafc] dark:bg-slate-800 border border-[#cbd5e1] dark:border-slate-700 rounded-lg text-xs sm:text-sm text-left transition cursor-pointer shadow-sm overflow-hidden"
               >
-                <option value="">Semua Kategori</option>
-                <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-                  {{ cat.nama_kategori }} ({{ cat.knowledge_count }})
-                </option>
-              </select>
+                <!-- Animated outline from left to right on hover or when open -->
+                <span 
+                  class="absolute inset-0 rounded-lg border-2 border-[#2563eb] pointer-events-none transition-[clip-path] duration-300 ease-out [clip-path:polygon(0_0,0_0,0_100%,0_100%)] group-hover:[clip-path:polygon(0_0,100%_0,100%_100%,0_100%)]"
+                  :class="{ '[clip-path:polygon(0_0,100%_0,100%_100%,0_100%)]': isKategoriOpen }"
+                ></span>
+
+                <!-- Text without left icon -->
+                <span class="truncate text-[#0f172a] dark:text-slate-100 font-medium relative z-10">
+                  {{ selectedKategoriLabel }}
+                </span>
+
+                <!-- Downward arrow that rotates upward when opened -->
+                <svg 
+                  class="w-4 h-4 text-[#64748b] dark:text-slate-400 transition-transform duration-300 shrink-0 relative z-10" 
+                  :class="{ 'rotate-180 text-[#2563eb] dark:text-blue-400': isKategoriOpen }" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div 
+                v-show="isKategoriOpen" 
+                class="absolute left-0 z-30 mt-1.5 w-full min-w-[260px] md:min-w-[320px] bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-[#e2e8f0] dark:border-slate-700 py-1.5 max-h-72 overflow-y-auto focus:outline-none"
+              >
+                <button 
+                  type="button" 
+                  @click="selectKategori('')"
+                  class="w-full text-left px-4 py-2.5 text-xs sm:text-sm transition flex items-center justify-between"
+                  :class="selectedKategori === '' ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-bold' : 'text-[#334155] dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>Semua Kategori</span>
+                  <svg v-if="selectedKategori === ''" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button 
+                  v-for="cat in categories" 
+                  :key="cat.id"
+                  type="button" 
+                  @click="selectKategori(cat.id)"
+                  class="w-full text-left px-4 py-2.5 text-xs sm:text-sm transition flex items-center justify-between"
+                  :class="String(selectedKategori) === String(cat.id) ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-bold' : 'text-[#334155] dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span class="truncate">{{ cat.nama_kategori }} ({{ cat.knowledge_count }})</span>
+                  <svg v-if="String(selectedKategori) === String(cat.id)" class="w-4 h-4 text-[#2563eb] shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -76,7 +165,7 @@
               v-if="isFiltered"
               @click="resetFilter"
               type="button"
-              class="px-4 py-2.5 border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5"
+              class="px-4 py-2.5 border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 cursor-pointer"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
               <span>Reset</span>
@@ -87,13 +176,27 @@
               @click="applyFilter" 
               :disabled="isLoading"
               type="button"
-              class="w-full md:w-auto px-6 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-75 text-white rounded-lg font-semibold text-xs sm:text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+              class="group relative overflow-hidden w-full md:w-auto px-6 py-2.5 bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] disabled:opacity-75 text-white rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer select-none"
             >
-              <svg v-if="isLoading" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+              <svg v-if="isLoading" class="animate-spin w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span>{{ isLoading ? 'Menerapkan...' : 'Terapkan Filter' }}</span>
+              
+              <!-- Loading State -->
+              <span v-if="isLoading" class="whitespace-nowrap">Menerapkan...</span>
+
+              <!-- Normal State with Hover Swap Animation -->
+              <div v-else class="relative overflow-hidden h-5 flex items-center justify-center pointer-events-none">
+                <!-- Teks Normal: Terapkan Filter -->
+                <span class="inline-block whitespace-nowrap transition-all duration-300 ease-out group-hover:translate-y-full group-hover:opacity-0">
+                  Terapkan Filter
+                </span>
+                <!-- Teks Hover: Konfirmasi (menimpa dari atas) -->
+                <span class="absolute inset-0 flex items-center justify-center whitespace-nowrap transition-all duration-300 ease-out -translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
+                  Konfirmasi
+                </span>
+              </div>
             </button>
           </div>
         </div>
@@ -114,7 +217,7 @@
         <button 
           v-if="isFiltered" 
           @click="resetFilter" 
-          class="px-4 py-2 bg-[#2563eb] text-white text-xs font-semibold rounded-lg hover:bg-[#1d4ed8] transition"
+          class="px-4 py-2 bg-[#2563eb] text-white text-xs font-semibold rounded-lg hover:bg-[#1d4ed8] transition cursor-pointer"
         >
           Tampilkan Semua Pengetahuan
         </button>
@@ -148,7 +251,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 import KnowledgeCard from '../../Components/KnowledgeCard.vue';
@@ -177,6 +280,50 @@ const selectedTipe = ref(props.filters?.tipe || '');
 const selectedKategori = ref(props.filters?.kategori || '');
 const isLoading = ref(false);
 
+const isTipeOpen = ref(false);
+const isKategoriOpen = ref(false);
+const tipeDropdownRef = ref(null);
+const kategoriDropdownRef = ref(null);
+
+const selectTipe = (val) => {
+  selectedTipe.value = val;
+  isTipeOpen.value = false;
+};
+
+const selectKategori = (val) => {
+  selectedKategori.value = val;
+  isKategoriOpen.value = false;
+};
+
+const selectedTipeLabel = computed(() => {
+  if (!selectedTipe.value) return 'Semua Tipe';
+  return selectedTipe.value;
+});
+
+const selectedKategoriLabel = computed(() => {
+  if (!selectedKategori.value) return 'Semua Kategori';
+  const found = props.categories.find(c => String(c.id) === String(selectedKategori.value));
+  return found ? `${found.nama_kategori} (${found.knowledge_count})` : 'Semua Kategori';
+});
+
+// Close dropdown on click outside
+const handleClickOutside = (event) => {
+  if (tipeDropdownRef.value && !tipeDropdownRef.value.contains(event.target)) {
+    isTipeOpen.value = false;
+  }
+  if (kategoriDropdownRef.value && !kategoriDropdownRef.value.contains(event.target)) {
+    isKategoriOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
 // Watch for filter props changes (e.g. navigation or URL changes)
 watch(() => props.filters, (newFilters) => {
   if (newFilters) {
@@ -192,6 +339,9 @@ const isFiltered = computed(() => {
 
 const applyFilter = () => {
   isLoading.value = true;
+  isTipeOpen.value = false;
+  isKategoriOpen.value = false;
+
   const params = {};
   if (searchQuery.value && searchQuery.value.trim() !== '') {
     params.q = searchQuery.value.trim();
@@ -216,7 +366,10 @@ const resetFilter = () => {
   searchQuery.value = '';
   selectedTipe.value = '';
   selectedKategori.value = '';
+  isTipeOpen.value = false;
+  isKategoriOpen.value = false;
   isLoading.value = true;
+
   router.get('/kategori', {}, {
     preserveState: true,
     preserveScroll: true,
