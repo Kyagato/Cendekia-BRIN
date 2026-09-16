@@ -18,16 +18,47 @@
           </span>
         </div>
 
-        <!-- Title & Content -->
-        <div class="space-y-1.5">
-          <h3 class="text-base font-semibold text-[#0f172a] dark:text-white line-clamp-2 leading-snug group-hover:text-[#2563eb] dark:group-hover:text-blue-400 transition-colors">
-            <a :href="`/knowledge/${item.id}`">
-              {{ item.judul }}
-            </a>
-          </h3>
-          <p class="text-[13px] text-[#475569] dark:text-slate-400 line-clamp-2 leading-relaxed">
-            {{ truncatedDescription }}
-          </p>
+        <!-- Main Content Row: Title & Description on Left, Small Thumbnail Box on Right -->
+        <div class="flex items-start justify-between gap-3.5 mt-1 mb-1">
+          <div class="flex-grow min-w-0 space-y-1.5">
+            <h3 class="text-base font-semibold text-[#0f172a] dark:text-white line-clamp-2 leading-snug group-hover:text-[#2563eb] dark:group-hover:text-blue-400 transition-colors">
+              <a :href="`/knowledge/${item.id}`">
+                {{ item.judul }}
+              </a>
+            </h3>
+            <p class="text-[13px] text-[#475569] dark:text-slate-400 line-clamp-2 leading-relaxed">
+              {{ truncatedDescription }}
+            </p>
+          </div>
+
+          <!-- Small Thumbnail Box (Sejajar dengan Judul, Kanan Mentok) -->
+          <a 
+            :href="`/knowledge/${item.id}`" 
+            class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-850 shadow-sm flex items-center justify-center group/thumb"
+          >
+            <img 
+              v-if="isImageFile && !imgError" 
+              :src="imageSrc" 
+              :alt="item.judul" 
+              @error="imgError = true"
+              class="w-full h-full object-cover group-hover/thumb:scale-110 group-hover:scale-105 transition-transform duration-300"
+            />
+            <div v-else class="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800">
+              <svg v-if="item.tipe === 'Video'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <svg v-else-if="item.tipe === 'Gambar'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <svg v-else-if="item.tipe === 'Audio'" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+              <svg v-else class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+          </a>
         </div>
       </div>
 
@@ -53,13 +84,33 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   item: {
     type: Object,
     required: true
   }
+});
+
+const imgError = ref(false);
+
+const isImageFile = computed(() => {
+  const path = props.item?.thumbnail || props.item?.file_path;
+  if (!path) return false;
+  const parts = path.split('.');
+  if (parts.length <= 1) return false;
+  const ext = parts.pop().toLowerCase();
+  return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+});
+
+const imageSrc = computed(() => {
+  const path = props.item?.thumbnail || props.item?.file_path;
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/')) {
+    return path;
+  }
+  return '/storage/' + path;
 });
 
 const badgeClass = computed(() => {
@@ -80,7 +131,7 @@ const badgeClass = computed(() => {
 const truncatedDescription = computed(() => {
   if (!props.item.deskripsi) return '';
   const cleanText = props.item.deskripsi.replace(/<[^>]*>/g, '');
-  return cleanText.length > 90 ? cleanText.substring(0, 90) + '...' : cleanText;
+  return cleanText.length > 75 ? cleanText.substring(0, 75) + '...' : cleanText;
 });
 
 const timeAgo = computed(() => {

@@ -117,14 +117,16 @@
                 </section>
                 @endif
 
-                {{-- Media Preview dari file_path (uploaded file / thumbnail) --}}
+                {{-- Media Preview dari file_path (uploaded file) --}}
+                {{-- Catatan: Thumbnail gambar untuk tipe Video, Audio, atau Teks hanya muncul di kartu Beranda & Kategori, tidak ditampilkan di dalam detail pengetahuan --}}
                 @if($knowledge->file_path && $knowledge->file_path !== $knowledge->url_teks)
+                @php
+                    $filePathExt = strtolower(pathinfo($knowledge->file_path, PATHINFO_EXTENSION));
+                    $isImageFile = in_array($filePathExt, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                @endphp
+                @if($knowledge->tipe == 'Gambar' || ($knowledge->tipe == 'Video' && !$isImageFile) || ($knowledge->tipe == 'Audio' && !$isImageFile))
                 <section class="mb-2">
-                    @php
-                        $filePathExt = strtolower(pathinfo($knowledge->file_path, PATHINFO_EXTENSION));
-                        $isImageFile = in_array($filePathExt, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                    @endphp
-                    @if($knowledge->tipe == 'Gambar' || $isImageFile)
+                    @if($knowledge->tipe == 'Gambar')
                         <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
                             <img src="{{ asset('storage/' . $knowledge->file_path) }}" alt="{{ $knowledge->judul }}" class="w-full max-h-[550px] object-contain mx-auto">
                         </div>
@@ -142,6 +144,7 @@
                         </div>
                     @endif
                 </section>
+                @endif
                 @endif
 
                 {{-- Ringkasan --}}
