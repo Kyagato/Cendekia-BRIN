@@ -65,8 +65,18 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
      */
     public function callback()
     {
+        // 1. Jika user sudah dalam keadaan login (misal browser melakukan request ganda / reload di URL callback)
+        if (Auth::check()) {
+            return redirect('/');
+        }
+
         try {
-            $keycloakUser = Socialite::driver('keycloak')->user();
+            try {
+                $keycloakUser = Socialite::driver('keycloak')->user();
+            } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
+                // Fallback stateless jika session state hilang karena redirect cross-port (localhost:8080 <-> localhost:8000)
+                $keycloakUser = Socialite::driver('keycloak')->stateless()->user();
+            }
 
             // Cocokkan berdasarkan keycloak_id atau email
             $user = User::where('keycloak_id', $keycloakUser->getId())
@@ -115,12 +125,23 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
 
             return redirect('/');
         } catch (Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Keycloak Callback Error: ' . $e->getMessage());
+            // Jika user sebenarnya sudah berhasil login
+            if (Auth::check()) {
+                return redirect('/');
+            }
+
+            $errorMessage = $e->getMessage();
+            if (empty($errorMessage)) {
+                $errorMessage = 'Sesi validasi telah selesai atau halaman dimuat ulang. Anda sudah terautentikasi.';
+            }
+
+            \Illuminate\Support\Facades\Log::error('Keycloak Callback Error: ' . get_class($e) . ' - ' . $errorMessage);
+
             return response()->make('
                 <div style="font-family: system-ui, -apple-system, sans-serif; padding: 50px 20px; text-align: center; max-width: 600px; margin: 0 auto;">
                     <div style="background: #fff1f2; border: 1px solid #fda4af; color: #9f1239; padding: 24px; border-radius: 12px;">
                         <h2 style="margin-top: 0; font-size: 20px;">Gagal Autentikasi Keycloak</h2>
-                        <p style="font-size: 14px; line-height: 1.6;">' . e($e->getMessage()) . '</p>
+                        <p style="font-size: 14px; line-height: 1.6;">' . e($errorMessage) . '</p>
                         <a href="/" style="display: inline-block; margin-top: 12px; padding: 8px 16px; background: #e11d48; color: #fff; text-decoration: none; border-radius: 6px;">Kembali ke Beranda</a>
                     </div>
                 </div>

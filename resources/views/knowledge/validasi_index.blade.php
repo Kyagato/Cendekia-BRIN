@@ -52,23 +52,18 @@
                     <div class="relative inline-block text-left w-full sm:w-auto" x-data="{ open: false }">
                         <button @click="open = !open" @click.outside="open = false" type="button"
                                 class="w-full sm:w-auto px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center justify-between gap-2 shadow-sm">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                                </svg>
-                                <span>
-                                    @if(request('status') === 'Diajukan')
-                                        Status: Diajukan
-                                    @elseif(request('status') === 'Disetujui')
-                                        Status: Disetujui
-                                    @elseif(request('status') === 'Ditolak')
-                                        Status: Ditolak
-                                    @else
-                                        Status
-                                    @endif
-                                </span>
-                            </div>
-                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <span>
+                                @if(request('status') === 'Diajukan')
+                                    Status: Diajukan
+                                @elseif(request('status') === 'Disetujui')
+                                    Status: Disetujui
+                                @elseif(request('status') === 'Ditolak')
+                                    Status: Ditolak
+                                @else
+                                    Status
+                                @endif
+                            </span>
+                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
