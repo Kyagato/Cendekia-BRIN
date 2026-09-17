@@ -1,223 +1,520 @@
 /* ==========================================================================
-   MojoPedia Custom Keycloak Login Theme
+   MojoPedia Custom Keycloak Login Theme (Clean Split Layout)
+   Soft Sky Blue Background | #4272FF Left Column | Solid Black Divider | Zero Gap
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* --- Page Background --- */
-body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    background: linear-gradient(to top, #2563eb 0%, #1e3a8a 55%, #0f172a 100%) !important;
+/* --- Reset & Global Page Settings --- */
+* {
+    box-sizing: border-box !important;
+}
+
+html,
+html.login-pf,
+body,
+body.login-pf,
+.login-pf,
+.login-pf body,
+.login-pf-page {
+    background: #e0f2fe !important;
+    background-color: #e0f2fe !important;
+    background-image: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 45%, #e0f2fe 100%) !important;
     background-attachment: fixed !important;
     background-size: cover !important;
+    background-repeat: no-repeat !important;
+    min-height: 100vh !important;
+    height: auto !important;
+}
+
+html {
+    height: auto !important;
+    min-height: 100vh !important;
     margin: 0 !important;
     padding: 0 !important;
+}
+
+body,
+.login-pf body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     min-height: 100vh !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 40px 16px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    color: #0f172a !important;
+    position: relative !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Subtle decorative soft circles in background */
+body::before {
+    content: "" !important;
+    position: fixed !important;
+    top: -10% !important;
+    right: -5% !important;
+    width: 500px !important;
+    height: 500px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle, rgba(186, 230, 253, 0.4) 0%, rgba(224, 242, 254, 0) 70%) !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+body::after {
+    content: "" !important;
+    position: fixed !important;
+    bottom: -10% !important;
+    left: -5% !important;
+    width: 600px !important;
+    height: 600px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle, rgba(191, 219, 254, 0.35) 0%, rgba(224, 242, 254, 0) 70%) !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+/* --- Container Alignment --- */
+.login-pf-page, #kc-container {
+    width: 100% !important;
+    max-width: 960px !important;
+    padding: 0 !important;
+    margin: auto !important;
+    position: relative !important;
+    z-index: 10 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Hide default external header since brand is inside the left column */
+#kc-header, .login-pf-page-header {
+    display: none !important;
+}
+
+/* --- Main Split Card (Using CSS Grid for 100% Guaranteed Equal Height) --- */
+.login-pf-page .card-pf,
+.card-pf {
+    width: 100% !important;
+    max-width: 940px !important;
+    min-height: 500px !important;
+    background: linear-gradient(to right, #4272FF 0%, #4272FF 44%, #ffffff 44%, #ffffff 100%) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 25px 50px -12px rgba(30, 58, 138, 0.15), 0 0 0 1px rgba(226, 232, 240, 0.9) !important;
+    display: grid !important;
+    grid-template-columns: 44% 56% !important;
+    grid-auto-rows: 1fr !important;
+    align-items: stretch !important;
+    overflow: hidden !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* ==========================================================================
+   LEFT COLUMN: MojoPedia Logo & Brand Info
+   Background: #4272FF | Full Height Stretch | Solid Black Divider
+   ========================================================================== */
+header.login-pf-header {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+    background: #4272FF !important;
+    background-color: #4272FF !important;
+    border: none !important;
+    border-right: 2px solid #000000 !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    color: #1e293b !important;
+    padding: 40px 32px !important;
+    text-align: center !important;
     position: relative !important;
-    z-index: 1 !important;
-}
-
-body::before {
-    content: "" !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    z-index: -1 !important;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><g fill="%23ffffff"><circle cx="200" cy="200" r="40"/><circle cx="250" cy="170" r="60"/><circle cx="310" cy="180" r="50"/><circle cx="370" cy="210" r="35"/><rect x="200" y="200" width="170" height="45" rx="20"/></g><g fill="%23ffffff" transform="translate(400, -80) scale(0.7)"><circle cx="200" cy="200" r="40"/><circle cx="250" cy="170" r="60"/><circle cx="310" cy="180" r="50"/><circle cx="370" cy="210" r="35"/><rect x="200" y="200" width="170" height="45" rx="20"/></g><g fill="%23ffffff" transform="translate(-150, 150) scale(1.1)"><circle cx="200" cy="200" r="40"/><circle cx="250" cy="170" r="60"/><circle cx="310" cy="180" r="50"/><circle cx="370" cy="210" r="35"/><rect x="200" y="200" width="170" height="45" rx="20"/></g></svg>') !important;
-    background-repeat: repeat !important;
-    opacity: 0.5 !important;
-    animation: moveClouds 45s linear infinite !important;
-    pointer-events: none !important;
-}
-
-@keyframes moveClouds {
-    from { background-position: 0 0; }
-    to { background-position: 800px 0; }
-}
-
-/* --- Container Alignment --- */
-#kc-container {
-    width: 100% !important;
-    max-width: 460px !important;
-    padding: 20px !important;
     box-sizing: border-box !important;
 }
 
-#kc-container-wrapper {
+/* Reset any Bootstrap / PatternFly nested grid inside left header */
+header.login-pf-header > div,
+header.login-pf-header .col-md-10,
+header.login-pf-header [class*="col-"] {
     width: 100% !important;
-}
-
-/* --- Brand Header / Logo --- */
-#kc-header {
+    max-width: 100% !important;
+    float: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
     text-align: center !important;
-    margin-bottom: 24px !important;
 }
 
-#kc-header-wrapper {
+/* Remove any wavy curve */
+header.login-pf-header::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Logo MojoPedia (Clean Transparent Emblem) */
+header.login-pf-header::before {
+    content: "" !important;
+    display: block !important;
+    width: 110px !important;
+    height: 110px !important;
+    background-image: url('../img/logo-mojopedia.png') !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    margin: 0 auto 20px auto !important;
+    filter: drop-shadow(0 10px 20px rgba(15, 23, 42, 0.25)) !important;
+}
+
+/* MojoPedia Brand Title on Left */
+#kc-page-title {
+    font-size: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    /* Geser ke kanan sedikit (6px) agar presisi di tengah terhadap logo */
+    transform: translateX(6px) !important;
+}
+
+#kc-page-title::before {
+    content: "MojoPedia" !important;
     font-size: 32px !important;
     font-weight: 800 !important;
     letter-spacing: -0.03em !important;
     color: #ffffff !important;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
-    text-decoration: none !important;
-    display: inline-block !important;
-}
-
-#kc-header-wrapper::before {
-    content: "MojoPedia" !important;
-}
-
-/* Hide default Keycloak header text if replaced */
-#kc-header-wrapper {
-    font-size: 0 !important;
-}
-#kc-header-wrapper::before {
-    font-size: 32px !important;
-}
-
-/* --- Login Card Container --- */
-.card-pf, #kc-content {
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
-    padding: 36px 32px !important;
-    margin: 0 auto !important;
-}
-
-/* --- Page Title Inside Card --- */
-#kc-page-title {
-    font-size: 22px !important;
-    font-weight: 700 !important;
-    color: #0f172a !important;
-    text-align: center !important;
-    margin-top: 0 !important;
-    margin-bottom: 24px !important;
-    letter-spacing: -0.02em !important;
-}
-
-/* --- Form Controls & Labels --- */
-.form-group {
-    margin-bottom: 20px !important;
-}
-
-label, .control-label {
     display: block !important;
+    text-align: center !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    text-shadow: 0 2px 8px rgba(15, 23, 42, 0.15) !important;
+}
+
+#kc-page-title::after {
+    content: "Digital Mojokerto System\A\ASistem Manajemen Pengetahuan &\ALayanan SSO Terpadu" !important;
+    white-space: pre-line !important;
     font-size: 13px !important;
     font-weight: 600 !important;
-    color: #334155 !important;
-    margin-bottom: 6px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
-}
-
-.form-control, input[type="text"], input[type="password"], input[type="email"] {
+    color: #ffffff !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.01em !important;
+    display: block !important;
+    margin: 8px auto 0 auto !important;
+    max-width: 280px !important;
+    text-align: center !important;
+    opacity: 0.92 !important;
     width: 100% !important;
-    height: 44px !important;
-    padding: 10px 14px !important;
-    font-size: 14px !important;
-    font-family: inherit !important;
-    color: #0f172a !important;
-    background-color: #f8fafc !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 8px !important;
-    box-sizing: border-box !important;
-    transition: all 0.2s ease-in-out !important;
+    text-shadow: 0 1px 4px rgba(15, 23, 42, 0.12) !important;
 }
 
-.form-control:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
-    background-color: #ffffff !important;
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
-    outline: none !important;
+/* ==========================================================================
+   HIDE REQUIRED FIELDS & ASTERISKS
+   Hapus teks "* Required fields" dan tanda bintang mengambang (*)
+   ========================================================================== */
+.subtitle,
+.required,
+span.required,
+div.subtitle,
+.login-pf-header .subtitle,
+.login-pf-header span.subtitle,
+.pf-c-form__label-required,
+span.pf-c-form__label-required,
+label .required,
+div.subtitle > span {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
 }
 
-/* --- Buttons --- */
-.btn-primary, #kc-login, input[type="submit"] {
+/* ==========================================================================
+   RIGHT COLUMN: Modern Minimalist Form Area (Compact Spacing)
+   ========================================================================== */
+#kc-content {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    padding: 34px 44px 28px 48px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    position: relative !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+}
+
+#kc-content-wrapper {
+    width: 100% !important;
+    max-width: 380px !important;
+    margin: 0 auto !important;
+    position: relative !important;
+}
+
+/* Top Right Tabs: Login | Sign up */
+#kc-info {
+    position: absolute !important;
+    top: 20px !important;
+    right: 32px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    z-index: 10 !important;
+}
+
+#kc-info-wrapper {
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#kc-registration {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 46px !important;
-    background-color: #2563eb !important;
-    background-image: none !important;
-    border: none !important;
-    border-radius: 8px !important;
-    color: #ffffff !important;
-    font-family: inherit !important;
-    font-size: 15px !important;
+}
+
+#kc-registration span {
+    font-size: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Tab "Login" (Active) */
+#kc-registration span::before {
+    content: "Login" !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #4272FF !important;
+    border-bottom: 2.5px solid #4272FF !important;
+    padding-bottom: 4px !important;
+    margin-right: 18px !important;
+    cursor: default !important;
+    letter-spacing: 0.01em !important;
+}
+
+/* Tab "Sign up" (Link to register) */
+#kc-registration a {
+    font-size: 13px !important;
     font-weight: 600 !important;
-    cursor: pointer !important;
+    color: #94a3b8 !important;
+    text-decoration: none !important;
+    padding-bottom: 4px !important;
+    transition: color 0.2s ease !important;
+}
+
+#kc-registration a:hover {
+    color: #4272FF !important;
+    text-decoration: none !important;
+}
+
+/* Form Greetings: "Welcome back" & "Please login to your account" */
+#kc-content-wrapper::before {
+    content: "Welcome back" !important;
+    display: block !important;
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    color: #4272FF !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 2px !important;
+    margin-top: 0 !important;
+}
+
+#kc-form::before {
+    content: "Please login to your account" !important;
+    display: block !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    margin-bottom: 16px !important;
+}
+
+/* Form Controls (Minimalist Underline Style & Rapat Antar Kolom) */
+.form-group {
+    margin-bottom: 11px !important;
+    position: relative !important;
+}
+
+label.pf-c-form__label, label {
+    display: block !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    text-transform: capitalize !important;
+    letter-spacing: 0.02em !important;
+    margin-bottom: 1px !important;
+    padding: 0 !important;
+}
+
+input.pf-c-form-control, 
+input[type="text"], 
+input[type="password"],
+input[type="email"] {
+    width: 100% !important;
+    height: 35px !important;
+    padding: 4px 0 !important;
+    font-size: 13.5px !important;
+    font-family: inherit !important;
+    color: #0f172a !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1.5px solid #cbd5e1 !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
     transition: all 0.2s ease !important;
-    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1) !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-.btn-primary:hover, #kc-login:hover, input[type="submit"]:hover {
-    background-color: #1d4ed8 !important;
-    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3) !important;
-    transform: translateY(-1px) !important;
+input.pf-c-form-control:focus, 
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    border-bottom: 2px solid #4272FF !important;
+    background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-.btn-primary:active, #kc-login:active, input[type="submit"]:active {
-    transform: translateY(0) !important;
-    background-color: #1e40af !important;
+/* Password Input Group */
+.pf-c-input-group {
+    display: flex !important;
+    align-items: center !important;
+    border-bottom: 1.5px solid #cbd5e1 !important;
+    transition: border-color 0.2s ease !important;
+    width: 100% !important;
+    height: 35px !important;
 }
 
-/* --- Checkbox & Links Row --- */
+.pf-c-input-group:focus-within {
+    border-bottom: 2px solid #4272FF !important;
+}
+
+.pf-c-input-group input {
+    border-bottom: none !important;
+    height: 100% !important;
+    flex: 1 !important;
+    padding: 4px 0 !important;
+}
+
+button[data-password-toggle], button.pf-c-button.pf-m-control {
+    background: transparent !important;
+    border: none !important;
+    color: #94a3b8 !important;
+    cursor: pointer !important;
+    padding: 4px 4px !important;
+    outline: none !important;
+    transition: color 0.2s ease !important;
+}
+
+button[data-password-toggle]:hover, button.pf-c-button.pf-m-control:hover {
+    color: #4272FF !important;
+}
+
+/* Forgot Password Link & Options */
+.login-pf-settings {
+    margin-top: -4px !important;
+    margin-bottom: 16px !important;
+}
+
 #kc-form-options {
     display: flex !important;
-    justify-content: space-between !important;
+    justify-content: flex-end !important;
     align-items: center !important;
-    margin-bottom: 24px !important;
-    font-size: 13px !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+    margin-bottom: 8px !important;
 }
 
-.checkbox label {
-    text-transform: none !important;
-    font-weight: 500 !important;
-    color: #475569 !important;
-    cursor: pointer !important;
-}
-
-/* --- Links Styling --- */
-a, #kc-registration a, #kc-form-options a {
-    color: #2563eb !important;
+#kc-form-options a {
+    font-size: 12px !important;
     font-weight: 600 !important;
+    color: #64748b !important;
     text-decoration: none !important;
     transition: color 0.15s ease !important;
 }
 
-a:hover, #kc-registration a:hover, #kc-form-options a:hover {
-    color: #1e40af !important;
+#kc-form-options a:hover {
+    color: #4272FF !important;
     text-decoration: underline !important;
 }
 
-/* --- Registration Prompt Footer --- */
-#kc-registration {
-    margin-top: 24px !important;
-    padding-top: 20px !important;
-    border-top: 1px solid #e2e8f0 !important;
-    text-align: center !important;
-    font-size: 13.5px !important;
-    color: #64748b !important;
+/* --- Submit Buttons (Brand Blue #4272FF) --- */
+#kc-form-buttons {
+    margin-top: 12px !important;
+    margin-bottom: 0 !important;
 }
 
-/* --- Alert Messages (Errors / Info) --- */
+#kc-login, 
+input[type="submit"],
+button[type="submit"],
+.btn-primary,
+.pf-c-button.pf-m-primary {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 42px !important;
+    background-color: #4272FF !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 14px rgba(66, 114, 255, 0.35) !important;
+}
+
+#kc-login:hover, 
+input[type="submit"]:hover,
+button[type="submit"]:hover,
+.btn-primary:hover,
+.pf-c-button.pf-m-primary:hover {
+    background-color: #315ee6 !important;
+    box-shadow: 0 6px 18px rgba(66, 114, 255, 0.45) !important;
+    transform: translateY(-1px) !important;
+}
+
+#kc-login:active, 
+input[type="submit"]:active,
+button[type="submit"]:active {
+    background-color: #244bbf !important;
+    transform: translateY(0) !important;
+}
+
+/* --- Alert Messages (Error / Info) --- */
 .alert, .alert-error, .alert-warning, .alert-success, .alert-info {
-    border-radius: 8px !important;
-    padding: 12px 16px !important;
-    font-size: 13.5px !important;
+    border-radius: 10px !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
     font-weight: 500 !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 14px !important;
     display: flex !important;
     align-items: center !important;
 }
@@ -246,51 +543,36 @@ a:hover, #kc-registration a:hover, #kc-form-options a:hover {
     color: #1e40af !important;
 }
 
-/* --- Social Login Providers --- */
-#kc-social-providers {
-    margin-top: 20px !important;
-}
+/* ==========================================================================
+   RESPONSIVE DESIGN (Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .login-pf-page .card-pf,
+    .card-pf {
+        grid-template-columns: 1fr !important;
+        grid-auto-rows: auto !important;
+        max-width: 440px !important;
+        min-height: auto !important;
+        border-radius: 20px !important;
+        background: #ffffff !important;
+    }
 
-#kc-social-providers ul {
-    list-style: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-}
+    header.login-pf-header {
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 2px solid #000000 !important;
+        padding: 32px 20px 24px !important;
+    }
 
-.zocial, #kc-social-providers a {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 42px !important;
-    background: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 8px !important;
-    color: #334155 !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-}
+    #kc-content {
+        width: 100% !important;
+        padding: 28px 20px 30px !important;
+    }
 
-.zocial:hover, #kc-social-providers a:hover {
-    background-color: #f8fafc !important;
-    border-color: #94a3b8 !important;
-    color: #0f172a !important;
-    text-decoration: none !important;
-}
-
-/* --- Footer Clean Up --- */
-#kc-info-wrapper {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin-top: 16px !important;
-    font-size: 13px !important;
-    color: #64748b !important;
-    text-align: center !important;
+    #kc-info {
+        position: static !important;
+        margin-bottom: 14px !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+    }
 }
