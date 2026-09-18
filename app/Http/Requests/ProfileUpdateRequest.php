@@ -26,7 +26,13 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'foto_profil' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+            'no_telepon' => ['nullable', 'string', 'max:30'],
+            'pekerjaan' => ['nullable', 'string', 'max:100'],
+            'jenis_kelamin' => ['nullable', 'string', 'in:Laki-laki,Perempuan,L,P'],
+            'alamat' => ['nullable', 'string', 'max:1000'],
+            'foto_profil' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
+            'remove_foto_profil' => ['nullable'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'role' => ['nullable', 'string', 'max:50'],
         ];
     }

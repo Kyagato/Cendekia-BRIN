@@ -33,12 +33,26 @@ class ProfileController extends Controller
         $role = $validatedData['role'] ?? null;
         unset($validatedData['role']);
         
+        // Handle password update if filled
+        if (!empty($validatedData['password'])) {
+            $user->password = \Illuminate\Support\Facades\Hash::make($validatedData['password']);
+        }
+        unset($validatedData['password']);
+
         $user->fill($validatedData);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
         
+        // Handle photo removal
+        if ($request->boolean('remove_foto_profil') || $request->input('remove_foto_profil') == '1') {
+            if ($user->foto_profil && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->foto_profil)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
+            }
+            $user->foto_profil = null;
+        }
+
         // Handle profile photo upload
         if ($request->hasFile('foto_profil')) {
             // Delete old photo if exists
@@ -64,11 +78,13 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
         $user = $request->user();
+
+        if (empty($user->keycloak_id)) {
+            $request->validateWithBag('userDeletion', [
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
         Auth::logout();
 
