@@ -22,7 +22,13 @@
         <div>
             <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100 break-words [overflow-wrap:anywhere]">{{ $knowledge->judul }}</h1>
             <div class="flex items-center gap-3 mt-2 text-sm text-slate-500 dark:text-slate-400">
-                <span>{{ $knowledge->user->name ?? 'Anonim' }}</span>
+                @if($knowledge->user)
+                    <a href="{{ route('users.show', $knowledge->user->id) }}" class="font-medium text-primary-600 dark:text-primary-400 hover:underline">
+                        {{ $knowledge->user->name }}
+                    </a>
+                @else
+                    <span>{{ $knowledge->penulis ?? 'Anonim' }}</span>
+                @endif
                 <span class="w-1 h-1 rounded-full bg-slate-400 dark:bg-slate-600"></span>
                 <span>{{ $knowledge->created_at?->format('d M Y') ?? '-' }}</span>
                 <span class="w-1 h-1 rounded-full bg-slate-400 dark:bg-slate-600"></span>
@@ -132,7 +138,13 @@
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
                                 <span class="text-slate-500 dark:text-slate-400">Penulis</span>
-                                <span class="text-slate-800 dark:text-slate-200 font-medium">{{ $knowledge->penulis ?? $knowledge->user->name ?? '-' }}</span>
+                                @if($knowledge->user)
+                                    <a href="{{ route('users.show', $knowledge->user->id) }}" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+                                        {{ $knowledge->penulis ?? $knowledge->user->name }}
+                                    </a>
+                                @else
+                                    <span class="text-slate-800 dark:text-slate-200 font-medium">{{ $knowledge->penulis ?? '-' }}</span>
+                                @endif
                             </div>
                             @if($knowledge->kolaborator)
                             <div class="flex justify-between">

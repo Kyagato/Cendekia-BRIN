@@ -95,4 +95,41 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Display the public profile of a user (POV Pengunjung & User Lain).
+     */
+    public function show(\App\Models\User $user): View
+    {
+        // Hanya ambil pengetahuan yang berstatus 'Disetujui' (terbit publik)
+        $knowledgeList = $user->knowledge()
+            ->where('status', 'Disetujui')
+            ->with(['category', 'tags'])
+            ->latest()
+            ->paginate(9);
+
+        $totalKnowledge = $user->knowledge()->where('status', 'Disetujui')->count();
+        $totalViews = $user->knowledge()->where('status', 'Disetujui')->sum('views_count') ?? 0;
+
+        // Thread forum yang dibuat oleh user ini
+        $forumThreads = \App\Models\ForumThread::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->withCount('replies')
+            ->with('category')
+            ->latest()
+            ->take(6)
+            ->get();
+        $totalThreads = \App\Models\ForumThread::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->count();
+
+        return view('pages.user-profile', compact(
+            'user',
+            'knowledgeList',
+            'totalKnowledge',
+            'totalViews',
+            'forumThreads',
+            'totalThreads'
+        ));
+    }
 }

@@ -134,18 +134,78 @@
                 </div>
 
                 {{-- Author --}}
-                <div class="flex items-center gap-3 pt-5 border-t border-slate-100 dark:border-slate-700">
-                    <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-inner shrink-0">
-                        @if($thread->user->foto_profil ?? null)
-                            <img src="{{ asset('storage/' . $thread->user->foto_profil) }}" class="w-full h-full object-cover rounded-full">
-                        @else
-                            {{ strtoupper(substr($thread->user->name ?? 'U', 0, 1)) }}
-                        @endif
-                    </div>
-                    <div>
-                        <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">{{ $thread->user->name ?? 'Anonymous' }}</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ $thread->user->instansi ?? 'BRIN' }}</div>
-                    </div>
+                <div class="flex items-center gap-3 pt-5 border-t border-slate-100 dark:border-slate-700 relative"
+                     x-data="{ openThreadAuthorPreview: false }">
+                    @if($thread->user)
+                        <div class="relative inline-flex items-center gap-3"
+                             @mouseenter="openThreadAuthorPreview = true"
+                             @mouseleave="openThreadAuthorPreview = false">
+                            <a href="{{ route('users.show', $thread->user->id) }}" class="shrink-0 group" title="Lihat Profil {{ $thread->user->name }}">
+                                <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-inner overflow-hidden group-hover:ring-2 group-hover:ring-primary-500 transition">
+                                    @if($thread->user->foto_profil)
+                                        <img src="{{ asset('storage/' . $thread->user->foto_profil) }}" class="w-full h-full object-cover rounded-full" alt="{{ $thread->user->name }}">
+                                    @else
+                                        {{ strtoupper(substr($thread->user->name, 0, 1)) }}
+                                    @endif
+                                </div>
+                            </a>
+                            <div>
+                                <a href="{{ route('users.show', $thread->user->id) }}" class="font-semibold text-slate-800 dark:text-slate-100 text-sm hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition block">
+                                    {{ $thread->user->name }}
+                                </a>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">{{ $thread->user->instansi ?? 'BRIN' }}</div>
+                            </div>
+
+                            {{-- Mini Hover Card Popover --}}
+                            <div x-show="openThreadAuthorPreview"
+                                 x-cloak
+                                 @mouseenter="openThreadAuthorPreview = true"
+                                 @mouseleave="openThreadAuthorPreview = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                                 class="absolute left-0 top-full mt-2 z-50 w-72 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-2xl border border-slate-200 dark:border-slate-700 text-left cursor-default">
+                                <div class="flex items-center gap-3 mb-3">
+                                    @if($thread->user->foto_profil)
+                                        <img src="{{ asset('storage/' . $thread->user->foto_profil) }}"
+                                             class="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0">
+                                    @else
+                                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-lg flex items-center justify-center shrink-0">
+                                            {{ strtoupper(substr($thread->user->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-sm text-slate-900 dark:text-white truncate">
+                                            {{ $thread->user->name }}
+                                        </div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                            {{ $thread->user->role ?? 'Anggota' }}
+                                        </div>
+                                        @if($thread->user->instansi)
+                                        <div class="text-[11px] text-slate-400 dark:text-slate-500 truncate">
+                                            {{ $thread->user->instansi }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <a href="{{ route('users.show', $thread->user->id) }}"
+                                   class="block w-full py-2 text-center text-xs font-semibold bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-300 rounded-xl transition">
+                                    Lihat Profil Lengkap &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    @else
+                        <div class="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-inner shrink-0">
+                            U
+                        </div>
+                        <div>
+                            <div class="font-semibold text-slate-800 dark:text-slate-100 text-sm">Anonymous</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">BRIN</div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

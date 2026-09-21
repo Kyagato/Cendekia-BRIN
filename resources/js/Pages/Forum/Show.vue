@@ -79,11 +79,26 @@
 
           <!-- Author Info -->
           <div class="flex items-center gap-3 pt-6 border-t border-[#e2e8f0] dark:border-slate-800">
-            <div class="w-10 h-10 rounded-lg bg-[#2563eb] text-white flex items-center justify-center font-bold text-sm shrink-0">
-              {{ thread.user?.name ? thread.user.name.charAt(0).toUpperCase() : 'U' }}
-            </div>
+            <UserPreviewPopover :user="thread.user">
+              <template #default="{ user }">
+                <a :href="`/users/${user.id}`" class="block">
+                  <div v-if="user.foto_profil" class="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                    <img :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
+                  </div>
+                  <div v-else class="w-10 h-10 rounded-lg bg-[#2563eb] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                    {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
+                  </div>
+                </a>
+              </template>
+            </UserPreviewPopover>
             <div>
-              <p class="font-semibold text-[#0f172a] dark:text-slate-100 text-sm">{{ thread.user?.name || 'Anonymous' }}</p>
+              <UserPreviewPopover :user="thread.user">
+                <template #default="{ user }">
+                  <a :href="`/users/${user.id}`" class="font-semibold text-[#0f172a] dark:text-slate-100 text-sm hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition block">
+                    {{ user.name }}
+                  </a>
+                </template>
+              </UserPreviewPopover>
               <p class="text-xs text-[#94a3b8]">{{ thread.user?.instansi || '' }}</p>
             </div>
           </div>
@@ -99,12 +114,28 @@
       <div v-if="replies?.data?.length > 0" class="space-y-4">
         <div v-for="reply in replies.data" :key="reply.id" class="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-[#e2e8f0] dark:border-slate-800 p-5">
           <div class="flex items-start gap-3">
-            <div class="w-9 h-9 rounded-lg bg-[#2563eb] text-white flex items-center justify-center font-bold text-xs shrink-0">
-              {{ reply.user?.name ? reply.user.name.charAt(0).toUpperCase() : 'U' }}
-            </div>
+            <UserPreviewPopover :user="reply.user">
+              <template #default="{ user }">
+                <a :href="`/users/${user.id}`" class="block">
+                  <div v-if="user.foto_profil" class="w-9 h-9 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                    <img :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
+                  </div>
+                  <div v-else class="w-9 h-9 rounded-lg bg-[#2563eb] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
+                  </div>
+                </a>
+              </template>
+            </UserPreviewPopover>
+
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-2">
-                <span class="font-semibold text-sm text-[#0f172a] dark:text-slate-100">{{ reply.user?.name || 'Anonymous' }}</span>
+                <UserPreviewPopover :user="reply.user">
+                  <template #default="{ user }">
+                    <a :href="`/users/${user.id}`" class="font-semibold text-sm text-[#0f172a] dark:text-slate-100 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition">
+                      {{ user.name }}
+                    </a>
+                  </template>
+                </UserPreviewPopover>
                 <span class="text-xs text-[#94a3b8]">{{ formatDate(reply.created_at) }}</span>
               </div>
               <div class="text-sm text-[#475569] dark:text-slate-300 leading-relaxed" v-html="reply.konten"></div>
@@ -112,12 +143,28 @@
               <!-- Nested Replies -->
               <div v-if="reply.replies?.length > 0" class="mt-4 space-y-3 pl-4 border-l-2 border-[#e2e8f0] dark:border-slate-700">
                 <div v-for="nested in reply.replies" :key="nested.id" class="flex items-start gap-2">
-                  <div class="w-7 h-7 rounded-md bg-[#f1f5f9] dark:bg-slate-700 text-[#475569] dark:text-slate-300 flex items-center justify-center font-bold text-xs shrink-0">
-                    {{ nested.user?.name ? nested.user.name.charAt(0).toUpperCase() : 'U' }}
-                  </div>
+                  <UserPreviewPopover :user="nested.user">
+                    <template #default="{ user }">
+                      <a :href="`/users/${user.id}`" class="block">
+                        <div v-if="user.foto_profil" class="w-7 h-7 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                          <img :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
+                        </div>
+                        <div v-else class="w-7 h-7 rounded-md bg-[#f1f5f9] dark:bg-slate-700 text-[#475569] dark:text-slate-300 flex items-center justify-center font-bold text-xs shrink-0">
+                          {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
+                        </div>
+                      </a>
+                    </template>
+                  </UserPreviewPopover>
+
                   <div>
                     <div class="flex items-center gap-2 mb-1">
-                      <span class="font-semibold text-xs text-[#0f172a] dark:text-slate-200">{{ nested.user?.name }}</span>
+                      <UserPreviewPopover :user="nested.user">
+                        <template #default="{ user }">
+                          <a :href="`/users/${user.id}`" class="font-semibold text-xs text-[#0f172a] dark:text-slate-200 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition">
+                            {{ user.name }}
+                          </a>
+                        </template>
+                      </UserPreviewPopover>
                       <span class="text-xs text-[#94a3b8]">{{ formatDate(nested.created_at) }}</span>
                     </div>
                     <div class="text-xs text-[#475569] dark:text-slate-300" v-html="nested.konten"></div>
@@ -170,6 +217,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
+import UserPreviewPopover from '../../Components/UserPreviewPopover.vue';
 
 const props = defineProps({
   thread: Object,

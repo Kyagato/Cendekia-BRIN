@@ -31,6 +31,9 @@ Route::get('/cari', [App\Http\Controllers\SearchController::class, 'index'])->na
 // Detail Pengetahuan (Layout Publik — untuk Beranda & Kategori)
 Route::get('/knowledge/{id}', [HomeController::class, 'knowledgeShow'])->name('knowledge.show')->whereNumber('id');
 
+// Profil Publik Pengguna (POV Pengunjung & User Lain)
+Route::get('/users/{user}', [ProfileController::class, 'show'])->name('users.show');
+
 // =================================================================
 // AUTHENTICATED ROUTES — Semua user yang sudah login
 // =================================================================

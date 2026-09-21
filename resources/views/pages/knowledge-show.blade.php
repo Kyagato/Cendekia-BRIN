@@ -31,7 +31,17 @@
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-slate-400 mb-10">
             <div class="flex items-center gap-1.5 shrink-0">
                 <svg class="w-4 h-4 text-slate-400 shrink-0" width="16" height="16" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                <span>Dibuat oleh: {{ $knowledge->penulis ?? ($knowledge->user->name ?? 'Anonim') }}{{ $knowledge->kolaborator ? ', ' . $knowledge->kolaborator : '' }}</span>
+                <span>Dibuat oleh:
+                    @if($knowledge->user)
+                        <a href="{{ route('users.show', $knowledge->user->id) }}"
+                           class="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition">
+                            {{ $knowledge->penulis ?? $knowledge->user->name }}
+                        </a>
+                    @else
+                        <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $knowledge->penulis ?? 'Anonim' }}</span>
+                    @endif
+                    {{ $knowledge->kolaborator ? ', ' . $knowledge->kolaborator : '' }}
+                </span>
             </div>
 
             @if($knowledge->tags && $knowledge->tags->count() > 0)
@@ -182,7 +192,15 @@
                             </div>
                             <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4">
                                 <dt class="font-semibold text-slate-900 dark:text-slate-100">Penulis</dt>
-                                <dd class="text-slate-600 dark:text-slate-300">{{ $knowledge->penulis ?? ($knowledge->user->name ?? '-') }}</dd>
+                                <dd class="text-slate-600 dark:text-slate-300">
+                                    @if($knowledge->user)
+                                        <a href="{{ route('users.show', $knowledge->user->id) }}" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+                                            {{ $knowledge->penulis ?? $knowledge->user->name }}
+                                        </a>
+                                    @else
+                                        {{ $knowledge->penulis ?? '-' }}
+                                    @endif
+                                </dd>
                             </div>
                             <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4">
                                 <dt class="font-semibold text-slate-900 dark:text-slate-100">Kategori</dt>
@@ -251,6 +269,33 @@
                         <svg class="w-4 h-4 shrink-0" width="16" height="16" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         <span>{{ $readingTime }} menit dibaca</span>
                     </div>
+
+                    {{-- Box Penulis --}}
+                    @if($knowledge->user)
+                    <div class="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
+                        <span class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Penulis</span>
+                        <div class="flex items-center gap-3">
+                            @if($knowledge->user->foto_profil)
+                                <img src="{{ asset('storage/' . $knowledge->user->foto_profil) }}" class="w-11 h-11 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0">
+                            @else
+                                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-base flex items-center justify-center shrink-0">
+                                    {{ strtoupper(substr($knowledge->user->name, 0, 1)) }}
+                                </div>
+                            @endif
+                            <div class="min-w-0">
+                                <a href="{{ route('users.show', $knowledge->user->id) }}" class="font-bold text-sm text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition truncate block">
+                                    {{ $knowledge->user->name }}
+                                </a>
+                                <div class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                    {{ $knowledge->user->role ?? 'Anggota' }}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{{ route('users.show', $knowledge->user->id) }}" class="block text-center py-2 px-3 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition">
+                            Lihat Profil Penulis &rarr;
+                        </a>
+                    </div>
+                    @endif
 
                     {{-- Di halaman ini --}}
                     <div class="space-y-3">

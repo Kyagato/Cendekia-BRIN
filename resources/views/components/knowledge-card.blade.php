@@ -37,7 +37,7 @@
                     @if($item->file_path && $isImageFile)
                         <img src="{{ asset('storage/' . $item->file_path) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover">
                     @else
-                        <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-750">
+                        <div class="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-900">
                             @if($item->tipe == 'Video')
                                 <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             @elseif($item->tipe == 'Gambar')
@@ -55,7 +55,7 @@
     </div>
 
     <!-- Footer Kategori & Views -->
-    <div class="px-5 py-3 bg-slate-50 dark:bg-slate-750/50 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+    <div class="px-5 py-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-700/80 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
         <div class="flex items-center gap-1 truncate max-w-[60%]">
             <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
             <span class="truncate">{{ $item->category->nama_kategori ?? 'Umum' }}</span>

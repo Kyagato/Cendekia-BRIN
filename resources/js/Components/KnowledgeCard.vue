@@ -34,7 +34,7 @@
           <!-- Small Thumbnail Box (Sejajar dengan Judul, Kanan Mentok) -->
           <a 
             :href="`/knowledge/${item.id}`" 
-            class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-850 shadow-sm flex items-center justify-center group/thumb"
+            class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 shadow-sm flex items-center justify-center group/thumb"
           >
             <img 
               v-if="isImageFile && !imgError" 

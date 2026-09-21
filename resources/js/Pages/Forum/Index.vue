@@ -91,8 +91,15 @@
           >
             <div class="flex items-start gap-4">
               <!-- Avatar -->
-              <div class="hidden sm:flex w-11 h-11 bg-[#2563eb] text-white rounded-lg items-center justify-center font-bold text-base shrink-0">
-                {{ thread.user?.name ? thread.user.name.charAt(0).toUpperCase() : 'U' }}
+              <div class="hidden sm:block shrink-0" @click.stop>
+                <UserPreviewPopover :user="thread.user">
+                  <template #default="{ user }">
+                    <a :href="`/users/${user.id}`" class="w-11 h-11 bg-[#2563eb] text-white rounded-lg flex items-center justify-center font-bold text-base shrink-0 hover:opacity-90 transition overflow-hidden">
+                      <img v-if="user.foto_profil" :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
+                      <span v-else>{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</span>
+                    </a>
+                  </template>
+                </UserPreviewPopover>
               </div>
 
               <div class="flex-grow min-w-0">
@@ -112,9 +119,15 @@
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4 text-xs text-[#94a3b8] dark:text-slate-400">
-                  <span class="font-medium text-[#475569] dark:text-slate-300">
-                    {{ thread.user?.name || 'Anonymous' }}
-                  </span>
+                  <div @click.stop>
+                    <UserPreviewPopover :user="thread.user">
+                      <template #default="{ user }">
+                        <a :href="`/users/${user.id}`" class="font-medium text-[#475569] dark:text-slate-300 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition">
+                          {{ user.name }}
+                        </a>
+                      </template>
+                    </UserPreviewPopover>
+                  </div>
 
                   <span v-if="thread.category" class="bg-[#f1f5f9] dark:bg-slate-800 px-2 py-0.5 rounded text-[#475569] dark:text-slate-300 border border-[#e2e8f0] dark:border-slate-700">
                     {{ thread.category.nama_kategori }}
@@ -150,6 +163,7 @@
 import { ref, computed } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
+import UserPreviewPopover from '../../Components/UserPreviewPopover.vue';
 
 const props = defineProps({
   threads: Object,
