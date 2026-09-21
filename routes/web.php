@@ -20,7 +20,7 @@ Route::get('/tentang', [HomeController::class, 'about'])->name('about');
 Route::get('/kategori', [HomeController::class, 'category'])->name('category.index');
 Route::get('/kategori/{id}', [HomeController::class, 'categoryShow'])->name('category.show');
 Route::get('/forum', [HomeController::class, 'forum'])->name('forum.index');
-Route::get('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'show'])->name('forum.show');
+Route::get('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'show'])->name('forum.show')->whereNumber('thread');
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 
 // Search API (publik) & Halaman Pencarian Utama
