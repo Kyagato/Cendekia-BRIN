@@ -14,10 +14,11 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request): \Inertia\Response
     {
-        return view('profile.edit', [
+        return \Inertia\Inertia::render('Profile/Edit', [
             'user' => $request->user(),
+            'status' => session('status'),
         ]);
     }
 
@@ -81,7 +82,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if (empty($user->keycloak_id)) {
-            $request->validateWithBag('userDeletion', [
+            $request->validate([
                 'password' => ['required', 'current_password'],
             ]);
         }
@@ -99,7 +100,7 @@ class ProfileController extends Controller
     /**
      * Display the public profile of a user (POV Pengunjung & User Lain).
      */
-    public function show(\App\Models\User $user): View
+    public function show(\App\Models\User $user): \Inertia\Response
     {
         // Hanya ambil pengetahuan yang berstatus 'Disetujui' (terbit publik)
         $knowledgeList = $user->knowledge()
@@ -109,7 +110,7 @@ class ProfileController extends Controller
             ->paginate(9);
 
         $totalKnowledge = $user->knowledge()->where('status', 'Disetujui')->count();
-        $totalViews = $user->knowledge()->where('status', 'Disetujui')->sum('views_count') ?? 0;
+        $totalViews = (int) ($user->knowledge()->where('status', 'Disetujui')->sum('views_count') ?? 0);
 
         // Thread forum yang dibuat oleh user ini
         $forumThreads = \App\Models\ForumThread::where('user_id', $user->id)
@@ -123,13 +124,13 @@ class ProfileController extends Controller
             ->where('status', 'approved')
             ->count();
 
-        return view('pages.user-profile', compact(
-            'user',
-            'knowledgeList',
-            'totalKnowledge',
-            'totalViews',
-            'forumThreads',
-            'totalThreads'
-        ));
+        return \Inertia\Inertia::render('Profile/Show', [
+            'user' => $user,
+            'knowledgeList' => $knowledgeList,
+            'totalKnowledge' => $totalKnowledge,
+            'totalViews' => $totalViews,
+            'forumThreads' => $forumThreads,
+            'totalThreads' => $totalThreads,
+        ]);
     }
 }

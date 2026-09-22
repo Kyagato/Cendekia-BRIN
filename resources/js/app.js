@@ -47,16 +47,19 @@ Alpine.store('darkMode', {
 window.Alpine = Alpine;
 Alpine.start();
 
-// Initialize Inertia Vue 3 App
-createInertiaApp({
-    title: (title) => title ? `${title} - MojoPedia` : 'MojoPedia',
-    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
-    setup({ el, App, props, plugin }) {
-        return createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .mount(el);
-    },
-    progress: {
-        color: '#2563eb', // MojoPedia Digital Governance Primary Blue
-    },
-});
+// Initialize Inertia Vue 3 App (only if #app root element exists)
+if (document.getElementById('app')) {
+    createInertiaApp({
+        title: (title) => title ? `${title} - MojoPedia` : 'MojoPedia',
+        resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
+        setup({ el, App, props, plugin }) {
+            return createApp({ render: () => h(App, props) })
+                .use(plugin)
+                .mount(el);
+        },
+        progress: {
+            color: '#2563eb', // MojoPedia Digital Governance Primary Blue
+        },
+    });
+}
+
