@@ -70,7 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: MANAJEMEN KONTEN PENGETAHUAN
     // Super Admin, Admin Pusat, Admin, Analisis Pengetahuan, Kreator Pengetahuan
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Admin IPPD,Analisis Pengetahuan,Analis Pengetahuan,Anggota,Kreator Pengetahuan,Moderator'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Analisis Pengetahuan,Analis Pengetahuan,Anggota,Kreator Pengetahuan,Moderator'])->group(function () {
         Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
         Route::get('/knowledge/create', [KnowledgeController::class, 'create'])->name('knowledge.create');
         Route::post('/knowledge', [KnowledgeController::class, 'store'])->name('knowledge.store');
@@ -88,7 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: ANALISIS PENGETAHUAN + ADMIN
     // Validasi, approve, atau reject konten
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Admin IPPD,Analisis Pengetahuan,Analis Pengetahuan'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Analisis Pengetahuan,Analis Pengetahuan'])->group(function () {
         Route::get('/validasi', function (\Illuminate\Http\Request $request) {
             $query = Knowledge::with(['user', 'category'])->where('status', '!=', 'Draft')->latest();
 
@@ -178,7 +178,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: MODERATOR + ADMIN
     // Mengelola forum diskusi
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Admin IPPD,Moderator'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Moderator'])->group(function () {
         Route::get('/forum/manage', function () {
             return redirect()->route('moderator.forum.approval');
         })->name('forum.manage');
@@ -200,7 +200,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: ADMIN + ADMIN PUSAT + SUPER ADMIN
     // Mengelola kategori, FAQ, laporan, dan pengaturan instansi
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Admin IPPD'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
         Route::get('/admin/kategori', function () {
             return view('dashboard'); // TODO: CRUD Kategori
         })->name('admin.kategori');
@@ -218,7 +218,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: SUPER ADMIN + ADMIN PUSAT + ADMIN
     // Manajemen CRUD Pengguna
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Admin IPPD'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
         Route::resource('/admin/users', App\Http\Controllers\UserController::class, ['as' => 'admin']);
     });
 
@@ -226,7 +226,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ROLE: SUPER ADMIN + ADMIN PUSAT + ADMIN
     // Panel administrator — kelola statistik, role, konfigurasi
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Admin IPPD'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
         Route::get('/admin/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('admin.statistik');
         Route::get('/admin/roles', function () {
             return view('dashboard'); // TODO: Manajemen Role
