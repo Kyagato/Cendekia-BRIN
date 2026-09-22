@@ -48,20 +48,20 @@ class AppServiceProvider extends ServiceProvider
         // ----- Gate: Mengelola Konfigurasi Sistem -----
         // Super Admin, Admin Pusat, dan Admin.
         Gate::define('manage-settings', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']);
+            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin']);
         });
 
         // ----- Gate: Mengelola Kategori & FAQ -----
         // Admin bisa CRUD kategori dan FAQ.
         Gate::define('manage-categories', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']);
+            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin']);
         });
 
         // ----- Gate: Membuat Konten/Pengetahuan -----
         // Anggota, Kreator Pengetahuan, Moderator, dan Admin bisa MEMBUAT konten baru.
         Gate::define('create-knowledge', function (User $user) {
             return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Moderator',
+                'Super Admin', 'Admin Pusat', 'Admin', 'Anggota', 'Kreator Pengetahuan', 'Moderator',
             ]);
         });
 
@@ -96,7 +96,7 @@ class AppServiceProvider extends ServiceProvider
         // Hanya Analisis Pengetahuan dan Admin yang bisa approve/reject.
         Gate::define('validate-knowledge', function (User $user) {
             return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Analisis Pengetahuan',
+                'Super Admin', 'Admin Pusat', 'Admin', 'Analisis Pengetahuan',
             ]);
         });
 
@@ -112,7 +112,7 @@ class AppServiceProvider extends ServiceProvider
         // Admin dan Analisis Pengetahuan.
         Gate::define('view-reports', function (User $user) {
             return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Analisis Pengetahuan',
+                'Super Admin', 'Admin Pusat', 'Admin', 'Analisis Pengetahuan',
             ]);
         });
 
