@@ -133,7 +133,7 @@
                                     </a>
                                     @endcan
                                     {{-- Validasi/Ubah --}}
-                                    @if(in_array(auth()->user()->role, ['Analisis Pengetahuan', 'Analis Pengetahuan', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
+                                    @if(in_array(auth()->user()->role, ['Analisis Pengetahuan', 'Analis Pengetahuan', 'Super Admin', 'Admin Pusat', 'Admin']))
                                     <a href="{{ route('validasi.show', $item->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
                                         <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
                                         <span>Ubah</span>
@@ -197,7 +197,7 @@
     @endif
 </div>
 
-@if(in_array(auth()->user()->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator', 'Super Admin', 'Admin Pusat', 'Admin IPPD']))
+@if(in_array(auth()->user()->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator', 'Super Admin', 'Admin Pusat', 'Admin']))
 
 <!-- Table Draft Pengetahuan -->
 <div class="mt-8 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
