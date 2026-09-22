@@ -99,7 +99,7 @@ class User extends Authenticatable
 
     public function isAdminRegular(): bool
     {
-        return $this->role === self::ROLE_ADMIN || $this->role === 'Admin IPPD';
+        return $this->role === self::ROLE_ADMIN;
     }
 
     public function isAdminIPPD(): bool
