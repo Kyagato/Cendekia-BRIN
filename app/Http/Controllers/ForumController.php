@@ -29,7 +29,11 @@ class ForumController extends Controller
             $linkedKnowledge = \App\Models\Knowledge::find($request->knowledge_id);
         }
 
-        return view('pages.forum-create', compact('categories', 'knowledges', 'linkedKnowledge'));
+        return Inertia::render('Forum/Create', [
+            'categories' => $categories,
+            'knowledges' => $knowledges,
+            'linkedKnowledge' => $linkedKnowledge,
+        ]);
     }
 
     // 2. Simpan Thread
