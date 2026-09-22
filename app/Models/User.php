@@ -68,7 +68,6 @@ class User extends Authenticatable
     public const ROLE_SUPER_ADMIN = 'Super Admin';
     public const ROLE_ADMIN_PUSAT  = 'Admin Pusat';
     public const ROLE_ADMIN        = 'Admin';
-    public const ROLE_ADMIN_IPPD   = 'Admin'; // Alias backward compatibility
     public const ROLE_ANALIS       = 'Analisis Pengetahuan';
     public const ROLE_MODERATOR    = 'Moderator';
     public const ROLE_ANGGOTA      = 'Anggota';
@@ -140,14 +139,10 @@ class User extends Authenticatable
 
     public function canManageContent(): bool
     {
-        return in_array($this->role, [
-            self::ROLE_SUPER_ADMIN,
-            self::ROLE_ADMIN_PUSAT,
-            self::ROLE_ADMIN_IPPD,
+        return $this->isAdmin() || in_array($this->role, [
             self::ROLE_ANGGOTA,
             self::ROLE_ANALIS,
-            'Kreator Pengetahuan',
-            'Analis Pengetahuan',
+            self::ROLE_MODERATOR,
         ]);
     }
 }
