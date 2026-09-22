@@ -89,15 +89,17 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
 
             $assignedRole = null;
             if (in_array('Super Admin', $kcRoles) || in_array('super_admin', $kcRoles)) {
-                $assignedRole = 'Super Admin';
+                $assignedRole = User::ROLE_SUPER_ADMIN;
             } elseif (in_array('Admin Pusat', $kcRoles) || in_array('admin_pusat', $kcRoles)) {
-                $assignedRole = 'Admin Pusat';
-            } elseif (in_array('Admin IPPD', $kcRoles) || in_array('admin_ippd', $kcRoles)) {
-                $assignedRole = 'Admin IPPD';
+                $assignedRole = User::ROLE_ADMIN_PUSAT;
+            } elseif (in_array('Admin', $kcRoles) || in_array('admin', $kcRoles) || in_array('Admin IPPD', $kcRoles) || in_array('admin_ippd', $kcRoles)) {
+                $assignedRole = User::ROLE_ADMIN;
             } elseif (in_array('Moderator', $kcRoles) || in_array('moderator', $kcRoles)) {
-                $assignedRole = 'Moderator';
-            } elseif (in_array('Analisis Pengetahuan', $kcRoles) || in_array('analisis_pengetahuan', $kcRoles)) {
-                $assignedRole = 'Analisis Pengetahuan';
+                $assignedRole = User::ROLE_MODERATOR;
+            } elseif (in_array('Analisis Pengetahuan', $kcRoles) || in_array('analisis_pengetahuan', $kcRoles) || in_array('analis_pengetahuan', $kcRoles)) {
+                $assignedRole = User::ROLE_ANALIS;
+            } elseif (in_array('Anggota', $kcRoles) || in_array('anggota', $kcRoles) || in_array('kreator_pengetahuan', $kcRoles)) {
+                $assignedRole = User::ROLE_ANGGOTA;
             }
 
             if ($user) {
@@ -115,7 +117,7 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                     'name' => $keycloakUser->getName() ?? $keycloakUser->getNickname() ?? 'Keycloak User',
                     'email' => $keycloakUser->getEmail(),
                     'keycloak_id' => $keycloakUser->getId(),
-                    'role' => $assignedRole ?? 'Anggota',
+                    'role' => $assignedRole ?? User::ROLE_ANGGOTA,
                     'email_verified_at' => now(),
                 ]);
             }

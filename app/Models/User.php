@@ -62,54 +62,92 @@ class User extends Authenticatable
         ];
     }
 
-    public function isSuperAdmin()
+    // ============================================================
+    // STANDAR KONSTANTA ROLE RESMI
+    // ============================================================
+    public const ROLE_SUPER_ADMIN = 'Super Admin';
+    public const ROLE_ADMIN_PUSAT  = 'Admin Pusat';
+    public const ROLE_ADMIN        = 'Admin';
+    public const ROLE_ADMIN_IPPD   = 'Admin'; // Alias backward compatibility
+    public const ROLE_ANALIS       = 'Analisis Pengetahuan';
+    public const ROLE_MODERATOR    = 'Moderator';
+    public const ROLE_ANGGOTA      = 'Anggota';
+
+    public const ALL_ROLES = [
+        self::ROLE_SUPER_ADMIN,
+        self::ROLE_ADMIN_PUSAT,
+        self::ROLE_ADMIN,
+        self::ROLE_ANGGOTA,
+        self::ROLE_ANALIS,
+        self::ROLE_MODERATOR,
+    ];
+
+    public const ADMIN_ROLES = [
+        self::ROLE_SUPER_ADMIN,
+        self::ROLE_ADMIN_PUSAT,
+        self::ROLE_ADMIN,
+    ];
+
+    public function isSuperAdmin(): bool
     {
-        return $this->role === 'Super Admin';
+        return $this->role === self::ROLE_SUPER_ADMIN;
     }
 
-    public function isAdminPusat()
+    public function isAdminPusat(): bool
     {
-        return $this->role === 'Admin Pusat';
+        return $this->role === self::ROLE_ADMIN_PUSAT;
     }
 
-    public function isAdminIPPD()
+    public function isAdminRegular(): bool
     {
-        return $this->role === 'Admin IPPD';
+        return $this->role === self::ROLE_ADMIN || $this->role === 'Admin IPPD';
     }
 
-    public function isCreator()
+    public function isAdminIPPD(): bool
     {
-        return in_array($this->role, ['Anggota', 'Kreator Pengetahuan']);
+        return $this->isAdminRegular();
     }
 
-    public function isAnalyst()
+    public function isAnalyst(): bool
     {
-        return $this->role === 'Analisis Pengetahuan';
+        return $this->role === self::ROLE_ANALIS || $this->role === 'Analis Pengetahuan';
     }
 
-    public function isModerator()
+    public function isModerator(): bool
     {
-        return $this->role === 'Moderator';
+        return $this->role === self::ROLE_MODERATOR;
     }
 
-    public function isMember()
+    public function isMember(): bool
     {
-        return in_array($this->role, ['Anggota', 'Kreator Pengetahuan']);
+        return in_array($this->role, [self::ROLE_ANGGOTA, 'Kreator Pengetahuan']);
     }
 
-    public function isGuest()
+    public function isCreator(): bool
+    {
+        return $this->isMember();
+    }
+
+    public function isGuest(): bool
     {
         return false;
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return in_array($this->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']);
+        return in_array($this->role, self::ADMIN_ROLES);
     }
 
-    public function canManageContent()
+    public function canManageContent(): bool
     {
-        return in_array($this->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Analisis Pengetahuan']);
+        return in_array($this->role, [
+            self::ROLE_SUPER_ADMIN,
+            self::ROLE_ADMIN_PUSAT,
+            self::ROLE_ADMIN_IPPD,
+            self::ROLE_ANGGOTA,
+            self::ROLE_ANALIS,
+            'Kreator Pengetahuan',
+            'Analis Pengetahuan',
+        ]);
     }
-
 }

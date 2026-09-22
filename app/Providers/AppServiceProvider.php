@@ -46,29 +46,29 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // ----- Gate: Mengelola Konfigurasi Sistem -----
-        // Super Admin, Admin Pusat, dan Admin IPPD (untuk instansinya).
+        // Super Admin, Admin Pusat, dan Admin.
         Gate::define('manage-settings', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']);
+            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']);
         });
 
         // ----- Gate: Mengelola Kategori & FAQ -----
         // Admin bisa CRUD kategori dan FAQ.
         Gate::define('manage-categories', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']);
+            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']);
         });
 
         // ----- Gate: Membuat Konten/Pengetahuan -----
         // Anggota, Kreator Pengetahuan, Moderator, dan Admin bisa MEMBUAT konten baru.
         Gate::define('create-knowledge', function (User $user) {
             return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Moderator',
+                'Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Moderator',
             ]);
         });
 
         // ----- Gate: Mengedit Konten Sendiri -----
         // Anggota, Kreator & Moderator hanya bisa edit konten miliknya. Admin bisa edit semua.
         Gate::define('edit-knowledge', function (User $user, Knowledge $knowledge) {
-            if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD'])) {
+            if ($user->isAdmin()) {
                 return true;
             }
             // Anggota, Kreator Pengetahuan & Moderator hanya bisa edit miliknya sendiri
@@ -81,7 +81,7 @@ class AppServiceProvider extends ServiceProvider
         // ----- Gate: Menghapus Konten -----
         // Anggota, Kreator & Moderator hanya bisa hapus konten miliknya. Admin bisa hapus semua.
         Gate::define('delete-knowledge', function (User $user, Knowledge $knowledge) {
-            if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD'])) {
+            if ($user->isAdmin()) {
                 return true;
             }
             if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator']) && $knowledge->user_id === $user->id) {
@@ -96,7 +96,7 @@ class AppServiceProvider extends ServiceProvider
         // Hanya Analisis Pengetahuan dan Admin yang bisa approve/reject.
         Gate::define('validate-knowledge', function (User $user) {
             return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan',
+                'Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Analisis Pengetahuan',
             ]);
         });
 
@@ -112,7 +112,7 @@ class AppServiceProvider extends ServiceProvider
         // Admin dan Analisis Pengetahuan.
         Gate::define('view-reports', function (User $user) {
             return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan',
+                'Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Analisis Pengetahuan',
             ]);
         });
 

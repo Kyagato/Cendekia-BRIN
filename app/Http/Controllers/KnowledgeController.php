@@ -18,7 +18,7 @@ class KnowledgeController extends Controller
             ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak']);
 
         // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (kecuali Admin)
-        if (!in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) && $user->email !== 'superadmin@brin.go.id') {
+        if (!$user->isAdmin() && $user->email !== 'superadmin@brin.go.id') {
             $query->where('user_id', $user->id);
         }
 
@@ -53,7 +53,7 @@ class KnowledgeController extends Controller
         $draftsQuery = Knowledge::with(['category', 'user', 'tags'])
             ->where('status', 'Draft');
 
-        if (!in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD']) && $user->email !== 'superadmin@brin.go.id') {
+        if (!$user->isAdmin() && $user->email !== 'superadmin@brin.go.id') {
             $draftsQuery->where('user_id', $user->id);
         }
 
@@ -66,7 +66,7 @@ class KnowledgeController extends Controller
 
     /**
      * Cek apakah user yang sedang login memiliki hak otomatis disetujui
-     * (Role: Super Admin, Admin Pusat, Admin IPPD, Analisis Pengetahuan / Analis Pengetahuan)
+     * (Role: Super Admin, Admin Pusat, Admin, Analisis Pengetahuan)
      */
     private function isAutoApproveUser(): bool
     {
@@ -76,6 +76,7 @@ class KnowledgeController extends Controller
         $autoApproveRoles = [
             'Super Admin',
             'Admin Pusat',
+            'Admin',
             'Admin IPPD',
             'Analisis Pengetahuan',
             'Analis Pengetahuan',

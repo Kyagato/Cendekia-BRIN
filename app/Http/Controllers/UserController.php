@@ -17,19 +17,19 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role === 'Super Admin' || $user->email === 'superadmin@brin.go.id') {
+        if ($user->role === User::ROLE_SUPER_ADMIN || $user->email === 'superadmin@brin.go.id') {
             // Super Admin can manage ALL roles (including other Super Admins)
-            return ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator'];
+            return User::ALL_ROLES;
         }
 
-        if ($user->role === 'Admin Pusat') {
-            // Admin Pusat can manage: Admin IPPD, Anggota, Moderator, Analisis Pengetahuan
-            return ['Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator'];
+        if ($user->role === User::ROLE_ADMIN_PUSAT) {
+            // Admin Pusat can manage: Admin, Anggota, Moderator, Analisis Pengetahuan
+            return [User::ROLE_ADMIN, User::ROLE_ANGGOTA, User::ROLE_ANALIS, User::ROLE_MODERATOR];
         }
 
-        if ($user->role === 'Admin IPPD') {
-            // Admin IPPD can manage: Anggota, Moderator, Analisis Pengetahuan
-            return ['Anggota', 'Analisis Pengetahuan', 'Moderator'];
+        if ($user->role === User::ROLE_ADMIN || $user->role === 'Admin IPPD') {
+            // Admin can manage: Anggota, Moderator, Analisis Pengetahuan
+            return [User::ROLE_ANGGOTA, User::ROLE_ANALIS, User::ROLE_MODERATOR];
         }
 
         return [];

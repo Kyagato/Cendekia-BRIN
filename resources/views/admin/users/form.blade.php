@@ -81,14 +81,15 @@
                             $roleLabel = match($role) {
                                 'Super Admin' => 'Super Admin',
                                 'Admin Pusat' => 'Admin Pusat',
-                                'Admin IPPD' => 'Admin IPPD',
+                                'Admin' => 'Admin',
+                                'Admin IPPD' => 'Admin',
                                 'Anggota' => 'Anggota (Pengguna Umum)',
                                 'Analisis Pengetahuan' => 'Analisis Pengetahuan',
                                 'Moderator' => 'Moderator',
                                 default => $role,
                             };
                             $currentRole = old('role', $user->role ?? '');
-                            $isSelected = ($currentRole === $role) || ($role === 'Anggota' && $currentRole === 'Kreator Pengetahuan');
+                            $isSelected = ($currentRole === $role) || ($role === 'Anggota' && $currentRole === 'Kreator Pengetahuan') || ($role === 'Admin' && $currentRole === 'Admin IPPD');
                         @endphp
                         <option value="{{ $role }}" {{ $isSelected ? 'selected' : '' }}>{{ $roleLabel }}</option>
                     @endforeach
