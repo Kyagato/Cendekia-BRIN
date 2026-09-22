@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = auth()->user();
         if (!$user) return redirect('/login');
 
-        if (in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']) || $user->email === 'superadmin@brin.go.id') {
+        if ($user->isAdmin()) {
             return redirect()->route('admin.statistik');
         }
 

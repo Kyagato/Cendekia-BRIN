@@ -82,7 +82,7 @@
                     </td>
                     <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            @if(in_array($user->role, $allowedRolesForView) || auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id')
+                            @if(in_array($user->role, $allowedRolesForView) || auth()->user()->isSuperAdmin())
                             <a href="{{ route('admin.users.edit', $user->id) }}" class="inline-flex items-center px-3 py-1.5 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 rounded text-xs font-medium transition">
                                 Edit
                             </a>

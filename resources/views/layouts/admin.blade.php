@@ -35,13 +35,12 @@
                 @if(!request()->routeIs('profile.edit'))
                 <nav class="hidden md:flex items-center gap-3 lg:gap-4">
                 @php
-                    $isModerator = auth()->check() && str_contains(auth()->user()->role, 'Moderator');
-                    $isKreator  = auth()->check() && str_contains(auth()->user()->role, 'Kreator');
-                    $moderatorRoles = ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Moderator'];
+                    $isModerator = auth()->check() && auth()->user()->isModerator();
+                    $isKreator  = auth()->check() && auth()->user()->isMember();
                 @endphp
 
                 {{-- Statistik: Super Admin, Admin Pusat, Admin --}}
-                @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+                @if(auth()->check() && auth()->user()->isAdmin())
                     <a href="{{ route('admin.statistik') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.statistik')
@@ -64,7 +63,7 @@
 
 
                 {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
-                @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan'])))
+                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAnalyst()))
                     <a href="{{ route('validasi.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('validasi.*')
@@ -76,7 +75,7 @@
 
 
                 {{-- Atur Forum: hanya untuk role moderator/admin --}}
-                @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, $moderatorRoles)))
+                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isModerator()))
                     <a href="{{ route('moderator.forum.approval') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('moderator.forum.*')
@@ -88,7 +87,7 @@
 
 
                 {{-- Edit FAQs: Super Admin, Admin Pusat, Admin --}}
-                @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+                @if(auth()->check() && auth()->user()->isAdmin())
                     <a href="{{ route('admin.faq.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.faq.*')
@@ -100,7 +99,7 @@
 
 
                 {{-- Pengguna: Super Admin, Admin Pusat, Admin --}}
-                @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+                @if(auth()->check() && auth()->user()->isAdmin())
                     <a href="{{ route('admin.users.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('admin.users.*')
@@ -192,11 +191,11 @@
          class="md:hidden bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 absolute top-16 w-full left-0 z-40 px-4 py-3 shadow-md space-y-1"
          style="display: none;">
         @php
-            $isModerator = auth()->check() && str_contains(auth()->user()->role, 'Moderator');
-            $isKreator   = auth()->check() && str_contains(auth()->user()->role, 'Kreator');
+            $isModerator = auth()->check() && auth()->user()->isModerator();
+            $isKreator   = auth()->check() && auth()->user()->isMember();
         @endphp
 
-        @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+        @if(auth()->check() && auth()->user()->isAdmin())
         <a href="{{ route('admin.statistik') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('admin.statistik') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Statistik</a>
@@ -211,26 +210,26 @@
 
 
         {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
-        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan'])))
+        @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAnalyst()))
         <a href="{{ route('validasi.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('validasi.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Validasi</a>
         @endif
 
 
-        @if(auth()->check() && (auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id' || in_array(auth()->user()->role, ['Admin Pusat', 'Admin', 'Admin IPPD', 'Moderator'])))
+        @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isModerator()))
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
         @endif
 
-        @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+        @if(auth()->check() && auth()->user()->isAdmin())
         <a href="{{ route('admin.faq.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('admin.faq.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Edit FAQs</a>
         @endif
 
-        @if(auth()->check() && (in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD']) || auth()->user()->email === 'superadmin@brin.go.id'))
+        @if(auth()->check() && auth()->user()->isAdmin())
         <a href="{{ route('admin.users.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('admin.users.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengguna</a>

@@ -18,7 +18,7 @@ class KnowledgeController extends Controller
             ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak']);
 
         // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (kecuali Admin)
-        if (!$user->isAdmin() && $user->email !== 'superadmin@brin.go.id') {
+        if (!$user->isAdmin()) {
             $query->where('user_id', $user->id);
         }
 
@@ -53,7 +53,7 @@ class KnowledgeController extends Controller
         $draftsQuery = Knowledge::with(['category', 'user', 'tags'])
             ->where('status', 'Draft');
 
-        if (!$user->isAdmin() && $user->email !== 'superadmin@brin.go.id') {
+        if (!$user->isAdmin()) {
             $draftsQuery->where('user_id', $user->id);
         }
 
@@ -73,16 +73,7 @@ class KnowledgeController extends Controller
         $user = Auth::user();
         if (!$user) return false;
 
-        $autoApproveRoles = [
-            'Super Admin',
-            'Admin Pusat',
-            'Admin',
-            'Admin IPPD',
-            'Analisis Pengetahuan',
-            'Analis Pengetahuan',
-        ];
-
-        return in_array($user->role, $autoApproveRoles) || $user->email === 'superadmin@brin.go.id';
+        return $user->isAdmin() || $user->isAnalyst();
     }
 
     // 1. Menampilkan Form Upload
