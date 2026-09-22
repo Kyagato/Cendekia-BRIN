@@ -276,7 +276,7 @@ class KnowledgeController extends Controller
             'file_upload.max' => 'Ukuran thumbnail gambar tidak boleh lebih dari 5MB.',
         ]);
 
-        // Determine new status: jika user berole auto-approval (Super Admin, Admin Pusat, Admin IPPD, Analis Pengetahuan), langsung set ke Disetujui
+        // Determine new status: jika user berole auto-approval (Super Admin, Admin Pusat, Admin, Analis Pengetahuan), langsung set ke Disetujui
         if ($this->isAutoApproveUser()) {
             $newStatus = 'Disetujui';
         } else {

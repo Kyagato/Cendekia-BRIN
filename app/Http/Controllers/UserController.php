@@ -27,7 +27,7 @@ class UserController extends Controller
             return [User::ROLE_ADMIN, User::ROLE_ANGGOTA, User::ROLE_ANALIS, User::ROLE_MODERATOR];
         }
 
-        if ($user->role === User::ROLE_ADMIN || $user->role === 'Admin IPPD') {
+        if ($user->role === User::ROLE_ADMIN) {
             // Admin can manage: Anggota, Moderator, Analisis Pengetahuan
             return [User::ROLE_ANGGOTA, User::ROLE_ANALIS, User::ROLE_MODERATOR];
         }
