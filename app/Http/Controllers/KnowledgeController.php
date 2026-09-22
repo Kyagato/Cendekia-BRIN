@@ -17,8 +17,15 @@ class KnowledgeController extends Controller
         $query = Knowledge::with(['category', 'user', 'tags'])
             ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak']);
 
+<<<<<<< HEAD
         // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login
         $query->where('user_id', $user->id);
+=======
+        // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (kecuali Admin)
+        if (!$user->isAdmin()) {
+            $query->where('user_id', $user->id);
+        }
+>>>>>>> 2e3db8ae728a3388ae619f34da65b300c5d41ac5
 
         $query->latest();
 
@@ -49,8 +56,16 @@ class KnowledgeController extends Controller
 
         // Get drafts for logged-in user
         $draftsQuery = Knowledge::with(['category', 'user', 'tags'])
+<<<<<<< HEAD
             ->where('status', 'Draft')
             ->where('user_id', $user->id);
+=======
+            ->where('status', 'Draft');
+
+        if (!$user->isAdmin()) {
+            $draftsQuery->where('user_id', $user->id);
+        }
+>>>>>>> 2e3db8ae728a3388ae619f34da65b300c5d41ac5
 
         $drafts = $draftsQuery->latest()
             ->paginate(5, ['*'], 'page_drafts')
@@ -61,22 +76,14 @@ class KnowledgeController extends Controller
 
     /**
      * Cek apakah user yang sedang login memiliki hak otomatis disetujui
-     * (Role: Super Admin, Admin Pusat, Admin IPPD, Analisis Pengetahuan / Analis Pengetahuan)
+     * (Role: Super Admin, Admin Pusat, Admin, Analisis Pengetahuan)
      */
     private function isAutoApproveUser(): bool
     {
         $user = Auth::user();
         if (!$user) return false;
 
-        $autoApproveRoles = [
-            'Super Admin',
-            'Admin Pusat',
-            'Admin IPPD',
-            'Analisis Pengetahuan',
-            'Analis Pengetahuan',
-        ];
-
-        return in_array($user->role, $autoApproveRoles) || $user->email === 'superadmin@brin.go.id';
+        return $user->isAdmin() || $user->isAnalyst();
     }
 
     // 1. Menampilkan Form Upload

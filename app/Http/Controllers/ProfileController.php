@@ -64,8 +64,8 @@ class ProfileController extends Controller
             $user->foto_profil = $path;
         }
 
-        // Only Super Admin, Admin Pusat, Admin IPPD can change roles
-        if ($role && in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD'])) {
+        // Only Super Admin, Admin Pusat, Admin can change roles
+        if ($role && $user->isAdmin()) {
             $user->role = $role;
         }
 

@@ -21,8 +21,8 @@ class RoleMiddleware
 
         $user = auth()->user();
 
-        // Super Admin & email superadmin selalu diberikan akses penuh
-        if ($user->role === 'Super Admin' || $user->email === 'superadmin@brin.go.id') {
+        // Super Admin selalu diberikan akses penuh
+        if ($user->isSuperAdmin()) {
             return $next($request);
         }
 

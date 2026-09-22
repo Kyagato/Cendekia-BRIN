@@ -238,7 +238,7 @@ watch(flashSuccess, (val) => {
 
 const canManageForum = computed(() => {
   if (!user.value) return false;
-  return ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Moderator'].includes(user.value.role);
+  return ['Super Admin', 'Admin Pusat', 'Admin', 'Admin IPPD', 'Moderator'].includes(user.value.role);
 });
 
 const replyTo = ref(null);

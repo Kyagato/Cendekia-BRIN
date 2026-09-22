@@ -67,6 +67,7 @@
                             $roleClass = match($user->role) {
                                 'Super Admin' => 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
                                 'Admin Pusat' => 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
+                                'Admin' => 'bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-800',
                                 'Admin IPPD' => 'bg-orange-100 dark:bg-orange-950 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-800',
                                 'Anggota' => 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
                                 'Kreator Pengetahuan' => 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
@@ -81,7 +82,7 @@
                     </td>
                     <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            @if(in_array($user->role, $allowedRolesForView) || auth()->user()->role === 'Super Admin' || auth()->user()->email === 'superadmin@brin.go.id')
+                            @if(in_array($user->role, $allowedRolesForView) || auth()->user()->isSuperAdmin())
                             <a href="{{ route('admin.users.edit', $user->id) }}" class="inline-flex items-center px-3 py-1.5 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 rounded text-xs font-medium transition">
                                 Edit
                             </a>

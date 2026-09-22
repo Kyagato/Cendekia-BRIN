@@ -44,9 +44,9 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
             ],
             [
-                'name' => 'Admin IPPD',
-                'email' => 'ippd@simpan.brin',
-                'role' => 'Admin IPPD',
+                'name' => 'Admin',
+                'email' => 'admin@simpan.brin',
+                'role' => 'Admin',
                 'instansi' => 'IPPD Serpong',
                 'jenis_kelamin' => 'P',
             ],

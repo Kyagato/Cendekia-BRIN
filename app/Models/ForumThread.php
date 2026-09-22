@@ -16,7 +16,7 @@ class ForumThread extends Model
     ];
 
     // Roles that get auto-approval
-    const AUTO_APPROVE_ROLES = ['super_admin', 'admin_pusat', 'admin_ippd', 'Super Admin', 'Admin Pusat', 'Admin IPPD'];
+    const AUTO_APPROVE_ROLES = ['super_admin', 'admin_pusat', 'admin_ippd', 'admin', 'Super Admin', 'Admin Pusat', 'Admin IPPD', 'Admin'];
 
     public function user()
     {

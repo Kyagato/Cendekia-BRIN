@@ -194,8 +194,8 @@ class HomeController extends Controller
             $user = auth()->user();
             $canView = $user && (
                 $user->id === $knowledge->user_id ||
-                in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Analisis Pengetahuan', 'Analis Pengetahuan', 'Kreator Pengetahuan']) ||
-                $user->email === 'superadmin@brin.go.id'
+                $user->isAdmin() ||
+                $user->isAnalyst()
             );
             if (!$canView) {
                 abort(404);

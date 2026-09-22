@@ -17,19 +17,19 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role === 'Super Admin' || $user->email === 'superadmin@brin.go.id') {
+        if ($user->isSuperAdmin()) {
             // Super Admin can manage ALL roles (including other Super Admins)
-            return ['Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator'];
+            return User::ALL_ROLES;
         }
 
-        if ($user->role === 'Admin Pusat') {
-            // Admin Pusat can manage: Admin IPPD, Anggota, Moderator, Analisis Pengetahuan
-            return ['Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator'];
+        if ($user->role === User::ROLE_ADMIN_PUSAT) {
+            // Admin Pusat can manage: Admin, Anggota, Moderator, Analisis Pengetahuan
+            return [User::ROLE_ADMIN, User::ROLE_ANGGOTA, User::ROLE_ANALIS, User::ROLE_MODERATOR];
         }
 
-        if ($user->role === 'Admin IPPD') {
-            // Admin IPPD can manage: Anggota, Moderator, Analisis Pengetahuan
-            return ['Anggota', 'Analisis Pengetahuan', 'Moderator'];
+        if ($user->role === User::ROLE_ADMIN || $user->role === 'Admin IPPD') {
+            // Admin can manage: Anggota, Moderator, Analisis Pengetahuan
+            return [User::ROLE_ANGGOTA, User::ROLE_ANALIS, User::ROLE_MODERATOR];
         }
 
         return [];
@@ -46,7 +46,7 @@ class UserController extends Controller
         $query = User::query();
 
         // Non-Super Admin only see users with roles they can manage
-        if ($user->role !== 'Super Admin' && $user->email !== 'superadmin@brin.go.id') {
+        if (!$user->isSuperAdmin()) {
             $query->whereIn('role', $allowedRoles);
         }
 
@@ -119,7 +119,7 @@ class UserController extends Controller
 
         // Prevent editing users outside of allowed roles (except Super Admin can edit everyone)
         $currentUser = auth()->user();
-        if ($currentUser->role !== 'Super Admin' && $currentUser->email !== 'superadmin@brin.go.id') {
+        if (!$currentUser->isSuperAdmin()) {
             if (!in_array($user->role, $allowedRoles)) {
                 abort(403, 'Anda tidak memiliki hak akses untuk mengedit pengguna ini.');
             }
@@ -138,7 +138,7 @@ class UserController extends Controller
 
         // Prevent updating users outside of allowed roles
         $currentUser = auth()->user();
-        if ($currentUser->role !== 'Super Admin' && $currentUser->email !== 'superadmin@brin.go.id') {
+        if (!$currentUser->isSuperAdmin()) {
             if (!in_array($user->role, $allowedRoles)) {
                 abort(403, 'Anda tidak memiliki hak akses untuk mengedit pengguna ini.');
             }
@@ -194,7 +194,7 @@ class UserController extends Controller
         // Prevent deleting users outside of allowed roles
         $allowedRoles = $this->getAllowedRoles();
         $currentUser = auth()->user();
-        if ($currentUser->role !== 'Super Admin' && $currentUser->email !== 'superadmin@brin.go.id') {
+        if (!$currentUser->isSuperAdmin()) {
             if (!in_array($user->role, $allowedRoles)) {
                 return redirect()->route('admin.users.index')->with('error', 'Anda tidak memiliki hak akses untuk menghapus pengguna ini.');
             }
