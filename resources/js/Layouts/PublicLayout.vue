@@ -77,7 +77,7 @@
           <!-- Logged In User Dropdown -->
           <div v-if="user" class="relative" ref="dropdownRef">
             <button @click="userMenuOpen = !userMenuOpen" class="flex items-center gap-2 p-1 pl-2 pr-3 rounded-lg border border-[#e2e8f0] dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition focus:outline-none cursor-pointer">
-              <div class="w-7 h-7 rounded-md bg-[#2563eb] text-white flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
+              <div class="w-7 h-7 rounded-full bg-[#2563eb] text-white flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
                 <img v-if="user.foto_profil" :src="`/storage/${user.foto_profil}`" :alt="user.name" class="w-full h-full object-cover">
                 <span v-else>{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</span>
               </div>

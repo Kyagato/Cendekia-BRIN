@@ -94,7 +94,7 @@
               <div class="hidden sm:block shrink-0" @click.stop>
                 <UserPreviewPopover :user="thread.user">
                   <template #default="{ user }">
-                    <a :href="`/users/${user.id}`" class="w-11 h-11 bg-[#2563eb] text-white rounded-lg flex items-center justify-center font-bold text-base shrink-0 hover:opacity-90 transition overflow-hidden">
+                    <a :href="`/users/${user.id}`" class="w-11 h-11 bg-[#2563eb] text-white rounded-full flex items-center justify-center font-bold text-base shrink-0 hover:opacity-90 transition overflow-hidden">
                       <img v-if="user.foto_profil" :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
                       <span v-else>{{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}</span>
                     </a>

@@ -82,10 +82,10 @@
             <UserPreviewPopover :user="thread.user">
               <template #default="{ user }">
                 <a :href="`/users/${user.id}`" class="block">
-                  <div v-if="user.foto_profil" class="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                  <div v-if="user.foto_profil" class="w-10 h-10 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
                     <img :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
                   </div>
-                  <div v-else class="w-10 h-10 rounded-lg bg-[#2563eb] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                  <div v-else class="w-10 h-10 rounded-full bg-[#2563eb] text-white flex items-center justify-center font-bold text-sm shrink-0">
                     {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
                   </div>
                 </a>
@@ -117,10 +117,10 @@
             <UserPreviewPopover :user="reply.user">
               <template #default="{ user }">
                 <a :href="`/users/${user.id}`" class="block">
-                  <div v-if="user.foto_profil" class="w-9 h-9 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                  <div v-if="user.foto_profil" class="w-9 h-9 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
                     <img :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
                   </div>
-                  <div v-else class="w-9 h-9 rounded-lg bg-[#2563eb] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  <div v-else class="w-9 h-9 rounded-full bg-[#2563eb] text-white flex items-center justify-center font-bold text-xs shrink-0">
                     {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
                   </div>
                 </a>
@@ -146,10 +146,10 @@
                   <UserPreviewPopover :user="nested.user">
                     <template #default="{ user }">
                       <a :href="`/users/${user.id}`" class="block">
-                        <div v-if="user.foto_profil" class="w-7 h-7 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                        <div v-if="user.foto_profil" class="w-7 h-7 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
                           <img :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
                         </div>
-                        <div v-else class="w-7 h-7 rounded-md bg-[#f1f5f9] dark:bg-slate-700 text-[#475569] dark:text-slate-300 flex items-center justify-center font-bold text-xs shrink-0">
+                        <div v-else class="w-7 h-7 rounded-full bg-[#f1f5f9] dark:bg-slate-700 text-[#475569] dark:text-slate-300 flex items-center justify-center font-bold text-xs shrink-0">
                           {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
                         </div>
                       </a>
