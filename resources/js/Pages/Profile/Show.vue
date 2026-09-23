@@ -19,12 +19,10 @@
       <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-8">
 
         <!-- Banner Cover -->
-        <div class="h-36 sm:h-48 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 relative overflow-hidden">
-          <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
+        <div class="h-36 sm:h-48 relative overflow-hidden profile-animated-banner">
           <!-- Badges on Banner -->
-          <div class="absolute top-4 right-4 flex items-center gap-2">
-            <span class="bg-black/35 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium flex items-center gap-1.5 shadow-sm">
+          <div class="absolute top-4 right-4 flex items-center gap-2 z-10">
+            <span class="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium flex items-center gap-1.5 shadow-sm border border-white/20">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
