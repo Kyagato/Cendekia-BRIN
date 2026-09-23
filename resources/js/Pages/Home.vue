@@ -26,6 +26,7 @@
               v-model="searchQuery"
               @input="onSearchInput"
               @focus="showSearchResults = searchQuery.length >= 2"
+              @keydown.enter="submitSearch"
               type="text" 
               placeholder="Cari judul riset, nama penulis, topik, atau kata kunci dokumen..." 
               class="w-full bg-transparent border-none text-[#0f172a] px-2 py-2 text-sm sm:text-base placeholder-[#94a3b8] focus:outline-none focus:ring-0"
@@ -38,12 +39,14 @@
               </svg>
             </div>
 
-            <a 
-              :href="`/cari?q=${encodeURIComponent(searchQuery)}`" 
-              class="bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 sm:px-8 py-2.5 rounded-full text-sm font-semibold transition shrink-0 shadow-sm"
+            <button 
+              type="button"
+              @click="submitSearch"
+              :class="{ 'is-flashing': isFlashing }"
+              class="btn-search-pulse bg-[#2563eb] text-white px-6 sm:px-8 py-2.5 rounded-full text-sm font-semibold shrink-0 shadow-sm cursor-pointer select-none focus:outline-none"
             >
               Cari
-            </a>
+            </button>
           </div>
 
           <!-- Autocomplete Dropdown -->
@@ -318,5 +321,13 @@ const onSearchInput = () => {
     }
     searchLoading.value = false;
   }, 300);
+};
+
+const isFlashing = ref(false);
+const submitSearch = () => {
+  isFlashing.value = true;
+  setTimeout(() => {
+    window.location.href = `/cari?q=${encodeURIComponent(searchQuery.value.trim())}`;
+  }, 220);
 };
 </script>

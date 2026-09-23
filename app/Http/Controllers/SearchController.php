@@ -7,6 +7,7 @@ use App\Models\ForumThread;
 use App\Models\Knowledge;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SearchController extends Controller
 {
@@ -167,8 +168,19 @@ class SearchController extends Controller
                 ->get();
         }
 
-        return view('pages.search', compact(
-            'results', 'categories', 'popularTags', 'forumResults'
-        ));
+        return Inertia::render('Search/Index', [
+            'results' => $results,
+            'categories' => $categories,
+            'popularTags' => $popularTags,
+            'forumResults' => $forumResults,
+            'filters' => [
+                'q' => $request->input('q', ''),
+                'tipe' => $request->input('tipe', ''),
+                'kategori' => $request->input('kategori', ''),
+                'label' => $request->input('label', ''),
+                'instansi' => $request->input('instansi', ''),
+                'sort' => $request->input('sort', 'terbaru'),
+            ],
+        ]);
     }
 }
