@@ -19,76 +19,45 @@
       <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-8">
 
         <!-- Banner Cover -->
-        <div class="h-36 sm:h-48 relative overflow-hidden profile-animated-banner">
-          <!-- Badges on Banner -->
-          <div class="absolute top-4 right-4 flex items-center gap-2 z-10">
-            <span class="bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium flex items-center gap-1.5 shadow-sm border border-white/20">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-              </svg>
-              Profil Publik
-            </span>
-          </div>
-        </div>
+        <div class="h-36 sm:h-48 relative overflow-hidden profile-animated-banner"></div>
 
         <!-- User Info Section -->
         <div class="px-6 sm:px-8 pb-8 pt-0 relative">
-          <div class="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-5 -mt-16 sm:-mt-20 mb-6">
-
-            <!-- Avatar & Identitas -->
-            <div class="flex flex-col sm:flex-row items-center sm:items-end gap-5 text-center sm:text-left">
-              <div class="relative shrink-0">
-                <img
-                  v-if="user.foto_profil"
-                  :src="`/storage/${user.foto_profil}`"
-                  :alt="user.name"
-                  class="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-xl bg-slate-100 dark:bg-slate-800"
-                />
-                <div
-                  v-else
-                  class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-slate-900 shadow-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-4xl"
-                >
-                  {{ userInitials }}
-                </div>
-                <span class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full" title="Akun Aktif"></span>
+          <!-- Top Row: Avatar (overlapping banner) & Action Buttons (mepet di bawah banner) -->
+          <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 mb-4">
+            <!-- Avatar (overlaps banner) -->
+            <div class="relative shrink-0 -mt-16 sm:-mt-20">
+              <img
+                v-if="user.foto_profil"
+                :src="`/storage/${user.foto_profil}`"
+                :alt="user.name"
+                class="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-xl bg-slate-100 dark:bg-slate-800"
+              />
+              <div
+                v-else
+                class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-slate-900 shadow-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-4xl"
+              >
+                {{ userInitials }}
               </div>
-
-              <div class="space-y-1.5">
-                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                  <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-                    {{ user.name }}
-                  </h1>
-                  <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                    {{ user.role || 'Anggota' }}
-                  </span>
-                </div>
-
-                <p v-if="user.pekerjaan || user.instansi" class="text-sm font-medium text-slate-600 dark:text-slate-300">
-                  {{ user.pekerjaan || 'Anggota' }} &bull; {{ user.instansi || 'Badan Riset dan Inovasi Nasional (BRIN)' }}
-                </p>
-
-                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-slate-500 dark:text-slate-400 pt-1">
-                  <span v-if="user.alamat" class="flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    <span>{{ user.alamat }}</span>
-                  </span>
-
-                  <span class="flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <span>Bergabung {{ formattedJoinDate }}</span>
-                  </span>
-                </div>
-              </div>
+              <span class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full" title="Akun Aktif"></span>
             </div>
 
-            <!-- Tombol Bagikan Profil -->
-            <div class="shrink-0 w-full sm:w-auto flex justify-center sm:justify-end">
+            <!-- Tombol Aksi Profil (Mepet dengan banner namun di luar/bawah banner) -->
+            <div class="mt-2 sm:mt-3 shrink-0 w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-2.5">
+              <!-- Tombol Pengaturan Profil (Hanya tampil jika user login melihat profil miliknya sendiri) -->
+              <Link
+                v-if="isOwner"
+                href="/profile"
+                class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-600 shadow-sm group"
+              >
+                <svg class="w-4 h-4 text-slate-500 group-hover:text-[#2563eb] dark:group-hover:text-blue-400 transition-all duration-500 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Pengaturan Profil</span>
+              </Link>
+
+              <!-- Tombol Bagikan Profil -->
               <button
                 type="button"
                 @click="shareProfile"
@@ -109,7 +78,39 @@
                 </template>
               </button>
             </div>
+          </div>
 
+          <!-- Identitas (di bawah avatar dan banner) -->
+          <div class="space-y-1.5 text-center sm:text-left mb-6">
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+              <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+                {{ user.name }}
+              </h1>
+              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                {{ user.role || 'Anggota' }}
+              </span>
+            </div>
+
+            <p v-if="user.pekerjaan || user.instansi" class="text-sm font-medium text-slate-600 dark:text-slate-300">
+              {{ user.pekerjaan || 'Anggota' }} &bull; {{ user.instansi || 'Badan Riset dan Inovasi Nasional (BRIN)' }}
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-slate-500 dark:text-slate-400 pt-1">
+              <span v-if="user.alamat" class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>{{ user.alamat }}</span>
+              </span>
+
+              <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span>Bergabung {{ formattedJoinDate }}</span>
+              </span>
+            </div>
           </div>
 
           <!-- Statistik Ringkas Pengguna -->
@@ -375,8 +376,13 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
+
+const page = usePage();
+const isOwner = computed(() => {
+  return page.props.auth?.user?.id === props.user?.id;
+});
 
 const props = defineProps({
   user: {

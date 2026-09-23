@@ -15,13 +15,25 @@
       <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-6 sm:p-8">
 
         <!-- Card Header -->
-        <header class="pb-5 border-b border-slate-200 dark:border-slate-800">
-          <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-            Pengaturan Profil
-          </h1>
-          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Perbarui informasi pribadi dan kata sandi Anda.
-          </p>
+        <header class="pb-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
+              Pengaturan Profil
+            </h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Perbarui informasi pribadi dan kata sandi Anda.
+            </p>
+          </div>
+          <Link
+            :href="`/users/${user.id}`"
+            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition self-start sm:self-auto border border-slate-200 dark:border-slate-700 shadow-sm"
+          >
+            <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span>Lihat Profil Saya</span>
+          </Link>
         </header>
 
         <!-- Form -->
