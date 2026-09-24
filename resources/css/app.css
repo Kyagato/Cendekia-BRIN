@@ -184,5 +184,50 @@
     .btn-outline-sweep:hover::after {
         clip-path: inset(0 0 0 0);
     }
+
+    /* Slide fill animation: left → right fill on hover (sesuai referensi user, warna biru project) */
+    .btn-slide-fill {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: color 0.35s ease, background-color 0.35s ease, border-color 0.35s ease;
+    }
+
+    .btn-slide-fill span,
+    .btn-slide-fill svg {
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-slide-fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background-color: #2563eb;
+        transition: width 0.35s ease;
+        z-index: 1;
+        border-radius: inherit;
+    }
+
+    .btn-slide-fill:hover::after {
+        width: 100%;
+    }
+
+    .btn-slide-fill:hover {
+        color: #ffffff !important;
+    }
+
+    /* Varian ketika tombol sedang aktif (warna biru dasar #2563eb, hover slide ke biru lebih gelap #1d4ed8) */
+    .btn-slide-fill.is-active {
+        background-color: #2563eb;
+        color: #ffffff !important;
+    }
+
+    .btn-slide-fill.is-active::after {
+        background-color: #1d4ed8;
+    }
 }
 
