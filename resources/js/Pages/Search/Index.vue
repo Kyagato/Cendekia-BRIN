@@ -50,7 +50,7 @@
               <button 
                 type="button" 
                 @click.stop="toggleTipe"
-                class="w-full sm:w-auto min-w-[140px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
+                class="btn-outline-sweep w-full sm:w-auto min-w-[140px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
               >
                 <span class="truncate font-medium">{{ selectedTipeLabel }}</span>
                 <svg 
@@ -97,7 +97,7 @@
               <button 
                 type="button" 
                 @click.stop="toggleKategori"
-                class="w-full sm:w-auto min-w-[170px] max-w-[240px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
+                class="btn-outline-sweep w-full sm:w-auto min-w-[170px] max-w-[240px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
               >
                 <span class="truncate font-medium">{{ selectedKategoriLabel }}</span>
                 <svg 
@@ -144,7 +144,7 @@
               <button 
                 type="button" 
                 @click.stop="toggleSort"
-                class="w-full sm:w-auto min-w-[130px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
+                class="btn-outline-sweep w-full sm:w-auto min-w-[130px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
               >
                 <span class="truncate font-medium">{{ selectedSortLabel }}</span>
                 <svg 

@@ -163,5 +163,26 @@
             background-position-x: calc(-1*var(--s));
         }
     }
+
+    /* Outline sweep animation: left → right on hover */
+    .btn-outline-sweep {
+        position: relative;
+    }
+
+    .btn-outline-sweep::after {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border: 2px solid #2563eb;
+        border-radius: inherit;
+        clip-path: inset(0 100% 0 0);
+        transition: clip-path 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .btn-outline-sweep:hover::after {
+        clip-path: inset(0 0 0 0);
+    }
 }
 
