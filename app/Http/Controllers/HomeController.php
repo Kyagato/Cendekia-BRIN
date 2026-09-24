@@ -92,12 +92,48 @@ class HomeController extends Controller
             $searchTerm = $request->q;
             $query->where(function($q) use ($searchTerm) {
                 $q->where('judul', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
+                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('tags', function ($tagQ) use ($searchTerm) {
+                      $tagQ->where('nama_label', 'like', "%{$searchTerm}%");
+                  })
+                  ->orWhereHas('user', function ($userQ) use ($searchTerm) {
+                      $userQ->where('name', 'like', "%{$searchTerm}%")
+                            ->orWhere('instansi', 'like', "%{$searchTerm}%");
+                  });
             });
         }
 
-        $filters = $request->only(['q', 'tipe', 'kategori', 'instansi', 'label']);
-        $knowledge = $query->latest()->paginate(12)->withQueryString();
+        // Sorting
+        $sort = $request->input('sort', 'terbaru');
+        if (!in_array($sort, ['terbaru', 'terpopuler', 'az', 'za'])) {
+            $sort = 'terbaru';
+        }
+
+        switch ($sort) {
+            case 'terpopuler':
+                $query->orderBy('views_count', 'desc');
+                break;
+            case 'az':
+                $query->orderBy('judul', 'asc');
+                break;
+            case 'za':
+                $query->orderBy('judul', 'desc');
+                break;
+            case 'terbaru':
+            default:
+                $query->latest();
+                break;
+        }
+
+        $filters = [
+            'q' => $request->input('q', '') ?: '',
+            'tipe' => $request->input('tipe', '') ?: '',
+            'kategori' => $request->input('kategori', '') ?: '',
+            'label' => $request->input('label', '') ?: '',
+            'instansi' => $request->input('instansi', '') ?: '',
+            'sort' => $sort,
+        ];
+        $knowledge = $query->paginate(12)->withQueryString();
 
         return Inertia::render('Category/Index', [
             'categories' => $categories,

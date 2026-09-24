@@ -77,16 +77,16 @@
         <!-- Quick Filter Pills -->
         <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-blue-100">
           <span class="text-blue-200 font-medium">Format:</span>
-          <a href="/cari?tipe=Teks" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Teks" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-blue-300"></span> Teks
           </a>
-          <a href="/cari?tipe=Video" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Video" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Video
           </a>
-          <a href="/cari?tipe=Audio" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Audio" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Audio
           </a>
-          <a href="/cari?tipe=Gambar" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Gambar" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Gambar
           </a>
           <a href="/kategori" class="px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white font-semibold transition">
@@ -325,9 +325,12 @@ const onSearchInput = () => {
 
 const isFlashing = ref(false);
 const submitSearch = () => {
+  if (!searchQuery.value || !searchQuery.value.trim()) {
+    return;
+  }
   isFlashing.value = true;
   setTimeout(() => {
-    window.location.href = `/cari?q=${encodeURIComponent(searchQuery.value.trim())}`;
+    window.location.href = `/kategori?q=${encodeURIComponent(searchQuery.value.trim())}`;
   }, 220);
 };
 </script>

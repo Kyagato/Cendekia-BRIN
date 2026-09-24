@@ -43,42 +43,164 @@
             />
           </div>
 
-          <!-- Filters Row -->
+          <!-- Filters Row with Animated Custom Dropdowns -->
           <div class="flex gap-2 flex-wrap items-center">
-            <!-- Tipe Select -->
-            <select 
-              v-model="form.tipe" 
-              @change="submitSearch"
-              class="px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer"
-            >
-              <option value="">Semua Tipe</option>
-              <option value="Teks">Teks</option>
-              <option value="Video">Video</option>
-              <option value="Gambar">Gambar</option>
-              <option value="Audio">Audio</option>
-            </select>
+            <!-- Tipe Custom Dropdown -->
+            <div class="relative w-full sm:w-auto" ref="tipeDropdownRef">
+              <button 
+                type="button" 
+                @click.stop="toggleTipe"
+                class="w-full sm:w-auto min-w-[140px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
+              >
+                <span class="truncate font-medium">{{ selectedTipeLabel }}</span>
+                <svg 
+                  class="w-4 h-4 text-slate-400 dark:text-slate-400 transition-transform duration-300 shrink-0 ml-1.5" 
+                  :class="{ 'rotate-180 text-[#2563eb] dark:text-blue-400': isTipeOpen }" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-            <!-- Kategori Select -->
-            <select 
-              v-model="form.kategori" 
-              @change="submitSearch"
-              class="px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer max-w-[190px] truncate"
-            >
-              <option value="">Semua Kategori</option>
-              <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.nama_kategori }}</option>
-            </select>
+              <!-- Dropdown Menu -->
+              <div 
+                v-show="isTipeOpen" 
+                class="absolute left-0 z-40 mt-1.5 w-full min-w-[150px] bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 focus:outline-none"
+              >
+                <button 
+                  type="button" 
+                  @click="selectTipe('')"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="!form.tipe ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>Semua Tipe</span>
+                  <svg v-if="!form.tipe" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button 
+                  v-for="t in ['Teks', 'Video', 'Gambar', 'Audio']" 
+                  :key="t"
+                  type="button" 
+                  @click="selectTipe(t)"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="form.tipe === t ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>{{ t }}</span>
+                  <svg v-if="form.tipe === t" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+              </div>
+            </div>
 
-            <!-- Sort Select -->
-            <select 
-              v-model="form.sort" 
-              @change="submitSearch"
-              class="px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer"
-            >
-              <option value="terbaru">Terbaru</option>
-              <option value="terpopuler">Terpopuler</option>
-              <option value="az">A — Z</option>
-              <option value="za">Z — A</option>
-            </select>
+            <!-- Kategori Custom Dropdown -->
+            <div class="relative w-full sm:w-auto" ref="kategoriDropdownRef">
+              <button 
+                type="button" 
+                @click.stop="toggleKategori"
+                class="w-full sm:w-auto min-w-[170px] max-w-[240px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
+              >
+                <span class="truncate font-medium">{{ selectedKategoriLabel }}</span>
+                <svg 
+                  class="w-4 h-4 text-slate-400 dark:text-slate-400 transition-transform duration-300 shrink-0 ml-1.5" 
+                  :class="{ 'rotate-180 text-[#2563eb] dark:text-blue-400': isKategoriOpen }" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div 
+                v-show="isKategoriOpen" 
+                class="absolute left-0 z-40 mt-1.5 w-full min-w-[220px] max-w-[300px] bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 max-h-72 overflow-y-auto focus:outline-none"
+              >
+                <button 
+                  type="button" 
+                  @click="selectKategori('')"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="!form.kategori ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>Semua Kategori</span>
+                  <svg v-if="!form.kategori" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button 
+                  v-for="cat in categories" 
+                  :key="cat.id"
+                  type="button" 
+                  @click="selectKategori(cat.id)"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="String(form.kategori) === String(cat.id) ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span class="truncate">{{ cat.nama_kategori }}</span>
+                  <svg v-if="String(form.kategori) === String(cat.id)" class="w-4 h-4 text-[#2563eb] shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sort Custom Dropdown -->
+            <div class="relative w-full sm:w-auto" ref="sortDropdownRef">
+              <button 
+                type="button" 
+                @click.stop="toggleSort"
+                class="w-full sm:w-auto min-w-[130px] flex items-center justify-between gap-2.5 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition cursor-pointer select-none"
+              >
+                <span class="truncate font-medium">{{ selectedSortLabel }}</span>
+                <svg 
+                  class="w-4 h-4 text-slate-400 dark:text-slate-400 transition-transform duration-300 shrink-0 ml-1.5" 
+                  :class="{ 'rotate-180 text-[#2563eb] dark:text-blue-400': isSortOpen }" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div 
+                v-show="isSortOpen" 
+                class="absolute left-0 z-40 mt-1.5 w-full min-w-[150px] bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 focus:outline-none"
+              >
+                <button 
+                  type="button" 
+                  @click="selectSort('terbaru')"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="form.sort === 'terbaru' ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>Terbaru</span>
+                  <svg v-if="form.sort === 'terbaru'" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button 
+                  type="button" 
+                  @click="selectSort('terpopuler')"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="form.sort === 'terpopuler' ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>Terpopuler</span>
+                  <svg v-if="form.sort === 'terpopuler'" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button 
+                  type="button" 
+                  @click="selectSort('az')"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="form.sort === 'az' ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>A — Z</span>
+                  <svg v-if="form.sort === 'az'" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button 
+                  type="button" 
+                  @click="selectSort('za')"
+                  class="w-full text-left px-3.5 py-2 text-xs sm:text-sm transition flex items-center justify-between cursor-pointer"
+                  :class="form.sort === 'za' ? 'bg-blue-50 dark:bg-slate-700 text-[#2563eb] dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                >
+                  <span>Z — A</span>
+                  <svg v-if="form.sort === 'za'" class="w-4 h-4 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </button>
+              </div>
+            </div>
 
             <!-- Cari Button -->
             <button 
@@ -123,7 +245,7 @@
             <button 
               v-if="hasActiveFilters"
               @click="resetAllFilters" 
-              class="text-sm text-[#2563eb] hover:text-[#1d4ed8] font-medium flex items-center gap-1.5 transition cursor-pointer"
+              class="text-sm text-red-600 hover:text-red-500 font-medium flex items-center gap-1.5 transition cursor-pointer"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -445,7 +567,7 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue';
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 
@@ -460,6 +582,59 @@ const props = defineProps({
   }
 });
 
+// Dropdown open states
+const isTipeOpen = ref(false);
+const isKategoriOpen = ref(false);
+const isSortOpen = ref(false);
+
+const tipeDropdownRef = ref(null);
+const kategoriDropdownRef = ref(null);
+const sortDropdownRef = ref(null);
+
+const toggleTipe = () => {
+  isTipeOpen.value = !isTipeOpen.value;
+  isKategoriOpen.value = false;
+  isSortOpen.value = false;
+};
+
+const toggleKategori = () => {
+  isKategoriOpen.value = !isKategoriOpen.value;
+  isTipeOpen.value = false;
+  isSortOpen.value = false;
+};
+
+const toggleSort = () => {
+  isSortOpen.value = !isSortOpen.value;
+  isTipeOpen.value = false;
+  isKategoriOpen.value = false;
+};
+
+const closeAllDropdowns = () => {
+  isTipeOpen.value = false;
+  isKategoriOpen.value = false;
+  isSortOpen.value = false;
+};
+
+const onDocumentClick = (e) => {
+  if (tipeDropdownRef.value && !tipeDropdownRef.value.contains(e.target)) {
+    isTipeOpen.value = false;
+  }
+  if (kategoriDropdownRef.value && !kategoriDropdownRef.value.contains(e.target)) {
+    isKategoriOpen.value = false;
+  }
+  if (sortDropdownRef.value && !sortDropdownRef.value.contains(e.target)) {
+    isSortOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', onDocumentClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', onDocumentClick);
+});
+
 const form = reactive({
   q: props.filters?.q || '',
   tipe: props.filters?.tipe || '',
@@ -469,12 +644,45 @@ const form = reactive({
   sort: props.filters?.sort || 'terbaru',
 });
 
+// Labels
+const selectedTipeLabel = computed(() => {
+  return form.tipe || 'Semua Tipe';
+});
+
+const selectedKategoriLabel = computed(() => {
+  if (!form.kategori) return 'Semua Kategori';
+  const found = props.categories?.find(c => String(c.id) === String(form.kategori));
+  return found ? found.nama_kategori : 'Semua Kategori';
+});
+
+const selectedSortLabel = computed(() => {
+  switch (form.sort) {
+    case 'terpopuler': return 'Terpopuler';
+    case 'az': return 'A — Z';
+    case 'za': return 'Z — A';
+    case 'terbaru':
+    default:
+      return 'Terbaru';
+  }
+});
+
 const hasActiveFilters = computed(() => {
-  return !!(form.q || form.tipe || form.kategori || form.label || form.instansi || (form.sort && form.sort !== 'terbaru'));
+  const hasQ = !!(props.filters?.q && String(props.filters.q).trim());
+  const hasTipe = !!(props.filters?.tipe && String(props.filters.tipe).trim());
+  const hasKategori = !!(props.filters?.kategori && String(props.filters.kategori).trim());
+  const hasLabel = !!(props.filters?.label && String(props.filters.label).trim());
+  const hasInstansi = !!(props.filters?.instansi && String(props.filters.instansi).trim());
+  const hasSort = !!(props.filters?.sort && props.filters.sort !== 'terbaru');
+
+  return hasQ || hasTipe || hasKategori || hasLabel || hasInstansi || hasSort;
 });
 
 const hasActiveFilterChips = computed(() => {
-  return !!(props.filters?.tipe || props.filters?.kategori || props.filters?.label);
+  return !!(
+    (props.filters?.tipe && String(props.filters.tipe).trim()) ||
+    (props.filters?.kategori && String(props.filters.kategori).trim()) ||
+    (props.filters?.label && String(props.filters.label).trim())
+  );
 });
 
 const activeCategoryName = computed(() => {
@@ -484,6 +692,7 @@ const activeCategoryName = computed(() => {
 });
 
 const submitSearch = () => {
+  closeAllDropdowns();
   const params = {};
   if (form.q) params.q = form.q;
   if (form.tipe) params.tipe = form.tipe;
@@ -496,6 +705,24 @@ const submitSearch = () => {
     preserveState: true,
     preserveScroll: true,
   });
+};
+
+const selectTipe = (value) => {
+  form.tipe = value;
+  isTipeOpen.value = false;
+  submitSearch();
+};
+
+const selectKategori = (value) => {
+  form.kategori = value;
+  isKategoriOpen.value = false;
+  submitSearch();
+};
+
+const selectSort = (value) => {
+  form.sort = value;
+  isSortOpen.value = false;
+  submitSearch();
 };
 
 const setFilter = (key, value) => {
@@ -515,6 +742,7 @@ const resetAllFilters = () => {
   form.label = '';
   form.instansi = '';
   form.sort = 'terbaru';
+  closeAllDropdowns();
   router.get('/cari', {}, {
     preserveState: true,
     preserveScroll: true,
