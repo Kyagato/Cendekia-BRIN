@@ -3,8 +3,8 @@
     <!-- Header -->
     <section class="relative py-12 bg-[#1e3a8a] text-white overflow-hidden">
 
-      <div class="container mx-auto px-4 relative z-10">
-        <nav class="flex text-sm text-blue-200 mb-4" aria-label="Breadcrumb">
+      <div class="container mx-auto px-4 relative z-10 text-center">
+        <nav class="flex justify-center text-sm text-blue-200 mb-4" aria-label="Breadcrumb">
           <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
               <Link href="/" class="inline-flex items-center hover:text-white transition">Beranda</Link>
@@ -18,7 +18,7 @@
           </ol>
         </nav>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-2 tracking-tight">Forum Diskusi MojoPedia</h1>
-        <p class="text-base text-blue-100">Ruang kolaborasi, tanya jawab, dan berbagi telaah pengetahuan antar aparatur dan peneliti.</p>
+        <p class="text-base text-blue-100 max-w-2xl mx-auto">Ruang kolaborasi, tanya jawab, dan berbagi telaah pengetahuan antar aparatur dan peneliti.</p>
       </div>
     </section>
 

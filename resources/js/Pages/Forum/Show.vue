@@ -173,7 +173,7 @@
               </div>
 
               <!-- Reply Button -->
-              <button v-if="!thread.is_locked && user" @click="replyTo = reply" class="mt-3 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold">
+              <button v-if="!thread.is_locked && user" @click="handleReply(reply)" class="mt-3 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                 Balas
               </button>
             </div>
@@ -181,17 +181,59 @@
         </div>
       </div>
 
-      <!-- Reply Form -->
-      <div v-if="user && !thread.is_locked" class="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-[#e2e8f0] dark:border-slate-800 p-5">
-        <h3 class="text-sm font-bold text-[#0f172a] dark:text-slate-200 mb-3">
-          {{ replyTo ? `Membalas: ${replyTo.user?.name}` : 'Tulis Balasan Anda' }}
-          <button v-if="replyTo" @click="replyTo = null" class="ml-2 text-xs text-[#94a3b8] hover:text-slate-700 dark:hover:text-slate-200 transition">✕ Batal</button>
-        </h3>
-        <form @submit.prevent="submitReply">
-          <textarea v-model="replyForm.konten" rows="4" required placeholder="Tulis balasan Anda di sini..." class="w-full px-3 py-2.5 rounded-lg border border-[#cbd5e1] dark:border-slate-700 bg-white dark:bg-slate-950 text-[#0f172a] dark:text-slate-100 text-sm focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] focus:outline-none transition resize-none"></textarea>
-          <div class="flex justify-end mt-3">
-            <button type="submit" :disabled="replyForm.processing" class="px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm">
-              <svg v-if="replyForm.processing" class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+      <!-- Reply Form (Sticky / Mengikuti User Saat Scroll) -->
+      <div 
+        v-if="user && !thread.is_locked" 
+        class="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-[#cbd5e1] dark:border-slate-800 p-4 transition-all duration-300"
+      >
+        <div class="flex items-center justify-between" :class="{ 'mb-3': !isCollapsed }">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#2563eb] animate-pulse"></span>
+            <h3 class="text-sm font-bold text-[#0f172a] dark:text-slate-100 flex items-center gap-1.5">
+              <span>{{ replyTo ? `Membalas: ${replyTo.user?.name}` : 'Tulis Balasan Anda' }}</span>
+              <button 
+                v-if="replyTo" 
+                @click="replyTo = null" 
+                type="button"
+                class="ml-2 text-xs text-rose-500 hover:text-rose-600 font-medium transition cursor-pointer"
+              >
+                ✕ Batal
+              </button>
+            </h3>
+          </div>
+
+          <!-- Minimize / Expand Toggle Button -->
+          <button 
+            type="button" 
+            @click="isCollapsed = !isCollapsed" 
+            class="text-xs text-[#64748b] dark:text-slate-400 hover:text-[#0f172a] dark:hover:text-white flex items-center gap-1.5 px-2.5 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition select-none cursor-pointer font-medium"
+          >
+            <span>{{ isCollapsed ? 'Buka Form' : 'Sembunyikan' }}</span>
+            <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="isCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+
+        <form v-show="!isCollapsed" @submit.prevent="submitReply">
+          <textarea 
+            ref="replyTextarea"
+            v-model="replyForm.konten" 
+            rows="3" 
+            required 
+            placeholder="Tulis balasan Anda di sini..." 
+            class="w-full px-3.5 py-2.5 rounded-lg border border-[#cbd5e1] dark:border-slate-700 bg-white dark:bg-slate-950 text-[#0f172a] dark:text-slate-100 text-sm focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] focus:outline-none transition resize-none shadow-xs"
+          ></textarea>
+          <div class="flex items-center justify-between mt-2.5">
+            <span class="text-[11px] text-[#94a3b8] dark:text-slate-400 hidden sm:inline">
+              Balasan akan tampil di forum diskusi ini
+            </span>
+            <button 
+              type="submit" 
+              :disabled="replyForm.processing" 
+              class="ml-auto px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
+            >
+              <svg v-if="replyForm.processing" class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
               Kirim Balasan
             </button>
           </div>
@@ -242,6 +284,16 @@ const canManageForum = computed(() => {
 });
 
 const replyTo = ref(null);
+const replyTextarea = ref(null);
+const isCollapsed = ref(false);
+
+const handleReply = (reply) => {
+  replyTo.value = reply;
+  isCollapsed.value = false;
+  setTimeout(() => {
+    replyTextarea.value?.focus();
+  }, 100);
+};
 
 const replyForm = useForm({
   konten: '',
