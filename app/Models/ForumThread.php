@@ -16,7 +16,7 @@ class ForumThread extends Model
     ];
 
     // Roles that get auto-approval
-    const AUTO_APPROVE_ROLES = ['super_admin', 'admin_pusat', 'admin', 'Super Admin', 'Admin Pusat', 'Admin'];
+    const AUTO_APPROVE_ROLES = ['super_admin', 'admin_pusat', 'admin', 'Super Admin', 'Admin Pusat', 'Admin IPPD'];
 
     public function user()
     {
@@ -26,7 +26,7 @@ class ForumThread extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
-    }
+    }   
 
     public function replies()
     {

@@ -1,0 +1,52 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Laravel Fundamental API Documentation",
+        "description": "Dokumentasi API Swagger / OpenAPI",
+        "contact": {
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/health-check": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Cek Status Server / API",
+                "operationId": "66fec15b64b82a6577bfad396fcd4aca",
+                "responses": {
+                    "200": {
+                        "description": "API running successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "healthy"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "System",
+            "description": "System"
+        }
+    ]
+}

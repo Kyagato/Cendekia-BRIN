@@ -12,13 +12,14 @@ class KnowledgeController extends Controller
 {
     public function index(Request $request)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
 
         $query = Knowledge::with(['category', 'user', 'tags'])
             ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak']);
-
-        // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login
-        $query->where('user_id', $userId);
+        // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (kecuali Admin)
+        if (!$user->isAdmin()) {
+            $query->where('user_id', $user->id);
+        }
 
         $query->latest();
 
@@ -50,7 +51,7 @@ class KnowledgeController extends Controller
         // Get drafts for logged-in user
         $draftsQuery = Knowledge::with(['category', 'user', 'tags'])
             ->where('status', 'Draft')
-            ->where('user_id', $userId);
+            ->where('user_id', $user->id);
 
         $drafts = $draftsQuery->latest()
             ->paginate(5, ['*'], 'page_drafts')
@@ -65,7 +66,6 @@ class KnowledgeController extends Controller
      */
     private function isAutoApproveUser(): bool
     {
-        /** @var \App\Models\User|null $user */
         $user = Auth::user();
         if (!$user) return false;
 
@@ -276,7 +276,7 @@ class KnowledgeController extends Controller
             'file_upload.max' => 'Ukuran thumbnail gambar tidak boleh lebih dari 5MB.',
         ]);
 
-        // Determine new status: jika user berole auto-approval (Super Admin, Admin Pusat, Admin, Analis Pengetahuan), langsung set ke Disetujui
+        // Determine new status: jika user berole auto-approval (Super Admin, Admin Pusat, Admin IPPD, Analis Pengetahuan), langsung set ke Disetujui
         if ($this->isAutoApproveUser()) {
             $newStatus = 'Disetujui';
         } else {
