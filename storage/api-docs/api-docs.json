@@ -1,20 +1,356 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Laravel Fundamental API Documentation",
-        "description": "Dokumentasi API Swagger / OpenAPI",
+        "title": "Cendekia-BRIN API",
+        "description": "REST API untuk sistem manajemen pengetahuan Cendekia-BRIN. Menyediakan endpoint untuk manajemen user, role, dan integrasi Keycloak SSO.",
         "contact": {
-            "email": "admin@example.com"
+            "name": "Tim Pengembang Cendekia-BRIN",
+            "email": "admin@cendekia-brin.go.id"
         },
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000/api",
-            "description": "Local Development Server"
+            "url": "/api",
+            "description": "API Server"
         }
     ],
     "paths": {
+        "/admin/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Daftar semua user",
+                "description": "Mengembalikan daftar user beserta role-nya. Bisa difilter berdasarkan role dan pencarian nama/email.",
+                "operationId": "getUsers",
+                "parameters": [
+                    {
+                        "name": "role",
+                        "in": "query",
+                        "description": "Filter berdasarkan role (contoh: Admin, Moderator, Anggota)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Pencarian berdasarkan nama atau email",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman (default: 15)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Detail satu user",
+                "description": "Mengembalikan data lengkap dari user berdasarkan ID.",
+                "operationId": "getUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "Anggota"
+                                                },
+                                                "instansi": {
+                                                    "type": "string",
+                                                    "example": "BRIN"
+                                                },
+                                                "jenis_kelamin": {
+                                                    "type": "string",
+                                                    "example": "L"
+                                                },
+                                                "keycloak_id": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "email_verified_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User tidak ditemukan"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/roles": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Daftar role yang tersedia",
+                "description": "Mengembalikan semua role yang ada di sistem (sesuai Keycloak Realm Roles).",
+                "operationId": "getAvailableRoles",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar role",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "roles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "Super Admin",
+                                                        "Admin Pusat",
+                                                        "Admin",
+                                                        "Anggota",
+                                                        "Analisis Pengetahuan",
+                                                        "Moderator"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{id}/role": {
+            "put": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Ubah role user",
+                "description": "Mengubah role user di database lokal. Nantinya akan terintegrasi dengan Keycloak Admin API untuk sinkronisasi realm role.",
+                "operationId": "updateUserRole",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID user yang ingin diubah role-nya",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Data role baru",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "role"
+                                ],
+                                "properties": {
+                                    "role": {
+                                        "description": "Role baru untuk user",
+                                        "type": "string",
+                                        "example": "Moderator",
+                                        "enum": [
+                                            "Super Admin",
+                                            "Admin Pusat",
+                                            "Admin",
+                                            "Anggota",
+                                            "Analisis Pengetahuan",
+                                            "Moderator"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Role berhasil diubah",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Role berhasil diubah dari 'Anggota' menjadi 'Moderator'."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "old_role": {
+                                                    "type": "string",
+                                                    "example": "Anggota"
+                                                },
+                                                "new_role": {
+                                                    "type": "string",
+                                                    "example": "Moderator"
+                                                },
+                                                "keycloak_synced": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal (role tidak valid)"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/health-check": {
             "get": {
                 "tags": [
@@ -43,10 +379,28 @@
             }
         }
     },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Masukkan token Sanctum Anda. Dapatkan token melalui endpoint login.",
+                "bearerFormat": "Token",
+                "scheme": "bearer"
+            }
+        }
+    },
     "tags": [
         {
             "name": "System",
-            "description": "System"
+            "description": "Endpoint status dan health check sistem"
+        },
+        {
+            "name": "Users",
+            "description": "Endpoint untuk manajemen data user"
+        },
+        {
+            "name": "Roles",
+            "description": "Endpoint untuk manajemen role user (terintegrasi dengan Keycloak Realm Roles)"
         }
     ]
 }
