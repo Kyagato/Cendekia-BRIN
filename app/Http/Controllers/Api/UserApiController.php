@@ -4,12 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\KeycloakAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class UserApiController extends Controller
 {
+    protected KeycloakAdminService $keycloakService;
+
+    public function __construct(KeycloakAdminService $keycloakService)
+    {
+        $this->keycloakService = $keycloakService;
+    }
     /**
      * Menampilkan daftar semua user.
      */
@@ -272,24 +279,33 @@ class UserApiController extends Controller
         $oldRole = $user->role;
         $newRole = $validated['role'];
 
-        // TODO: Integrasi Keycloak Admin API
-        // Nanti di sini kita panggil KeycloakService untuk sinkronisasi
-        // realm role ke Keycloak sebelum menyimpan ke database lokal.
-        // Contoh:
-        // $keycloakService->syncUserRole($user->keycloak_id, $oldRole, $newRole);
+        $keycloakSynced = false;
+        $keycloakMessage = null;
+
+        // Sinkronisasi ke Keycloak jika user terhubung dengan Keycloak SSO
+        if (!empty($user->keycloak_id)) {
+            $kcResult = $this->keycloakService->syncUserRole($user->keycloak_id, $newRole);
+            $keycloakSynced = $kcResult['keycloak_synced'];
+            $keycloakMessage = $kcResult['message'];
+        }
 
         $user->update(['role' => $newRole]);
 
+        $message = "Role berhasil diubah dari '{$oldRole}' menjadi '{$newRole}'.";
+        if ($keycloakMessage) {
+            $message .= " ({$keycloakMessage})";
+        }
+
         return response()->json([
             'status' => 'success',
-            'message' => "Role berhasil diubah dari '{$oldRole}' menjadi '{$newRole}'.",
+            'message' => $message,
             'data' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'old_role' => $oldRole,
                 'new_role' => $newRole,
-                'keycloak_synced' => false,
+                'keycloak_synced' => $keycloakSynced,
             ],
         ]);
     }

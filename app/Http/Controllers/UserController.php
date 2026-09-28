@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\KeycloakAdminService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +11,12 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    protected KeycloakAdminService $keycloakService;
+
+    public function __construct(KeycloakAdminService $keycloakService)
+    {
+        $this->keycloakService = $keycloakService;
+    }
     /**
      * Get the list of roles the current admin is allowed to manage.
      */
@@ -160,6 +167,8 @@ class UserController extends Controller
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
+        $roleChanged = ($user->role !== $validated['role']);
+
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->jenis_kelamin = $validated['gender'];
@@ -179,7 +188,17 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'Data pengguna berhasil diperbarui.');
+        $successMsg = 'Data pengguna berhasil diperbarui.';
+        if ($roleChanged && !empty($user->keycloak_id)) {
+            $kcResult = $this->keycloakService->syncUserRole($user->keycloak_id, $validated['role']);
+            if ($kcResult['keycloak_synced']) {
+                $successMsg .= ' Role berhasil disinkronkan ke Keycloak.';
+            } else {
+                $successMsg .= ' (Catatan Keycloak: ' . $kcResult['message'] . ')';
+            }
+        }
+
+        return redirect()->route('admin.users.index')->with('success', $successMsg);
     }
 
     /**
