@@ -260,6 +260,11 @@ class UserApiController extends Controller
     )]
     public function updateRole(Request $request, User $user): JsonResponse
     {
+        // Toleransi jika user memasukkan "Analis Pengetahuan" (akan dinormalisasi ke "Analisis Pengetahuan")
+        if ($request->input('role') === 'Analis Pengetahuan') {
+            $request->merge(['role' => User::ROLE_ANALIS]);
+        }
+
         $validated = $request->validate([
             'role' => 'required|string|in:' . implode(',', User::ALL_ROLES),
         ]);
