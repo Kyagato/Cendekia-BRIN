@@ -80,9 +80,9 @@
 
         <!-- Action Button -->
         <div class="w-full md:w-auto text-right">
-          <Link href="/forum/create" class="inline-flex justify-center items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-5 py-2.5 rounded-lg font-semibold transition shadow-sm w-full md:w-auto">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-            Buat Topik Baru
+          <Link href="/forum/create" class="group inline-flex justify-center items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm w-full md:w-auto">
+            <svg class="w-5 h-5 group-hover-spin-brief" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            <span>Buat Topik Baru</span>
           </Link>
         </div>
       </div>
@@ -158,8 +158,9 @@
         <div v-else class="text-center py-16 bg-white dark:bg-slate-900 rounded-lg border border-[#e2e8f0] dark:border-slate-800 shadow-sm">
           <h3 class="text-xl font-bold text-[#0f172a] dark:text-white mb-2">Belum ada topik diskusi</h3>
           <p class="text-[#475569] dark:text-slate-400 mb-6">Jadilah yang pertama memulai diskusi di forum ini!</p>
-          <Link href="/forum/create" class="inline-flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-2.5 rounded-lg font-semibold transition shadow-sm">
-            Buat Topik Baru
+          <Link href="/forum/create" class="group inline-flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm">
+            <svg class="w-5 h-5 group-hover-spin-brief" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            <span>Buat Topik Baru</span>
           </Link>
         </div>
       </div>
