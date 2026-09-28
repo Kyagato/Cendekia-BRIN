@@ -1,6 +1,23 @@
 <template>
-  <div class="bg-white dark:bg-slate-900 rounded-lg border border-[#e2e8f0] dark:border-slate-800 card-hover flex flex-col h-full overflow-hidden group">
-    <div class="p-4 flex-grow flex flex-col justify-between">
+  <div class="relative bg-white dark:bg-slate-900 rounded-lg border border-[#e2e8f0] dark:border-slate-800 card-hover flex flex-col h-full overflow-hidden group">
+    <!-- Animated Perimeter Outline on Hover -->
+    <svg 
+      class="absolute inset-0 w-full h-full pointer-events-none z-20 rounded-lg overflow-visible" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect 
+        x="1.5" 
+        y="1.5" 
+        width="calc(100% - 3px)" 
+        height="calc(100% - 3px)" 
+        rx="7" 
+        pathLength="100" 
+        class="outline-card-stroke"
+        :style="{ stroke: outlineColor }"
+      />
+    </svg>
+
+    <div class="p-4 flex-grow flex flex-col justify-between relative z-10">
       <div>
         <!-- Header Badges: Media Badge (Left) & Department / Category Badge (Right) -->
         <div class="flex items-center justify-between gap-2 mb-3">
@@ -125,6 +142,20 @@ const badgeClass = computed(() => {
       return 'bg-[#fefce8] text-[#ca8a04] dark:bg-yellow-950/80 dark:text-yellow-300';
     default: 
       return 'bg-[#eff6ff] text-[#2563eb] dark:bg-blue-950/80 dark:text-blue-300';
+  }
+});
+
+const outlineColor = computed(() => {
+  switch (props.item?.tipe) {
+    case 'Video': 
+      return '#dc2626'; // Merah
+    case 'Gambar': 
+      return '#eab308'; // Kuning
+    case 'Audio': 
+      return '#16a34a'; // Hijau
+    case 'Teks': 
+    default: 
+      return '#2563eb'; // Biru
   }
 });
 
