@@ -30,8 +30,10 @@
           <Link 
             href="/forum?sort=terbaru" 
             :class="[
-              'btn-slide-fill px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer select-none',
-              sort === 'terbaru' ? 'is-active font-semibold shadow-sm' : 'text-[#475569] dark:text-slate-400 hover:text-white'
+              'btn-slide-fill px-4 py-2 rounded-lg text-sm transition cursor-pointer select-none border',
+              sort === 'terbaru' 
+                ? 'is-active font-semibold shadow-xs' 
+                : 'border-[#e2e8f0] dark:border-slate-800 text-[#475569] dark:text-slate-400 font-medium'
             ]"
           >
             <span>Terbaru</span>
@@ -43,8 +45,10 @@
               @click="popOpen = !popOpen" 
               type="button"
               :class="[
-                'btn-slide-fill inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer select-none',
-                isPopuler ? 'is-active font-semibold shadow-sm' : 'text-[#475569] dark:text-slate-400 hover:text-white'
+                'btn-slide-fill inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm transition cursor-pointer select-none border',
+                isPopuler 
+                  ? 'is-active font-semibold shadow-xs' 
+                  : 'border-[#e2e8f0] dark:border-slate-800 text-[#475569] dark:text-slate-400 font-medium'
               ]"
             >
               <span>{{ activePopulerLabel }}</span>
