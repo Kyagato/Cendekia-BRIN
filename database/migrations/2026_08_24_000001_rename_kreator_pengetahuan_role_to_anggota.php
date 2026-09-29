@@ -13,7 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Modify enum column definition to include 'Anggota'
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Analisis Pengetahuan', 'Moderator') NOT NULL DEFAULT 'Anggota'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Kreator Pengetahuan', 'Analisis Pengetahuan', 'Moderator') NOT NULL DEFAULT 'Anggota'");
+        }
 
         // 2. Update existing 'Kreator Pengetahuan' records to 'Anggota'
         DB::table('users')
@@ -21,7 +23,9 @@ return new class extends Migration
             ->update(['role' => 'Anggota']);
 
         // 3. Finalize enum column definition to use 'Anggota' as primary default
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator') NOT NULL DEFAULT 'Anggota'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('Super Admin', 'Admin Pusat', 'Admin IPPD', 'Anggota', 'Analisis Pengetahuan', 'Moderator') NOT NULL DEFAULT 'Anggota'");
+        }
     }
 
     /**
@@ -29,7 +33,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('Super Admin', 'Admin Pusat', 'Admin IPPD', 'Kreator Pengetahuan', 'Analisis Pengetahuan', 'Moderator', 'Anggota') NOT NULL DEFAULT 'Kreator Pengetahuan'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('Super Admin', 'Admin Pusat', 'Admin IPPD', 'Kreator Pengetahuan', 'Analisis Pengetahuan', 'Moderator', 'Anggota') NOT NULL DEFAULT 'Kreator Pengetahuan'");
+        }
         
         DB::table('users')
             ->where('role', 'Anggota')

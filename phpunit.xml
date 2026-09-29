@@ -32,5 +32,10 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="KEYCLOAK_BASE_URL" value="http://localhost:8080"/>
+        <env name="KEYCLOAK_CLIENT_ID" value="mojopedia-app"/>
+        <env name="KEYCLOAK_CLIENT_SECRET" value="testing-secret"/>
+        <env name="KEYCLOAK_REALM" value="Mojopedia"/>
+        <env name="KEYCLOAK_REDIRECT_URI" value="http://localhost/auth/keycloak/callback"/>
     </php>
 </phpunit>

@@ -82,7 +82,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if (empty($user->keycloak_id)) {
-            $request->validate([
+            $request->validateWithBag('userDeletion', [
                 'password' => ['required', 'current_password'],
             ]);
         }
