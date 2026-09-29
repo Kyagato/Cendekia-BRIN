@@ -61,6 +61,10 @@ class AuthApiController extends Controller
                 response: 401,
                 description: 'Email atau password salah'
             ),
+            new OA\Response(
+                response: 429,
+                description: 'Terlalu banyak percobaan login (Rate limit 5 request/menit)'
+            ),
         ]
     )]
     public function login(Request $request): JsonResponse
@@ -120,7 +124,7 @@ class AuthApiController extends Controller
     )]
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->currentAccessToken()?->delete();
 
         return response()->json([
             'status' => 'success',

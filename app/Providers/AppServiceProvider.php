@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Models\Knowledge;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use SocialiteProviders\Manager\SocialiteWasCalled;
@@ -29,6 +32,18 @@ class AppServiceProvider extends ServiceProvider
             \SocialiteProviders\Manager\SocialiteWasCalled::class,
             \SocialiteProviders\Keycloak\KeycloakExtendSocialite::class.'@handle'
         );
+
+        // Rate Limiter untuk Login API (maksimal 5 percobaan per menit per email/IP)
+        RateLimiter::for('api-login', function (Request $request) {
+            $key = (string) $request->input('email') . '|' . $request->ip();
+            return Limit::perMinute(5)->by($key)->response(function () {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Terlalu banyak percobaan login. Silakan tunggu 1 menit sebelum mencoba kembali.',
+                ], 429);
+            });
+        });
+
         // ============================================================
         // GATES — Otorisasi Berbasis Role untuk MojoPedia
         // ============================================================

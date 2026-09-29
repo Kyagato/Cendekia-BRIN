@@ -20,7 +20,7 @@ Route::get('/health-check', function () {
 });
 
 // Autentikasi API (Sanctum Token)
-Route::post('/login', [AuthApiController::class, 'login']);
+Route::post('/login', [AuthApiController::class, 'login'])->middleware('throttle:api-login');
 Route::post('/logout', [AuthApiController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::get('/user', function (Request $request) {

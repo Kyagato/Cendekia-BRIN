@@ -102,6 +102,9 @@
                     },
                     "401": {
                         "description": "Email atau password salah"
+                    },
+                    "429": {
+                        "description": "Terlalu banyak percobaan login (Rate limit 5 request/menit)"
                     }
                 }
             }
