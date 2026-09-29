@@ -66,25 +66,25 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // ----- Gate: Mengedit Konten Sendiri -----
-        // Anggota, Kreator & Moderator hanya bisa edit konten miliknya. Admin bisa edit semua.
+        // Anggota, Kreator, Analis & Moderator hanya bisa edit konten miliknya. Admin bisa edit semua.
         Gate::define('edit-knowledge', function (User $user, Knowledge $knowledge) {
             if ($user->isAdmin()) {
                 return true;
             }
-            // Anggota, Kreator Pengetahuan & Moderator hanya bisa edit miliknya sendiri
-            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator']) && $knowledge->user_id === $user->id) {
+            // User hanya bisa edit konten miliknya sendiri
+            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator', 'Analisis Pengetahuan', 'Analis Pengetahuan']) && $knowledge->user_id === $user->id) {
                 return true;
             }
             return false;
         });
 
         // ----- Gate: Menghapus Konten -----
-        // Anggota, Kreator & Moderator hanya bisa hapus konten miliknya. Admin bisa hapus semua.
+        // Anggota, Kreator, Analis & Moderator hanya bisa hapus konten miliknya. Admin bisa hapus semua.
         Gate::define('delete-knowledge', function (User $user, Knowledge $knowledge) {
             if ($user->isAdmin()) {
                 return true;
             }
-            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator']) && $knowledge->user_id === $user->id) {
+            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator', 'Analisis Pengetahuan', 'Analis Pengetahuan']) && $knowledge->user_id === $user->id) {
                 return true;
             }
             return false;
