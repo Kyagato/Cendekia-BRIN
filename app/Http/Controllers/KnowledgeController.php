@@ -7,6 +7,7 @@ use App\Models\Knowledge;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class KnowledgeController extends Controller
 {
@@ -218,12 +219,16 @@ class KnowledgeController extends Controller
 
     public function edit(Knowledge $knowledge)
     {
+        Gate::authorize('edit-knowledge', $knowledge);
+
         $categories = Category::all();
         return view('knowledge.edit', compact('knowledge', 'categories'));
     }
 
     public function update(Request $request, Knowledge $knowledge)
     {
+        Gate::authorize('edit-knowledge', $knowledge);
+
         // Handle "Batal Ajukan" — revert status from "Diajukan" to "Draft"
         if ($request->has('batal_ajukan')) {
             $knowledge->update(['status' => 'Draft']);
@@ -350,6 +355,8 @@ class KnowledgeController extends Controller
 
     public function destroy(Knowledge $knowledge)
     {
+        Gate::authorize('delete-knowledge', $knowledge);
+
         $tags = $knowledge->tags;
         $knowledge->tags()->detach();
         $knowledge->delete();
