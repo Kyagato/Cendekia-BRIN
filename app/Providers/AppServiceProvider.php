@@ -116,11 +116,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // ----- Gate: Mengelola Forum Diskusi -----
-        // Moderator khusus mengelola forum. Admin juga bisa.
+        // Moderator khusus mengelola forum. Seluruh Admin juga bisa.
         Gate::define('manage-forum', function (User $user) {
-            return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Moderator',
-            ]);
+            return $user->isAdmin() || $user->isModerator();
         });
 
         // ----- Gate: Melihat Laporan & Analitik -----

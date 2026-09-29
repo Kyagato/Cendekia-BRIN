@@ -192,43 +192,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // =============================================================
-    // ROLE: ADMIN + ADMIN PUSAT + SUPER ADMIN
-    // Mengelola kategori, FAQ, laporan, dan pengaturan instansi
-    // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
-        Route::get('/admin/kategori', function () {
-            return view('dashboard'); // TODO: CRUD Kategori
-        })->name('admin.kategori');
-        Route::resource('/admin/faq', App\Http\Controllers\FaqController::class, ['as' => 'admin']);
-        Route::post('/admin/faq-section', [App\Http\Controllers\FaqController::class, 'storeSection'])->name('admin.faq.storeSection');
-        Route::put('/admin/faq-section/update', [App\Http\Controllers\FaqController::class, 'updateSection'])->name('admin.faq.updateSection');
-        Route::delete('/admin/faq-section', [App\Http\Controllers\FaqController::class, 'destroySection'])->name('admin.faq.destroySection');
-        Route::get('/admin/laporan', function () {
-            return view('dashboard'); // TODO: Halaman laporan & analitik
-        })->name('admin.laporan');
-    });
-
-    // =============================================================
-    // =============================================================
     // ROLE: SUPER ADMIN + ADMIN PUSAT + ADMIN
-    // Manajemen CRUD Pengguna
+    // Panel administrator — kelola statistik, users, FAQ
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
-        Route::resource('/admin/users', App\Http\Controllers\UserController::class, ['as' => 'admin']);
-    });
-
-    // =============================================================
-    // ROLE: SUPER ADMIN + ADMIN PUSAT + ADMIN
-    // Panel administrator — kelola statistik, role, konfigurasi
-    // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
-        Route::get('/admin/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('admin.statistik');
-        Route::get('/admin/roles', function () {
-            return view('dashboard'); // TODO: Manajemen Role
-        })->name('admin.roles');
-        Route::get('/admin/settings', function () {
-            return view('dashboard'); // TODO: Konfigurasi Aplikasi
-        })->name('admin.settings');
+    Route::prefix('admin')->name('admin.')->middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
+        Route::get('/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('statistik');
+        Route::resource('/users', App\Http\Controllers\UserController::class);
+        Route::resource('/faq', App\Http\Controllers\FaqController::class);
+        Route::post('/faq-section', [App\Http\Controllers\FaqController::class, 'storeSection'])->name('faq.storeSection');
+        Route::put('/faq-section/update', [App\Http\Controllers\FaqController::class, 'updateSection'])->name('faq.updateSection');
+        Route::delete('/faq-section', [App\Http\Controllers\FaqController::class, 'destroySection'])->name('faq.destroySection');
     });
 });
 

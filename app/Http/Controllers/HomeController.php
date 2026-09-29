@@ -66,64 +66,11 @@ class HomeController extends Controller
             ->take(20)
             ->get();
 
-        $query = Knowledge::with(['category', 'user', 'tags'])->where('status', 'Disetujui');
-
-        if ($request->filled('tipe')) {
-            $query->where('tipe', $request->tipe);
-        }
-
-        if ($request->filled('kategori')) {
-            $query->where('category_id', $request->kategori);
-        }
-
-        if ($request->filled('instansi')) {
-            $query->whereHas('user', function($q) use ($request) {
-                $q->where('instansi', $request->instansi);
-            });
-        }
-
-        if ($request->filled('label')) {
-            $query->whereHas('tags', function($q) use ($request) {
-                $q->where('nama_label', $request->label);
-            });
-        }
-
-        if ($request->filled('q')) {
-            $searchTerm = $request->q;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('judul', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%')
-                  ->orWhereHas('tags', function ($tagQ) use ($searchTerm) {
-                      $tagQ->where('nama_label', 'like', "%{$searchTerm}%");
-                  })
-                  ->orWhereHas('user', function ($userQ) use ($searchTerm) {
-                      $userQ->where('name', 'like', "%{$searchTerm}%")
-                            ->orWhere('instansi', 'like', "%{$searchTerm}%");
-                  });
-            });
-        }
-
-        // Sorting
-        $sort = $request->input('sort', 'terbaru');
-        if (!in_array($sort, ['terbaru', 'terpopuler', 'az', 'za'])) {
-            $sort = 'terbaru';
-        }
-
-        switch ($sort) {
-            case 'terpopuler':
-                $query->orderBy('views_count', 'desc');
-                break;
-            case 'az':
-                $query->orderBy('judul', 'asc');
-                break;
-            case 'za':
-                $query->orderBy('judul', 'desc');
-                break;
-            case 'terbaru':
-            default:
-                $query->latest();
-                break;
-        }
+        $knowledge = Knowledge::with(['category', 'user', 'tags'])
+            ->where('status', 'Disetujui')
+            ->filter($request->all())
+            ->paginate(12)
+            ->withQueryString();
 
         $filters = [
             'q' => $request->input('q', '') ?: '',
@@ -131,9 +78,8 @@ class HomeController extends Controller
             'kategori' => $request->input('kategori', '') ?: '',
             'label' => $request->input('label', '') ?: '',
             'instansi' => $request->input('instansi', '') ?: '',
-            'sort' => $sort,
+            'sort' => $request->input('sort', 'terbaru'),
         ];
-        $knowledge = $query->paginate(12)->withQueryString();
 
         return Inertia::render('Category/Index', [
             'categories' => $categories,
