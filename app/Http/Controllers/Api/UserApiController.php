@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\KeycloakAdminService;
 use Illuminate\Http\JsonResponse;
@@ -46,8 +47,8 @@ class UserApiController extends Controller
                 name: 'per_page',
                 in: 'query',
                 required: false,
-                description: 'Jumlah data per halaman (default: 15)',
-                schema: new OA\Schema(type: 'integer', default: 15)
+                description: 'Jumlah data per halaman (min: 1, max: 100, default: 15)',
+                schema: new OA\Schema(type: 'integer', default: 15, minimum: 1, maximum: 100)
             ),
         ],
         responses: [
@@ -57,7 +58,31 @@ class UserApiController extends Controller
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'status', type: 'string', example: 'success'),
-                        new OA\Property(property: 'data', type: 'object'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(
+                                    property: 'data',
+                                    type: 'array',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                                            new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
+                                            new OA\Property(property: 'role', type: 'string', example: 'Anggota'),
+                                            new OA\Property(property: 'instansi', type: 'string', example: 'BRIN'),
+                                            new OA\Property(property: 'foto_profil', type: 'string', nullable: true),
+                                            new OA\Property(property: 'email_verified_at', type: 'string', format: 'date-time', nullable: true),
+                                            new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+                                            new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
+                                        ]
+                                    )
+                                ),
+                                new OA\Property(property: 'links', type: 'object'),
+                                new OA\Property(property: 'meta', type: 'object'),
+                            ]
+                        ),
                     ]
                 )
             ),
@@ -81,12 +106,15 @@ class UserApiController extends Controller
             });
         }
 
+        // Batasi per_page antara 1 sampai 100 untuk mencegah kelebihan memori (DoS)
+        $perPage = min(max((int) $request->get('per_page', 15), 1), 100);
+
         $users = $query->orderBy('created_at', 'desc')
-            ->paginate($request->get('per_page', 15));
+            ->paginate($perPage);
 
         return response()->json([
             'status' => 'success',
-            'data' => $users,
+            'data' => UserResource::collection($users)->response()->getData(true),
         ]);
     }
 

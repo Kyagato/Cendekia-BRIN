@@ -179,11 +179,13 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Jumlah data per halaman (default: 15)",
+                        "description": "Jumlah data per halaman (min: 1, max: 100, default: 15)",
                         "required": false,
                         "schema": {
                             "type": "integer",
-                            "default": 15
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
                         }
                     }
                 ],
@@ -199,6 +201,59 @@
                                             "example": "success"
                                         },
                                         "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "John Doe"
+                                                            },
+                                                            "email": {
+                                                                "type": "string",
+                                                                "example": "john@example.com"
+                                                            },
+                                                            "role": {
+                                                                "type": "string",
+                                                                "example": "Anggota"
+                                                            },
+                                                            "instansi": {
+                                                                "type": "string",
+                                                                "example": "BRIN"
+                                                            },
+                                                            "foto_profil": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            },
+                                                            "email_verified_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time"
+                                                            },
+                                                            "updated_at": {
+                                                                "type": "string",
+                                                                "format": "date-time"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "links": {
+                                                    "type": "object"
+                                                },
+                                                "meta": {
+                                                    "type": "object"
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },
