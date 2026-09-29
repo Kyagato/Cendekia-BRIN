@@ -30,7 +30,7 @@ Route::get('/user', function (Request $request) {
 // ============================================================
 // API Manajemen User & Role
 // ============================================================
-Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
+Route::prefix('admin')->middleware(['auth:sanctum', 'role:Super Admin,Admin Pusat,Admin'])->group(function () {
     // Daftar role yang tersedia
     Route::get('/roles', [UserApiController::class, 'availableRoles']);
 

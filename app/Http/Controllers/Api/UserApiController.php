@@ -62,6 +62,7 @@ class UserApiController extends Controller
                 )
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden (Akses ditolak: Hanya untuk Admin)'),
         ]
     )]
     public function index(Request $request): JsonResponse
@@ -136,6 +137,7 @@ class UserApiController extends Controller
             ),
             new OA\Response(response: 404, description: 'User tidak ditemukan'),
             new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden (Akses ditolak: Hanya untuk Admin)'),
         ]
     )]
     public function show(User $user): JsonResponse
@@ -190,6 +192,7 @@ class UserApiController extends Controller
                 )
             ),
             new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden (Akses ditolak: Hanya untuk Admin)'),
         ]
     )]
     public function availableRoles(): JsonResponse
@@ -263,10 +266,31 @@ class UserApiController extends Controller
             new OA\Response(response: 404, description: 'User tidak ditemukan'),
             new OA\Response(response: 422, description: 'Validasi gagal (role tidak valid)'),
             new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Forbidden (Akses ditolak: Hanya untuk Admin/Super Admin)'),
         ]
     )]
     public function updateRole(Request $request, User $user): JsonResponse
     {
+        $currentUser = $request->user();
+
+        // Pencegahan eskalasi role hierarkis:
+        // Jika bukan Super Admin, tidak diizinkan mengubah user Super Admin atau mempromosikan user ke Super Admin
+        if ($currentUser && !$currentUser->isSuperAdmin()) {
+            if ($user->isSuperAdmin()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki hak akses untuk mengubah role Super Admin.',
+                ], 403);
+            }
+
+            if ($request->input('role') === User::ROLE_SUPER_ADMIN) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Hanya Super Admin yang berhak memberikan role Super Admin.',
+                ], 403);
+            }
+        }
+
         // Toleransi jika user memasukkan "Analis Pengetahuan" (akan dinormalisasi ke "Analisis Pengetahuan")
         if ($request->input('role') === 'Analis Pengetahuan') {
             $request->merge(['role' => User::ROLE_ANALIS]);
