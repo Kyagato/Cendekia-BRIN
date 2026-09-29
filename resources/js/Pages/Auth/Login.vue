@@ -37,9 +37,9 @@
               </Link>
               <div class="flex items-center gap-3 ml-auto text-xs">
                 <span class="text-slate-400 hidden sm:inline">Belum punya akun?</span>
-                <Link href="/register" class="px-3 py-1.5 border border-blue-500/40 text-blue-400 font-semibold tracking-wide rounded-lg hover:bg-[#2563eb] hover:text-white transition">
+                <a href="/register" class="px-3 py-1.5 border border-blue-500/40 text-blue-400 font-semibold tracking-wide rounded-lg hover:bg-[#2563eb] hover:text-white transition">
                   Daftar
-                </Link>
+                </a>
               </div>
             </div>
 

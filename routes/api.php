@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Endpoint API untuk Cendekia-BRIN.
+| Endpoint API untuk MojoPedia.
 | Dokumentasi Swagger tersedia di: /api/documentation
 |
 */

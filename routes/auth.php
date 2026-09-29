@@ -12,10 +12,10 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
+    Route::get('register', [\App\Http\Controllers\Auth\KeycloakController::class, 'register'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [\App\Http\Controllers\Auth\KeycloakController::class, 'register']);
 
     Route::get('login', [\App\Http\Controllers\Auth\KeycloakController::class, 'redirect'])
         ->name('login');
@@ -25,6 +25,8 @@ Route::middleware('guest')->group(function () {
     // Keycloak SSO Routes
     Route::get('auth/keycloak/redirect', [\App\Http\Controllers\Auth\KeycloakController::class, 'redirect'])
         ->name('keycloak.redirect');
+    Route::get('auth/keycloak/register', [\App\Http\Controllers\Auth\KeycloakController::class, 'register'])
+        ->name('keycloak.register');
     Route::get('auth/keycloak/callback', [\App\Http\Controllers\Auth\KeycloakController::class, 'callback'])
         ->name('keycloak.callback');
 

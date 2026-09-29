@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'Cendekia-BRIN API',
+                'title' => 'MojoPedia API',
             ],
 
             'routes' => [

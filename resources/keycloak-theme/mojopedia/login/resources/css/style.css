@@ -330,9 +330,9 @@ div.subtitle > span {
     text-decoration: none !important;
 }
 
-/* Form Greetings: "Welcome back" & "Please login to your account" */
+/* Form Greetings: "Selamat Datang" & "Please login to your account" */
 #kc-content-wrapper::before {
-    content: "Welcome back" !important;
+    content: "Selamat Datang" !important;
     display: block !important;
     font-size: 24px !important;
     font-weight: 800 !important;

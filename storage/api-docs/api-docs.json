@@ -1,11 +1,11 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Cendekia-BRIN API",
-        "description": "REST API untuk sistem manajemen pengetahuan Cendekia-BRIN. Menyediakan endpoint untuk manajemen user, role, dan integrasi Keycloak SSO.",
+        "title": "MojoPedia API",
+        "description": "REST API untuk sistem manajemen pengetahuan MojoPedia. Menyediakan endpoint untuk manajemen user, role, dan integrasi Keycloak SSO.",
         "contact": {
-            "name": "Tim Pengembang Cendekia-BRIN",
-            "email": "admin@cendekia-brin.go.id"
+            "name": "Tim Pengembang MojoPedia",
+            "email": "admin@mojopedia.go.id"
         },
         "version": "1.0.0"
     },

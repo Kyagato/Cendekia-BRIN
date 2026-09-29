@@ -61,6 +61,57 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
     }
 
     /**
+     * Redirect user ke halaman registrasi Keycloak SSO.
+     */
+    public function register()
+    {
+        $baseUrl = config('services.keycloak.base_url');
+        $clientId = config('services.keycloak.client_id');
+
+        // Tampilkan peringatan jika konfigurasi belum diisi
+        if (empty($baseUrl) || empty($clientId)) {
+            return response()->make('
+                <div style="font-family: system-ui, -apple-system, sans-serif; padding: 50px 20px; text-align: center; max-width: 600px; margin: 0 auto;">
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 24px; border-radius: 12px;">
+                        <h2 style="margin-top: 0; font-size: 20px;">Konfigurasi Keycloak Belum Diisi di .env</h2>
+                        <p style="font-size: 14px; color: #7f1d1d; line-height: 1.6;">
+                            Silakan buka file <code>.env</code> dan pastikan variabel berikut sudah terisi:
+                        </p>
+                        <pre style="background: #1e293b; color: #f8fafc; padding: 16px; border-radius: 8px; text-align: left; font-size: 13px; overflow-x: auto;">
+KEYCLOAK_BASE_URL=http://localhost:8080
+KEYCLOAK_REALM=Mojopedia
+KEYCLOAK_CLIENT_ID=mojopedia-app
+KEYCLOAK_CLIENT_SECRET=your-client-secret
+KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
+                    </div>
+                </div>
+            ', 500);
+        }
+
+        try {
+            $redirectResponse = Socialite::driver('keycloak')
+                ->with(['prompt' => 'create'])
+                ->redirect();
+            $targetUrl = $redirectResponse->getTargetUrl();
+
+            if (request()->header('X-Inertia') || request()->wantsJson()) {
+                return Inertia::location($targetUrl);
+            }
+
+            return $redirectResponse;
+        } catch (Exception $e) {
+            return response()->make('
+                <div style="font-family: system-ui, -apple-system, sans-serif; padding: 50px 20px; text-align: center; max-width: 600px; margin: 0 auto;">
+                    <div style="background: #fff1f2; border: 1px solid #fda4af; color: #9f1239; padding: 24px; border-radius: 12px;">
+                        <h2 style="margin-top: 0; font-size: 20px;">Gagal Menghubungi Keycloak Server</h2>
+                        <p style="font-size: 14px; line-height: 1.6;">' . e($e->getMessage()) . '</p>
+                    </div>
+                </div>
+            ', 500);
+        }
+    }
+
+    /**
      * Callback setelah user berhasil login di Keycloak.
      */
     public function callback()

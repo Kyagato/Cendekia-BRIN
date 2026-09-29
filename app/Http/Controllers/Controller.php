@@ -6,11 +6,11 @@ use OpenApi\Attributes as OA;
 
 #[OA\Info(
     version: '1.0.0',
-    title: 'Cendekia-BRIN API',
-    description: 'REST API untuk sistem manajemen pengetahuan Cendekia-BRIN. Menyediakan endpoint untuk manajemen user, role, dan integrasi Keycloak SSO.',
+    title: 'MojoPedia API',
+    description: 'REST API untuk sistem manajemen pengetahuan MojoPedia. Menyediakan endpoint untuk manajemen user, role, dan integrasi Keycloak SSO.',
     contact: new OA\Contact(
-        name: 'Tim Pengembang Cendekia-BRIN',
-        email: 'admin@cendekia-brin.go.id'
+        name: 'Tim Pengembang MojoPedia',
+        email: 'admin@mojopedia.go.id'
     )
 )]
 #[OA\Server(
