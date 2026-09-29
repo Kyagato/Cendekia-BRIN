@@ -47,7 +47,7 @@ class ForumController extends Controller
         ]);
 
         $user   = Auth::user();
-        $status = in_array($user->role, ForumThread::AUTO_APPROVE_ROLES) ? 'approved' : 'pending';
+        $status = $user->isAdmin() ? 'approved' : 'pending';
 
         $thread = ForumThread::create([
             'user_id'      => $user->id,

@@ -16,7 +16,7 @@ class ForumThread extends Model
     ];
 
     // Roles that get auto-approval
-    const AUTO_APPROVE_ROLES = ['super_admin', 'admin_pusat', 'admin', 'Super Admin', 'Admin Pusat', 'Admin IPPD'];
+    const AUTO_APPROVE_ROLES = User::ADMIN_ROLES;
 
     public function user()
     {
