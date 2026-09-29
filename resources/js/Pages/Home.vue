@@ -3,6 +3,24 @@
     <!-- Institutional Hero Section -->
     <section class="relative bg-[#1e3a8a] text-white pt-16 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
 
+      <!-- Floating White Square Particles (40 Partikel, Opacity 50%, 5 Ukuran, Gerakan Cepat ke Atas) -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div
+          v-for="(p, idx) in heroParticles"
+          :key="idx"
+          class="hero-particle-square"
+          :style="{
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            left: `${p.left}%`,
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+            '--rot-end': `${p.rot}deg`,
+            '--drift': `${p.drift}px`
+          }"
+        ></div>
+      </div>
+
       <div class="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 text-center">
 
         <!-- Hero Headline -->
@@ -333,4 +351,85 @@ const submitSearch = () => {
     window.location.href = `/kategori?q=${encodeURIComponent(searchQuery.value.trim())}`;
   }, 220);
 };
+
+// Data 40 Partikel Kotak Putih Latar Hero (5 Ukuran, Gerakan Cepat ke Atas, Rotasi Aktif)
+const heroParticles = [
+  { size: 10, left: 3, duration: 6.2, delay: -1.4, rot: 180, drift: 12 },
+  { size: 18, left: 7, duration: 7.8, delay: -4.2, rot: -240, drift: -10 },
+  { size: 30, left: 12, duration: 5.5, delay: -2.1, rot: 360, drift: 15 },
+  { size: 10, left: 16, duration: 8.4, delay: -5.6, rot: -180, drift: -8 },
+  { size: 46, left: 21, duration: 9.0, delay: -3.8, rot: 270, drift: 18 },
+  { size: 18, left: 25, duration: 6.8, delay: -0.7, rot: -360, drift: -14 },
+  { size: 10, left: 29, duration: 5.9, delay: -4.9, rot: 180, drift: 10 },
+  { size: 66, left: 34, duration: 9.5, delay: -2.5, rot: 120, drift: -12 },
+  { size: 30, left: 38, duration: 7.2, delay: -6.1, rot: -270, drift: 16 },
+  { size: 18, left: 42, duration: 6.0, delay: -1.8, rot: 360, drift: -15 },
+  { size: 10, left: 46, duration: 8.1, delay: -5.0, rot: -180, drift: 9 },
+  { size: 46, left: 50, duration: 8.8, delay: -3.2, rot: 240, drift: -16 },
+  { size: 10, left: 54, duration: 5.7, delay: -0.9, rot: 180, drift: 11 },
+  { size: 18, left: 58, duration: 7.4, delay: -4.6, rot: -360, drift: -13 },
+  { size: 30, left: 62, duration: 6.5, delay: -2.8, rot: 270, drift: 14 },
+  { size: 66, left: 67, duration: 9.2, delay: -6.5, rot: -150, drift: -11 },
+  { size: 10, left: 71, duration: 5.8, delay: -1.2, rot: 180, drift: 8 },
+  { size: 18, left: 75, duration: 7.9, delay: -5.3, rot: -270, drift: -15 },
+  { size: 46, left: 79, duration: 8.6, delay: -3.5, rot: 360, drift: 17 },
+  { size: 10, left: 83, duration: 6.1, delay: -0.4, rot: -180, drift: -10 },
+  { size: 30, left: 87, duration: 7.0, delay: -4.1, rot: 210, drift: 13 },
+  { size: 18, left: 91, duration: 6.6, delay: -2.0, rot: -360, drift: -12 },
+  { size: 10, left: 95, duration: 5.4, delay: -5.8, rot: 180, drift: 9 },
+  { size: 66, left: 9, duration: 9.6, delay: -7.2, rot: -180, drift: 14 },
+  { size: 10, left: 14, duration: 6.3, delay: -3.0, rot: 270, drift: -8 },
+  { size: 18, left: 18, duration: 7.1, delay: -0.6, rot: -210, drift: 12 },
+  { size: 30, left: 23, duration: 5.8, delay: -4.5, rot: 360, drift: -16 },
+  { size: 46, left: 32, duration: 8.9, delay: -6.8, rot: -300, drift: 15 },
+  { size: 10, left: 36, duration: 5.6, delay: -1.9, rot: 180, drift: -9 },
+  { size: 18, left: 44, duration: 7.6, delay: -5.4, rot: -240, drift: 11 },
+  { size: 10, left: 48, duration: 6.4, delay: -2.7, rot: 360, drift: -13 },
+  { size: 66, left: 52, duration: 9.4, delay: -0.8, rot: 150, drift: 16 },
+  { size: 30, left: 56, duration: 6.9, delay: -4.3, rot: -360, drift: -14 },
+  { size: 18, left: 64, duration: 7.3, delay: -6.0, rot: 240, drift: 10 },
+  { size: 10, left: 69, duration: 5.9, delay: -1.6, rot: -180, drift: -11 },
+  { size: 46, left: 73, duration: 8.7, delay: -3.9, rot: 300, drift: 15 },
+  { size: 18, left: 81, duration: 6.7, delay: -0.3, rot: -270, drift: -12 },
+  { size: 10, left: 85, duration: 6.0, delay: -4.8, rot: 180, drift: 8 },
+  { size: 30, left: 89, duration: 7.5, delay: -2.3, rot: -360, drift: -15 },
+  { size: 46, left: 93, duration: 8.5, delay: -6.4, rot: 210, drift: 13 }
+];
 </script>
+
+<style scoped>
+@keyframes heroParticleFloatUp {
+  0% {
+    top: 108%;
+    opacity: 0;
+    transform: translateX(0) rotate(0deg);
+  }
+  8% {
+    opacity: 0.5;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  95% {
+    opacity: 0.2;
+  }
+  100% {
+    top: -18%;
+    opacity: 0;
+    transform: translateX(var(--drift, 12px)) rotate(var(--rot-end, 360deg));
+  }
+}
+
+.hero-particle-square {
+  position: absolute;
+  pointer-events: none;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  animation-name: heroParticleFloatUp;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  backdrop-filter: blur(0.5px);
+  will-change: transform, top, opacity;
+}
+</style>
