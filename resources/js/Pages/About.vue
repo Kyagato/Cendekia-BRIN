@@ -40,7 +40,7 @@
           </div>
         </div>
         <div class="lg:w-1/2 w-full">
-          <div class="rounded-lg border border-[#e2e8f0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm relative overflow-hidden">
+          <div class="rounded-lg border border-[#e2e8f0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm relative overflow-hidden transition-all duration-300 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/10">
             <div class="flex items-center gap-4 mb-6 pb-6 border-b border-[#f1f5f9] dark:border-slate-800">
               <div class="w-12 h-12 rounded-lg bg-white dark:bg-slate-800 border border-blue-200/60 dark:border-slate-700 p-1 flex items-center justify-center shrink-0 shadow-sm">
                 <img 
@@ -78,7 +78,7 @@
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-2xl font-bold text-center text-[#0f172a] dark:text-white mb-10">Alur Kerja Pengelolaan Pengetahuan</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div v-for="(step, idx) in steps" :key="idx" class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-[#e2e8f0] dark:border-slate-800 relative card-hover">
+          <div v-for="(step, idx) in steps" :key="idx" class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-[#e2e8f0] dark:border-slate-800 relative card-hover transition-all duration-300 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/10">
             <div class="w-8 h-8 bg-[#2563eb] text-white rounded-lg flex items-center justify-center text-sm font-bold mb-4 shadow-sm">{{ idx + 1 }}</div>
             <h3 class="text-base font-bold text-[#0f172a] dark:text-white mb-2">{{ step.title }}</h3>
             <p class="text-[#475569] dark:text-slate-400 text-xs leading-relaxed">{{ step.desc }}</p>
@@ -91,7 +91,7 @@
     <section class="py-16 container mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-2xl font-bold text-center text-[#0f172a] dark:text-white mb-10">Fitur Ekosistem Pengetahuan</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="(feat, idx) in features" :key="idx" class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-[#e2e8f0] dark:border-slate-800 flex items-start gap-4 card-hover">
+        <div v-for="(feat, idx) in features" :key="idx" class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-[#e2e8f0] dark:border-slate-800 flex items-start gap-4 card-hover transition-all duration-300 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/10">
           <div class="w-10 h-10 bg-[#eff6ff] dark:bg-blue-950/80 rounded-lg flex items-center justify-center text-[#2563eb] dark:text-blue-300 shrink-0 border border-blue-200/50">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="feat.icon" />
