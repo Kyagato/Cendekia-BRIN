@@ -7,6 +7,7 @@ use App\Http\Resources\KnowledgeResource;
 use App\Models\Category;
 use App\Models\Knowledge;
 use App\Models\Tag;
+use App\Services\KnowledgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +15,13 @@ use OpenApi\Attributes as OA;
 
 class KnowledgeApiController extends Controller
 {
+    protected KnowledgeService $knowledgeService;
+
+    public function __construct(KnowledgeService $knowledgeService)
+    {
+        $this->knowledgeService = $knowledgeService;
+    }
+
     #[OA\Get(
         path: '/knowledge',
         operationId: 'getKnowledgeList',
@@ -257,15 +265,7 @@ class KnowledgeApiController extends Controller
             ], 403);
         }
 
-        // Hapus file fisik jika ada
-        if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
-            Storage::disk('public')->delete($knowledge->file_path);
-        }
-        if ($knowledge->gambar_sampul && Storage::disk('public')->exists($knowledge->gambar_sampul)) {
-            Storage::disk('public')->delete($knowledge->gambar_sampul);
-        }
-
-        $knowledge->delete();
+        $this->knowledgeService->deleteKnowledge($knowledge);
 
         return response()->json([
             'status' => 'success',
