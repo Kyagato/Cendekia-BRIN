@@ -18,7 +18,7 @@
           </ol>
         </nav>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">Tentang MojoPedia</h1>
-        <p class="text-base text-blue-100 max-w-2xl mx-auto">Sistem Manajemen Pengetahuan — Digital Mojokerto System</p>
+        <p class="text-base text-blue-100 max-w-2xl mx-auto">Sistem Manajemen Pengetahuan </p>
       </div>
     </section>
 
@@ -42,13 +42,15 @@
         <div class="lg:w-1/2 w-full">
           <div class="rounded-lg border border-[#e2e8f0] dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm relative overflow-hidden">
             <div class="flex items-center gap-4 mb-6 pb-6 border-b border-[#f1f5f9] dark:border-slate-800">
-              <div class="w-12 h-12 rounded-lg bg-[#eff6ff] dark:bg-blue-950/80 border border-blue-200/60 flex items-center justify-center text-[#2563eb] dark:text-blue-300">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                </svg>
+              <div class="w-12 h-12 rounded-lg bg-white dark:bg-slate-800 border border-blue-200/60 dark:border-slate-700 p-1 flex items-center justify-center shrink-0 shadow-sm">
+                <img 
+                  src="/images/logo-kab-mojokerto.png" 
+                  alt="Lambang Kabupaten Mojokerto" 
+                  class="w-full h-full object-contain"
+                />
               </div>
               <div>
-                <h3 class="text-lg font-bold text-[#0f172a] dark:text-white">Pusat Pengetahuan Terpadu</h3>
+                <h3 class="text-lg font-bold text-[#0f172a] dark:text-white">Pusat Pengetahuan Terpadu di</h3>
                 <p class="text-xs text-[#94a3b8]">Standar Pengarsipan Digital Nasional</p>
               </div>
             </div>
@@ -59,7 +61,7 @@
               </li>
               <li class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb]"></span>
-                <span>Proses review & validasi berjenjang oleh tim moderator kurator</span>
+                <span>Proses review & validasi berjenjang oleh tim moderator dan tim analis</span>
               </li>
               <li class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#2563eb]"></span>
