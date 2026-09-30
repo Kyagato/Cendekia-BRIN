@@ -28,6 +28,9 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Authentication', description: 'Endpoint untuk autentikasi dan manajemen token')]
 #[OA\Tag(name: 'Users', description: 'Endpoint untuk manajemen data user')]
 #[OA\Tag(name: 'Roles', description: 'Endpoint untuk manajemen role user (terintegrasi dengan Keycloak Realm Roles)')]
+#[OA\Tag(name: 'Categories', description: 'Endpoint untuk kategori dan klasifikasi repositori')]
+#[OA\Tag(name: 'Knowledge', description: 'Endpoint repositori dokumen, riset, dan aset multimedia')]
+#[OA\Tag(name: 'Forum', description: 'Endpoint diskusi komunitas, thread topik, dan balasan')]
 abstract class Controller
 {
     #[OA\Get(

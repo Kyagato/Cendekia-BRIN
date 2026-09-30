@@ -272,5 +272,45 @@
     .group:hover .outline-card-stroke {
         stroke-dashoffset: 0;
     }
+
+    /* ========================================================
+       Page Transition: Slide & Float (Native App Feel)
+       ======================================================== */
+    .page-slide-enter-active {
+        transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: transform, opacity;
+    }
+
+    .page-slide-leave-active {
+        transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1),
+                    transform 0.2s cubic-bezier(0.4, 0, 1, 1);
+        will-change: transform, opacity;
+    }
+
+    .page-slide-enter-from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    .page-slide-leave-to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    /* Respect reduced-motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .page-slide-enter-active,
+        .page-slide-leave-active {
+            transition: opacity 0.15s ease !important;
+            transform: none !important;
+        }
+        .page-slide-enter-from,
+        .page-slide-leave-to {
+            transform: none !important;
+            opacity: 0 !important;
+        }
+    }
 }
+
 

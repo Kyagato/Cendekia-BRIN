@@ -158,9 +158,13 @@
       </div>
     </header>
 
-    <!-- Main Body -->
-    <main class="flex-1">
-      <slot />
+    <!-- Main Body with Smooth Page Transition (Slide & Float) -->
+    <main class="flex-1 overflow-x-hidden">
+      <Transition name="page-slide" mode="out-in">
+        <div :key="page.url" class="w-full">
+          <slot />
+        </div>
+      </Transition>
     </main>
 
     <!-- Footer -->

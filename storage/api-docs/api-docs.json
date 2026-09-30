@@ -149,6 +149,639 @@
                 ]
             }
         },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Daftar semua kategori pengetahuan",
+                "description": "Mengambil seluruh daftar kategori beserta jumlah dokumen terasosiasi yang berstatus Disetujui.",
+                "operationId": "getCategories",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar kategori",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{id}": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Detail satu kategori",
+                "operationId": "getCategoryDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail kategori ditemukan"
+                    },
+                    "404": {
+                        "description": "Kategori tidak ditemukan"
+                    }
+                }
+            }
+        },
+        "/admin/categories": {
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Tambah kategori baru (Admin)",
+                "operationId": "createCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_kategori"
+                                ],
+                                "properties": {
+                                    "nama_kategori": {
+                                        "type": "string",
+                                        "example": "Informatika & Siber"
+                                    },
+                                    "deskripsi": {
+                                        "type": "string",
+                                        "example": "Dokumen seputar infrastruktur IT & keamanan informasi"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Kategori berhasil ditambahkan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/categories/{id}": {
+            "put": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Perbarui kategori (Admin)",
+                "operationId": "updateCategory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_kategori"
+                                ],
+                                "properties": {
+                                    "nama_kategori": {
+                                        "type": "string",
+                                        "example": "Informatika"
+                                    },
+                                    "deskripsi": {
+                                        "type": "string",
+                                        "example": "Deskripsi baru"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Kategori berhasil diperbarui"
+                    },
+                    "404": {
+                        "description": "Kategori tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Hapus kategori (Admin)",
+                "operationId": "deleteCategory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kategori berhasil dihapus"
+                    },
+                    "400": {
+                        "description": "Kategori masih memiliki pengetahuan terkait"
+                    },
+                    "404": {
+                        "description": "Kategori tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/forum/threads": {
+            "get": {
+                "tags": [
+                    "Forum"
+                ],
+                "summary": "Daftar thread diskusi forum (Publik)",
+                "description": "Menampilkan seluruh diskusi yang sudah disetujui, mendukung filter kategori, sorting terpopuler/terbaru, dan pagination.",
+                "operationId": "getForumThreads",
+                "parameters": [
+                    {
+                        "name": "kategori",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "terbaru",
+                                "terpopuler"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar thread forum",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Forum"
+                ],
+                "summary": "Buat topik diskusi forum baru (Sanctum)",
+                "operationId": "createForumThread",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "judul",
+                                    "konten",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "judul": {
+                                        "type": "string",
+                                        "example": "Diskusi Implementasi SPBE 2026"
+                                    },
+                                    "konten": {
+                                        "type": "string",
+                                        "example": "Bagaimana evaluasi arsitektur domain layanan di OPD Anda?"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "knowledge_id": {
+                                        "type": "integer",
+                                        "example": 5,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Thread forum berhasil dibuat"
+                    },
+                    "422": {
+                        "description": "Validasi form gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/forum/threads/{id}": {
+            "get": {
+                "tags": [
+                    "Forum"
+                ],
+                "summary": "Detail thread diskusi beserta balasan / komentar",
+                "operationId": "getForumThreadDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail thread dan balasan"
+                    },
+                    "404": {
+                        "description": "Thread tidak ditemukan"
+                    }
+                }
+            }
+        },
+        "/forum/threads/{id}/replies": {
+            "post": {
+                "tags": [
+                    "Forum"
+                ],
+                "summary": "Kirim balasan / komentar pada thread (Sanctum)",
+                "operationId": "replyForumThread",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "konten"
+                                ],
+                                "properties": {
+                                    "konten": {
+                                        "type": "string",
+                                        "example": "Sangat setuju, kami sedang menyusun SOP integrasi."
+                                    },
+                                    "parent_id": {
+                                        "type": "integer",
+                                        "example": null,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Balasan berhasil dikirim"
+                    },
+                    "400": {
+                        "description": "Thread dikunci"
+                    },
+                    "404": {
+                        "description": "Thread tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/knowledge": {
+            "get": {
+                "tags": [
+                    "Knowledge"
+                ],
+                "summary": "Daftar repositori pengetahuan (Publik / Filterable)",
+                "description": "Mendukung filter berdasarkan kata kunci (q), tipe media, kategori, label, instansi, sort, dan pagination.",
+                "operationId": "getKnowledgeList",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Pencarian teks judul, deskripsi, penulis",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tipe",
+                        "in": "query",
+                        "description": "Filter tipe: Teks, Video, Gambar, Audio",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "Teks",
+                                "Video",
+                                "Gambar",
+                                "Audio"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "kategori",
+                        "in": "query",
+                        "description": "ID kategori",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sorting: terbaru, terpopuler, az, za",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "terbaru"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman (default: 12)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 12
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil daftar pengetahuan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Knowledge"
+                ],
+                "summary": "Kirim / Unggah pengetahuan baru (Sanctum)",
+                "operationId": "storeKnowledge",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "judul",
+                                    "category_id",
+                                    "tipe"
+                                ],
+                                "properties": {
+                                    "judul": {
+                                        "type": "string",
+                                        "example": "Panduan Keamanan Siber"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "tipe": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Teks",
+                                            "Video",
+                                            "Gambar",
+                                            "Audio"
+                                        ]
+                                    },
+                                    "deskripsi": {
+                                        "type": "string",
+                                        "example": "Ringkasan panduan..."
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "<p>Detail lengkap materi</p>"
+                                    },
+                                    "penulis": {
+                                        "type": "string",
+                                        "example": "Diskominfo"
+                                    },
+                                    "kolaborator": {
+                                        "type": "string",
+                                        "example": "BSSN"
+                                    },
+                                    "tags": {
+                                        "type": "string",
+                                        "example": "keamanan,sop,data"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "gambar_sampul": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pengetahuan berhasil diajukan"
+                    },
+                    "422": {
+                        "description": "Validasi form gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/knowledge/{id}": {
+            "get": {
+                "tags": [
+                    "Knowledge"
+                ],
+                "summary": "Detail dokumen pengetahuan & catat view",
+                "operationId": "getKnowledgeDetail",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data pengetahuan ditemukan"
+                    },
+                    "404": {
+                        "description": "Pengetahuan tidak ditemukan"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Knowledge"
+                ],
+                "summary": "Hapus dokumen pengetahuan (Pemilik atau Admin)",
+                "operationId": "deleteKnowledge",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pengetahuan berhasil dihapus"
+                    },
+                    "403": {
+                        "description": "Tidak memiliki izin"
+                    },
+                    "404": {
+                        "description": "Pengetahuan tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/admin/users": {
             "get": {
                 "tags": [
@@ -605,6 +1238,18 @@
         {
             "name": "Roles",
             "description": "Endpoint untuk manajemen role user (terintegrasi dengan Keycloak Realm Roles)"
+        },
+        {
+            "name": "Categories",
+            "description": "Endpoint untuk kategori dan klasifikasi repositori"
+        },
+        {
+            "name": "Knowledge",
+            "description": "Endpoint repositori dokumen, riset, dan aset multimedia"
+        },
+        {
+            "name": "Forum",
+            "description": "Endpoint diskusi komunitas, thread topik, dan balasan"
         }
     ]
 }
