@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ForumThread extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'forum_threads';
     protected $guarded = ['id'];
 

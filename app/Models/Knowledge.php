@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Knowledge extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'knowledge'; 
     protected $guarded = ['id'];
+
 
     protected $casts = [
         'unggulan' => 'boolean',

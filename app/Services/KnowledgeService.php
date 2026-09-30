@@ -6,11 +6,21 @@ use App\Models\Knowledge;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class KnowledgeService
 {
+    /**
+     * Membersihkan cache statistik saat ada mutasi data pengetahuan.
+     */
+    public function invalidateStatsCache(): void
+    {
+        Cache::forget('stats_global_aggregation');
+        Cache::forget('stats_instansi_list');
+    }
+
     /**
      * Memeriksa apakah user memiliki hak otomatis disetujui (Admin atau Analis).
      */
@@ -83,6 +93,8 @@ class KnowledgeService
             if (!empty($data['tags'])) {
                 $this->syncTags($knowledge, $data['tags']);
             }
+
+            $this->invalidateStatsCache();
 
             return $knowledge;
         });
@@ -162,6 +174,8 @@ class KnowledgeService
                 $this->syncTags($knowledge, $data['tags']);
             }
 
+            $this->invalidateStatsCache();
+
             return $knowledge;
         });
     }
@@ -193,6 +207,8 @@ class KnowledgeService
                     $tag->delete();
                 }
             }
+
+            $this->invalidateStatsCache();
 
             return (bool) $deleted;
         });
