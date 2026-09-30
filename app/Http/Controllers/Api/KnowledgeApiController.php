@@ -48,25 +48,8 @@ class KnowledgeApiController extends Controller
         $query = Knowledge::with(['category', 'user', 'tags'])
             ->where('status', 'Disetujui');
 
-        // Gunakan filter bawaan model Knowledge
+        // Gunakan filter bawaan model Knowledge (termasuk sorting via parameter 'sort')
         $query->filter($request->all());
-
-        // Pengurutan
-        switch ($request->input('sort')) {
-            case 'terpopuler':
-                $query->orderByDesc('views_count');
-                break;
-            case 'az':
-                $query->orderBy('judul', 'asc');
-                break;
-            case 'za':
-                $query->orderBy('judul', 'desc');
-                break;
-            case 'terbaru':
-            default:
-                $query->latest();
-                break;
-        }
 
         $knowledge = $query->paginate($perPage);
 
