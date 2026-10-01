@@ -225,16 +225,16 @@ class HomeController extends Controller
         $comments = $knowledge->comments()->get();
         $commentsCount = $knowledge->allComments()->count();
 
-        return Inertia::render('Knowledge/Show', [
-            'knowledge'      => $knowledge,
-            'readingTime'    => $readingTime,
-            'isBookmarked'   => $isBookmarked,
-            'bookmarksCount' => $bookmarksCount,
-            'isLiked'        => $isLiked,
-            'likesCount'     => $likesCount,
-            'comments'       => $comments,
-            'commentsCount'  => $commentsCount,
-        ]);
+        return view('pages.knowledge-show', compact(
+            'knowledge',
+            'readingTime',
+            'isBookmarked',
+            'bookmarksCount',
+            'isLiked',
+            'likesCount',
+            'comments',
+            'commentsCount'
+        ));
     }
 
     public function toggleDarkMode(Request $request)
