@@ -323,7 +323,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
                             <span>Komentar</span>
-                            <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                            <span id="top-comments-count" class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                                 {{ $commentsCount }}
                             </span>
                         </a>
@@ -331,147 +331,83 @@
                 </div>
 
                 {{-- Section Komentar --}}
-                <section id="komentar" class="scroll-mt-28 space-y-6 pt-4" x-data="{ isCollapsed: false, replyToId: null, replyToName: '', setReply(id, name) { this.replyToId = id; this.replyToName = name; this.isCollapsed = false; this.$nextTick(() => { const el = document.getElementById('comment-textarea'); if(el) el.focus(); }); }, cancelReply() { this.replyToId = null; this.replyToName = ''; } }">
+                <section id="komentar" class="scroll-mt-28 space-y-6 pt-4" x-data="commentSystem()">
                     <div class="flex items-center justify-between">
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
                             <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                             </svg>
                             Diskusi & Komentar
-                            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold">
+                            <span id="section-comments-count" class="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold" x-text="commentsCount">
                                 {{ $commentsCount }}
                             </span>
                         </h2>
                     </div>
 
-                    {{-- Flash Session Success --}}
+                    {{-- Flash Session Success (Otomatis hilang setelah 5 detik) --}}
                     @if(session('success'))
-                    <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2">
-                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span>{{ session('success') }}</span>
+                    <div x-data="{ show: true }" 
+                         x-show="show" 
+                         x-init="setTimeout(() => show = false, 5000)"
+                         x-transition:leave="transition ease-in duration-300"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm flex items-center justify-between shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium">{{ session('success') }}</span>
+                        </div>
+                        <button type="button" @click="show = false" class="text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-200 transition p-1">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
                     @endif
 
+                    {{-- Toast Notifikasi AJAX (Muncul 5 detik lalu otomatis menghilang) --}}
+                    <div x-show="toast.show"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 -translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-300"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm flex items-center justify-between shadow-sm"
+                         style="display: none;">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-medium" x-text="toast.message"></span>
+                        </div>
+                        <button type="button" @click="toast.show = false" class="text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-200 transition p-1">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
                     {{-- Daftar Komentar --}}
-                    @if($comments->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($comments as $comment)
-                                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm space-y-3">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-700 dark:text-slate-200">
-                                                @if($comment->user && $comment->user->foto_profil)
-                                                    <img src="{{ asset('storage/' . $comment->user->foto_profil) }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
-                                                @else
-                                                    {{ strtoupper(substr($comment->user?->name ?? 'A', 0, 1)) }}
-                                                @endif
-                                            </div>
-                                            <div>
-                                                <div class="flex items-center gap-2">
-                                                    <span class="font-bold text-sm text-slate-900 dark:text-white">
-                                                        {{ $comment->user?->name ?? 'Anonim' }}
-                                                    </span>
-                                                    @if($comment->user && in_array($comment->user->role, ['Super Admin', 'Admin Pusat', 'Admin']))
-                                                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300 font-semibold">Admin</span>
-                                                    @endif
-                                                </div>
-                                                <span class="text-xs text-slate-400 dark:text-slate-500">
-                                                    {{ $comment->created_at->diffForHumans() }}
-                                                </span>
-                                            </div>
-                                        </div>
+                    <div id="comments-list" class="space-y-4">
+                        @foreach($comments as $comment)
+                            @include('partials.knowledge-comment-item', ['comment' => $comment])
+                        @endforeach
+                    </div>
 
-                                        {{-- Aksi Hapus Komentar jika pemilik atau admin --}}
-                                        @if(auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->isAdmin()))
-                                            <form action="{{ route('knowledge.comment.destroy', $comment->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-xs text-slate-400 hover:text-rose-600 transition p-1" title="Hapus komentar">
-                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-
-                                    <div class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed pl-1 sm:pl-3">
-                                        {{ $comment->konten }}
-                                    </div>
-
-                                    {{-- Tombol Balas --}}
-                                    @auth
-                                    <div class="pl-1 sm:pl-3 pt-1">
-                                        <button type="button" 
-                                                @click="setReply({{ $comment->id }}, '{{ addslashes($comment->user?->name ?? 'Anonim') }}')"
-                                                class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 transition cursor-pointer">
-                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                                            </svg>
-                                            Balas
-                                        </button>
-                                    </div>
-                                    @endauth
-
-                                    {{-- Balasan Bersarang (Replies) --}}
-                                    @if($comment->replies && $comment->replies->count() > 0)
-                                        <div class="ml-4 sm:ml-8 mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
-                                            @foreach($comment->replies as $reply)
-                                                <div class="bg-slate-50 dark:bg-slate-750/50 rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-700 space-y-2">
-                                                    <div class="flex items-start justify-between gap-2">
-                                                        <div class="flex items-center gap-2.5">
-                                                            <div class="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-700 dark:text-slate-200">
-                                                                @if($reply->user && $reply->user->foto_profil)
-                                                                    <img src="{{ asset('storage/' . $reply->user->foto_profil) }}" alt="{{ $reply->user->name }}" class="w-full h-full object-cover">
-                                                                @else
-                                                                    {{ strtoupper(substr($reply->user?->name ?? 'A', 0, 1)) }}
-                                                                @endif
-                                                            </div>
-                                                            <div>
-                                                                <span class="font-bold text-xs text-slate-900 dark:text-white">
-                                                                    {{ $reply->user?->name ?? 'Anonim' }}
-                                                                </span>
-                                                                <span class="text-[11px] text-slate-400 dark:text-slate-500 block">
-                                                                    {{ $reply->created_at->diffForHumans() }}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-                                                        @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->isAdmin()))
-                                                            <form action="{{ route('knowledge.comment.destroy', $reply->id) }}" method="POST" onsubmit="return confirm('Hapus balasan ini?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="text-xs text-slate-400 hover:text-rose-600 transition p-1" title="Hapus balasan">
-                                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                    </svg>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                    </div>
-                                                    <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pl-1 sm:pl-2">
-                                                        {{ $reply->konten }}
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                </div>
-                            @endforeach
+                    <div id="empty-comments" class="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 {{ $comments->count() > 0 ? 'hidden' : '' }}">
+                        <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
                         </div>
-                    @else
-                        <div class="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
-                            <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-3">
-                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                            </div>
-                            <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Belum ada komentar</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Jadilah yang pertama memberikan tanggapan atau pertanyaan pada pengetahuan ini!</p>
-                        </div>
-                    @endif
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Belum ada komentar</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Jadilah yang pertama memberikan tanggapan atau pertanyaan pada pengetahuan ini!</p>
+                    </div>
 
-                    {{-- Kotak Tulis Komentar Sticky / Floating (Mengikuti saat digeser ke atas & bawah persis seperti forum) --}}
+                    {{-- Kotak Tulis Komentar Sticky / Floating (Mengikuti saat digeser ke atas & bawah) --}}
                     @auth
                     <div class="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 p-4 transition-all duration-300">
                         <div class="flex items-center justify-between" :class="{ 'mb-3': !isCollapsed }">
@@ -503,12 +439,16 @@
                             </button>
                         </div>
 
-                        <form x-show="!isCollapsed" action="{{ route('knowledge.comment', $knowledge->id) }}" method="POST">
+                        <form x-show="!isCollapsed" 
+                              @submit.prevent="submitComment($event)" 
+                              action="{{ route('knowledge.comment', $knowledge->id) }}" 
+                              method="POST">
                             @csrf
                             <input type="hidden" name="parent_id" :value="replyToId">
                             <textarea 
                                 id="comment-textarea"
                                 name="konten" 
+                                x-model="commentText"
                                 rows="3" 
                                 required 
                                 placeholder="Tuliskan komentar atau pertanyaan Anda di sini..." 
@@ -520,12 +460,26 @@
                                 </span>
                                 <button 
                                     type="submit" 
-                                    class="ml-auto px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
+                                    :disabled="isSubmitting"
+                                    class="ml-auto px-5 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
                                 >
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                    </svg>
-                                    Kirim Komentar
+                                    <template x-if="!isSubmitting">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                                            </svg>
+                                            <span>Kirim Komentar</span>
+                                        </div>
+                                    </template>
+                                    <template x-if="isSubmitting">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                            </svg>
+                                            <span>Mengirim...</span>
+                                        </div>
+                                    </template>
                                 </button>
                             </div>
                         </form>
@@ -699,6 +653,150 @@ function toggleLike(knowledgeId) {
         btn.disabled = false;
         console.error('Error toggling like:', err);
     });
+}
+
+function commentSystem() {
+    return {
+        isCollapsed: false,
+        replyToId: null,
+        replyToName: '',
+        isSubmitting: false,
+        commentText: '',
+        commentsCount: {{ $commentsCount }},
+        toast: {
+            show: false,
+            message: '',
+            timer: null
+        },
+        showToast(msg) {
+            this.toast.message = msg;
+            this.toast.show = true;
+            if (this.toast.timer) clearTimeout(this.toast.timer);
+            this.toast.timer = setTimeout(() => {
+                this.toast.show = false;
+            }, 5000);
+        },
+        setReply(id, name) {
+            this.replyToId = id;
+            this.replyToName = name;
+            this.isCollapsed = false;
+            this.$nextTick(() => {
+                const el = document.getElementById('comment-textarea');
+                if (el) el.focus();
+            });
+        },
+        cancelReply() {
+            this.replyToId = null;
+            this.replyToName = '';
+        },
+        async submitComment(e) {
+            if (!this.commentText || !this.commentText.trim()) return;
+            this.isSubmitting = true;
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.status === 'success') {
+                    // Sembunyikan empty state jika sebelumnya belum ada komentar
+                    const emptyState = document.getElementById('empty-comments');
+                    if (emptyState) emptyState.classList.add('hidden');
+
+                    if (this.replyToId) {
+                        const repliesContainer = document.getElementById('replies-container-' + this.replyToId);
+                        if (repliesContainer) {
+                            repliesContainer.classList.remove('hidden');
+                            repliesContainer.insertAdjacentHTML('beforeend', data.html);
+                        }
+                    } else {
+                        const list = document.getElementById('comments-list');
+                        if (list) {
+                            list.insertAdjacentHTML('beforeend', data.html);
+                        }
+                    }
+
+                    // Reset form & state
+                    this.commentText = '';
+                    this.cancelReply();
+                    this.commentsCount++;
+
+                    // Update count di tombol atas
+                    const badge = document.getElementById('top-comments-count');
+                    if (badge) badge.innerText = this.commentsCount;
+
+                    // Tampilkan notifikasi hijau selama 5 detik lalu menghilang
+                    this.showToast(data.message || 'Komentar Anda berhasil dikirim.');
+
+                    // Scroll smooth ke komentar baru agar terlihat tanpa terpental ke atas
+                    this.$nextTick(() => {
+                        const newEl = document.getElementById('comment-' + data.comment.id);
+                        if (newEl) {
+                            newEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    });
+                } else {
+                    alert(data.message || 'Terjadi kesalahan saat mengirim komentar.');
+                }
+            } catch (err) {
+                console.error(err);
+                form.submit();
+            } finally {
+                this.isSubmitting = false;
+            }
+        },
+        async deleteComment(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus komentar ini?')) return;
+
+            try {
+                const res = await fetch(`/knowledge/comment/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ _method: 'DELETE' })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    const el = document.getElementById('comment-' + id);
+                    if (el) {
+                        el.style.transition = 'all 0.3s ease';
+                        el.style.opacity = '0';
+                        el.style.transform = 'scale(0.95)';
+                        setTimeout(() => el.remove(), 300);
+                    }
+                    this.commentsCount = Math.max(0, this.commentsCount - 1);
+                    const badge = document.getElementById('top-comments-count');
+                    if (badge) badge.innerText = this.commentsCount;
+
+                    if (this.commentsCount === 0) {
+                        const emptyState = document.getElementById('empty-comments');
+                        if (emptyState) emptyState.classList.remove('hidden');
+                    }
+
+                    this.showToast(data.message || 'Komentar berhasil dihapus.');
+                } else {
+                    alert(data.message || 'Gagal menghapus komentar.');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    };
 }
 </script>
 @endsection

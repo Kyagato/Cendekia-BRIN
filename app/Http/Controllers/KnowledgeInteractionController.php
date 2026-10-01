@@ -109,21 +109,27 @@ class KnowledgeInteractionController extends Controller
             $user
         );
 
-        if ($request->wantsJson()) {
+        if ($request->wantsJson() || $request->ajax()) {
+            $html = !empty($comment->parent_id)
+                ? view('partials.knowledge-comment-reply-item', ['reply' => $comment])->render()
+                : view('partials.knowledge-comment-item', ['comment' => $comment])->render();
+
             return response()->json([
                 'status'  => 'success',
-                'message' => 'Komentar berhasil dikirim.',
+                'message' => 'Komentar Anda berhasil dikirim.',
                 'comment' => $comment->load('user'),
+                'html'    => $html,
             ]);
         }
 
-        return back()->with('success', 'Komentar Anda berhasil dikirim.');
+        $redirectUrl = strtok(url()->previous(), '#') . '#komentar';
+        return redirect()->to($redirectUrl)->with('success', 'Komentar Anda berhasil dikirim.');
     }
 
     /**
      * Menghapus komentar pengetahuan (oleh pembuat komentar atau admin).
      */
-    public function destroyComment(KnowledgeComment $comment): RedirectResponse
+    public function destroyComment(Request $request, KnowledgeComment $comment): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
 
@@ -141,6 +147,14 @@ class KnowledgeInteractionController extends Controller
             $user
         );
 
-        return back()->with('success', 'Komentar berhasil dihapus.');
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Komentar berhasil dihapus.',
+            ]);
+        }
+
+        $redirectUrl = strtok(url()->previous(), '#') . '#komentar';
+        return redirect()->to($redirectUrl)->with('success', 'Komentar berhasil dihapus.');
     }
 }
