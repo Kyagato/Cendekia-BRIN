@@ -31,29 +31,26 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // ============================================================
-// API Kategori (Publik & Admin)
+// API Endpoints Publik (Dibatasi dengan Rate Limiting 60 req/min)
 // ============================================================
-Route::get('/categories', [CategoryApiController::class, 'index']);
-Route::get('/categories/{id}', [CategoryApiController::class, 'show'])->whereNumber('id');
+Route::middleware('throttle:api-public')->group(function () {
+    // API Kategori (Publik)
+    Route::get('/categories', [CategoryApiController::class, 'index']);
+    Route::get('/categories/{id}', [CategoryApiController::class, 'show'])->whereNumber('id');
 
-// ============================================================
-// API Knowledge (Publik & Protected)
-// ============================================================
-Route::get('/knowledge', [KnowledgeApiController::class, 'index']);
-Route::get('/knowledge/{id}', [KnowledgeApiController::class, 'show'])->whereNumber('id');
+    // API Knowledge (Publik)
+    Route::get('/knowledge', [KnowledgeApiController::class, 'index']);
+    Route::get('/knowledge/{id}', [KnowledgeApiController::class, 'show'])->whereNumber('id');
+
+    // API Forum Diskusi (Publik)
+    Route::get('/forum/threads', [ForumApiController::class, 'index']);
+    Route::get('/forum/threads/{id}', [ForumApiController::class, 'show'])->whereNumber('id');
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/knowledge', [KnowledgeApiController::class, 'store']);
     Route::delete('/knowledge/{id}', [KnowledgeApiController::class, 'destroy'])->whereNumber('id');
-});
 
-// ============================================================
-// API Forum Diskusi (Publik & Protected)
-// ============================================================
-Route::get('/forum/threads', [ForumApiController::class, 'index']);
-Route::get('/forum/threads/{id}', [ForumApiController::class, 'show'])->whereNumber('id');
-
-Route::middleware('auth:sanctum')->group(function () {
     Route::post('/forum/threads', [ForumApiController::class, 'store']);
     Route::post('/forum/threads/{id}/replies', [ForumApiController::class, 'reply'])->whereNumber('id');
 });

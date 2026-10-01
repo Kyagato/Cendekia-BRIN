@@ -60,6 +60,12 @@ class ForumController extends Controller
             'approved_at'  => $status === 'approved' ? now() : null,
         ]);
 
+        \App\Models\AuditLog::record(
+            'FORUM_CREATE',
+            "Membuat topik diskusi: '{$thread->judul}' (Status: {$status})",
+            ['thread_id' => $thread->id, 'judul' => $thread->judul, 'category_id' => $thread->category_id]
+        );
+
         $message = $status === 'approved'
             ? 'Topik diskusi berhasil dibuat dan langsung tayang.'
             : 'Topik diskusi berhasil dibuat dan menunggu persetujuan moderator.';
@@ -116,14 +122,31 @@ class ForumController extends Controller
     public function destroy(ForumThread $thread)
     {
         Gate::authorize('manage-forum');
+        $title = $thread->judul;
+        $id = $thread->id;
         $thread->delete();
+
+        \App\Models\AuditLog::record(
+            'FORUM_DELETE',
+            "Menghapus topik diskusi: '{$title}' (ID: {$id})",
+            ['thread_id' => $id, 'judul' => $title]
+        );
+
         return redirect()->route('forum.index')->with('success', 'Topik berhasil dihapus.');
     }
 
     public function destroyReply(ForumReply $reply)
     {
         Gate::authorize('manage-forum');
+        $replyId = $reply->id;
         $reply->delete();
+
+        \App\Models\AuditLog::record(
+            'FORUM_REPLY_DELETE',
+            "Menghapus balasan forum (ID: {$replyId})",
+            ['reply_id' => $replyId]
+        );
+
         return back()->with('success', 'Balasan berhasil dihapus.');
     }
 
@@ -132,6 +155,13 @@ class ForumController extends Controller
         Gate::authorize('manage-forum');
         $thread->update(['is_pinned' => !$thread->is_pinned]);
         $status = $thread->is_pinned ? 'dipin' : 'dilepas pinnya';
+
+        \App\Models\AuditLog::record(
+            'FORUM_PIN',
+            "Mengubah status pin topik diskusi: '{$thread->judul}' menjadi {$status}",
+            ['thread_id' => $thread->id, 'is_pinned' => $thread->is_pinned]
+        );
+
         return back()->with('success', "Topik berhasil $status.");
     }
 
@@ -140,6 +170,13 @@ class ForumController extends Controller
         Gate::authorize('manage-forum');
         $thread->update(['is_locked' => !$thread->is_locked]);
         $status = $thread->is_locked ? 'dikunci' : 'dibuka kuncinya';
+
+        \App\Models\AuditLog::record(
+            'FORUM_LOCK',
+            "Mengubah status kunci topik diskusi: '{$thread->judul}' menjadi {$status}",
+            ['thread_id' => $thread->id, 'is_locked' => $thread->is_locked]
+        );
+
         return back()->with('success', "Topik berhasil $status.");
     }
 }

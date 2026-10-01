@@ -96,6 +96,13 @@ class KnowledgeService
 
             $this->invalidateStatsCache();
 
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_CREATE',
+                "Membuat pengetahuan baru: '{$knowledge->judul}' (Tipe: {$knowledge->tipe}, Status: {$knowledge->status})",
+                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'tipe' => $knowledge->tipe, 'status' => $knowledge->status],
+                $user
+            );
+
             return $knowledge;
         });
     }
@@ -176,6 +183,13 @@ class KnowledgeService
 
             $this->invalidateStatsCache();
 
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_UPDATE',
+                "Memperbarui pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
+                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'status' => $knowledge->status],
+                $user
+            );
+
             return $knowledge;
         });
     }
@@ -186,6 +200,9 @@ class KnowledgeService
     public function deleteKnowledge(Knowledge $knowledge): bool
     {
         return DB::transaction(function () use ($knowledge) {
+            $knowledgeId = $knowledge->id;
+            $knowledgeTitle = $knowledge->judul;
+
             // Hapus file fisik jika ada
             if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
                 Storage::disk('public')->delete($knowledge->file_path);
@@ -209,6 +226,12 @@ class KnowledgeService
             }
 
             $this->invalidateStatsCache();
+
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_DELETE',
+                "Menghapus pengetahuan: '{$knowledgeTitle}' (ID: {$knowledgeId})",
+                ['knowledge_id' => $knowledgeId, 'judul' => $knowledgeTitle]
+            );
 
             return (bool) $deleted;
         });

@@ -62,6 +62,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Knowledge::class, 'bookmarks', 'user_id', 'knowledge_id')
                     ->withTimestamps();
     }
+
+    // Relasi ke Audit Logs
+    public function auditLogs()
+    {
+        return $this->hasMany(AuditLog::class);
+    }
     /**
      * Get the attributes that should be cast.
      *

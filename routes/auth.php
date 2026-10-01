@@ -32,13 +32,15 @@ Route::middleware('guest')->group(function () {
         ->name('password.request');
 
     Route::post('forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'sendOtp'])
-        ->name('password.email');
+        ->name('password.email')
+        ->middleware('throttle:auth-otp');
 
     Route::get('forgot-password/verify', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showOtpForm'])
         ->name('password.otp.show');
 
     Route::post('forgot-password/verify', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'verifyOtp'])
-        ->name('password.otp.verify');
+        ->name('password.otp.verify')
+        ->middleware('throttle:auth-otp');
 
     Route::get('forgot-password/reset', [\App\Http\Controllers\Auth\ForgotPasswordOtpController::class, 'showResetForm'])
         ->name('password.otp.reset');

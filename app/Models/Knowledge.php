@@ -64,6 +64,34 @@ class Knowledge extends Model
         return $this->bookmarks()->where('user_id', $user->id)->exists();
     }
 
+    // Relasi ke Likes
+    public function likes()
+    {
+        return $this->hasMany(KnowledgeLike::class);
+    }
+
+    // Cek apakah di-like oleh user tertentu
+    public function isLikedBy(?User $user): bool
+    {
+        if (!$user) return false;
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
+
+    // Relasi ke Komentar (Top level / root comments)
+    public function comments()
+    {
+        return $this->hasMany(KnowledgeComment::class)
+            ->whereNull('parent_id')
+            ->with(['user', 'replies.user'])
+            ->latest();
+    }
+
+    // Seluruh komentar termasuk balasan
+    public function allComments()
+    {
+        return $this->hasMany(KnowledgeComment::class);
+    }
+
     /**
      * Local Scope untuk memfilter data pengetahuan secara dinamis.
      * Mengeliminasi duplikasi query di HomeController, SearchController, dan ApiSearch.

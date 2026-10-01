@@ -77,6 +77,12 @@ class FaqController extends Controller
             Faq::create($validated);
         }
 
+        \App\Models\AuditLog::record(
+            'FAQ_CREATE',
+            "Menambahkan FAQ baru: '{$validated['pertanyaan']}' pada bagian '{$validated['kategori_faq']}'",
+            ['kategori_faq' => $validated['kategori_faq'], 'pertanyaan' => $validated['pertanyaan']]
+        );
+
         return redirect()->route('admin.faq.index')->with('success', 'Judul FAQ baru berhasil ditambahkan.');
     }
 
@@ -102,6 +108,12 @@ class FaqController extends Controller
 
         $faq->update($validated);
 
+        \App\Models\AuditLog::record(
+            'FAQ_UPDATE',
+            "Memperbarui FAQ: '{$faq->pertanyaan}' (ID: {$faq->id})",
+            ['faq_id' => $faq->id, 'pertanyaan' => $faq->pertanyaan, 'kategori_faq' => $faq->kategori_faq]
+        );
+
         return redirect()->route('admin.faq.index')->with('success', 'FAQ berhasil diperbarui.');
     }
 
@@ -121,6 +133,12 @@ class FaqController extends Controller
         Faq::where('kategori_faq', $validated['old_kategori_faq'])
             ->update(['kategori_faq' => trim($validated['new_kategori_faq'])]);
 
+        \App\Models\AuditLog::record(
+            'FAQ_SECTION_UPDATE',
+            "Mengubah nama bagian FAQ dari '{$validated['old_kategori_faq']}' menjadi '{$validated['new_kategori_faq']}'",
+            ['old_section' => $validated['old_kategori_faq'], 'new_section' => $validated['new_kategori_faq']]
+        );
+
         return redirect()->route('admin.faq.index')->with('success', 'Nama Bagian FAQ berhasil diperbarui.');
     }
 
@@ -135,6 +153,12 @@ class FaqController extends Controller
 
         Faq::where('kategori_faq', $validated['kategori_faq'])->delete();
 
+        \App\Models\AuditLog::record(
+            'FAQ_SECTION_DELETE',
+            "Menghapus bagian FAQ: '{$validated['kategori_faq']}' beserta seluruh pertanyaannya.",
+            ['kategori_faq' => $validated['kategori_faq']]
+        );
+
         return redirect()->route('admin.faq.index')->with('success', 'Bagian "' . $validated['kategori_faq'] . '" dan seluruh isinya berhasil dihapus.');
     }
 
@@ -144,7 +168,15 @@ class FaqController extends Controller
     public function destroy(Faq $faq)
     {
         $section = $faq->kategori_faq;
+        $faqQuestion = $faq->pertanyaan;
+        $faqId = $faq->id;
         $faq->delete();
+
+        \App\Models\AuditLog::record(
+            'FAQ_DELETE',
+            "Menghapus FAQ: '{$faqQuestion}' (ID: {$faqId})",
+            ['faq_id' => $faqId, 'pertanyaan' => $faqQuestion]
+        );
 
         // Jika tidak ada FAQ tersisa di bagian ini, sisakan placeholder agar bagian tidak hilang
         $countLeft = Faq::where('kategori_faq', $section)->count();

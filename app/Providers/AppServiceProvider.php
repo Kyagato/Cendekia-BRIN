@@ -33,6 +33,37 @@ class AppServiceProvider extends ServiceProvider
             \SocialiteProviders\Keycloak\KeycloakExtendSocialite::class.'@handle'
         );
 
+        // Audit Logging untuk Aktivitas Autentikasi
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            \App\Models\AuditLog::record(
+                'LOGIN',
+                "Pengguna '{$event->user->name}' ({$event->user->email}) berhasil login ke sistem.",
+                ['guard' => $event->guard, 'role' => $event->user->role],
+                $event->user
+            );
+        });
+
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Logout::class, function ($event) {
+            if ($event->user) {
+                \App\Models\AuditLog::record(
+                    'LOGOUT',
+                    "Pengguna '{$event->user->name}' ({$event->user->email}) telah keluar (logout) dari sistem.",
+                    ['guard' => $event->guard],
+                    $event->user
+                );
+            }
+        });
+
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Failed::class, function ($event) {
+            $email = $event->credentials['email'] ?? 'unknown';
+            \App\Models\AuditLog::record(
+                'LOGIN_FAILED',
+                "Percobaan login gagal untuk akun email: '{$email}'.",
+                ['email' => $email],
+                $event->user
+            );
+        });
+
         // Rate Limiter untuk Login API (maksimal 5 percobaan per menit per email/IP)
         RateLimiter::for('api-login', function (Request $request) {
             $key = (string) $request->input('email') . '|' . $request->ip();
@@ -40,6 +71,38 @@ class AppServiceProvider extends ServiceProvider
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Terlalu banyak percobaan login. Silakan tunggu 1 menit sebelum mencoba kembali.',
+                ], 429);
+            });
+        });
+
+        // Rate Limiter untuk Pencarian & Autocomplete (maksimal 30 request per menit per IP)
+        RateLimiter::for('search-limit', function (Request $request) {
+            return Limit::perMinute(30)->by($request->ip())->response(function () {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Terlalu banyak permintaan pencarian. Silakan perlambat jeda pencarian Anda (Maksimal 30 request/menit).',
+                ], 429);
+            });
+        });
+
+        // Rate Limiter untuk Permintaan OTP Lupa Password (maksimal 3 percobaan per menit per email/IP)
+        RateLimiter::for('auth-otp', function (Request $request) {
+            $key = (string) $request->input('email', $request->ip());
+            return Limit::perMinute(3)->by($key)->response(function () {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Terlalu banyak permintaan pengiriman kode OTP. Silakan tunggu 1 menit.',
+                ], 429);
+            });
+        });
+
+        // Rate Limiter Global untuk API Publik (maksimal 60 request per menit per IP/Token)
+        RateLimiter::for('api-public', function (Request $request) {
+            $key = $request->user()?->id ?: $request->ip();
+            return Limit::perMinute(60)->by($key)->response(function () {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Batas kuota akses API terlampaui (60 request/menit). Silakan tunggu sejenak.',
                 ], 429);
             });
         });

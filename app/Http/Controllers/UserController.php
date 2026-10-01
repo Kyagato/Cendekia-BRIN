@@ -104,7 +104,7 @@ class UserController extends Controller
             $fotoProfilPath = $request->file('foto_profil')->store('profile_photos', 'public');
         }
 
-        User::create([
+        $newUser = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -113,6 +113,12 @@ class UserController extends Controller
             'role' => $validated['role'],
             'foto_profil' => $fotoProfilPath,
         ]);
+
+        \App\Models\AuditLog::record(
+            'USER_CREATE',
+            "Menambahkan akun pengguna baru: '{$newUser->name}' ({$newUser->email}) dengan peran {$newUser->role}.",
+            ['created_user_id' => $newUser->id, 'email' => $newUser->email, 'role' => $newUser->role]
+        );
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
@@ -168,6 +174,7 @@ class UserController extends Controller
         ]);
 
         $roleChanged = ($user->role !== $validated['role']);
+        $oldRole = $user->role;
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
@@ -187,6 +194,12 @@ class UserController extends Controller
         }
 
         $user->save();
+
+        \App\Models\AuditLog::record(
+            'USER_UPDATE',
+            "Memperbarui data pengguna: '{$user->name}' ({$user->email})" . ($roleChanged ? " (Peran diubah dari {$oldRole} menjadi {$user->role})" : ""),
+            ['target_user_id' => $user->id, 'email' => $user->email, 'role_changed' => $roleChanged, 'old_role' => $oldRole, 'new_role' => $user->role]
+        );
 
         $successMsg = 'Data pengguna berhasil diperbarui.';
         if ($roleChanged && !empty($user->keycloak_id)) {
@@ -219,11 +232,21 @@ class UserController extends Controller
             }
         }
 
+        $deletedName = $user->name;
+        $deletedEmail = $user->email;
+        $deletedId = $user->id;
+
         if ($user->foto_profil) {
             Storage::disk('public')->delete($user->foto_profil);
         }
 
         $user->delete();
+
+        \App\Models\AuditLog::record(
+            'USER_DELETE',
+            "Menghapus pengguna: '{$deletedName}' ({$deletedEmail}) (ID: {$deletedId})",
+            ['target_user_id' => $deletedId, 'name' => $deletedName, 'email' => $deletedEmail]
+        );
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
     }

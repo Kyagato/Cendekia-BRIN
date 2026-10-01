@@ -201,6 +201,14 @@ class HomeController extends Controller
 
         $knowledge->increment('views_count');
 
+        if (auth()->check()) {
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_VIEW',
+                "Membaca artikel pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
+                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
+            );
+        }
+
         // Estimasi waktu baca (200 kata/menit)
         $fullText = ($knowledge->deskripsi ?? '') . ' ' . ($knowledge->detail ?? '');
         $wordCount = str_word_count(strip_tags($fullText));
@@ -211,7 +219,22 @@ class HomeController extends Controller
         $isBookmarked = $currentUser ? $knowledge->isBookmarkedBy($currentUser) : false;
         $bookmarksCount = $knowledge->bookmarks()->count();
 
-        return view('pages.knowledge-show', compact('knowledge', 'readingTime', 'isBookmarked', 'bookmarksCount'));
+        // Likes & Comments
+        $isLiked = $currentUser ? $knowledge->isLikedBy($currentUser) : false;
+        $likesCount = $knowledge->likes()->count();
+        $comments = $knowledge->comments()->get();
+        $commentsCount = $knowledge->allComments()->count();
+
+        return view('pages.knowledge-show', compact(
+            'knowledge',
+            'readingTime',
+            'isBookmarked',
+            'bookmarksCount',
+            'isLiked',
+            'likesCount',
+            'comments',
+            'commentsCount'
+        ));
     }
 
     public function toggleDarkMode(Request $request)

@@ -19,8 +19,12 @@ Route::get('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'sho
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 
 // Search API (publik) & Halaman Pencarian Utama
-Route::get('/api/search', [App\Http\Controllers\SearchController::class, 'apiSearch'])->name('search.api');
-Route::get('/api/search/autocomplete', [App\Http\Controllers\SearchController::class, 'autocomplete'])->name('search.autocomplete');
+Route::get('/api/search', [App\Http\Controllers\SearchController::class, 'apiSearch'])
+    ->name('search.api')
+    ->middleware('throttle:search-limit');
+Route::get('/api/search/autocomplete', [App\Http\Controllers\SearchController::class, 'autocomplete'])
+    ->name('search.autocomplete')
+    ->middleware('throttle:search-limit');
 Route::get('/cari', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 
 // Detail Pengetahuan (Layout Publik — untuk Beranda & Kategori)
@@ -64,6 +68,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ----- Bookmark / Favorit Pengetahuan -----
     Route::post('/knowledge/{knowledge}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('knowledge.bookmark');
     Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
+
+    // ----- Like & Komentar Pengetahuan -----
+    Route::post('/knowledge/{knowledge}/like', [\App\Http\Controllers\KnowledgeInteractionController::class, 'toggleLike'])->name('knowledge.like');
+    Route::post('/knowledge/{knowledge}/comment', [\App\Http\Controllers\KnowledgeInteractionController::class, 'storeComment'])->name('knowledge.comment');
+    Route::delete('/knowledge/comment/{comment}', [\App\Http\Controllers\KnowledgeInteractionController::class, 'destroyComment'])->name('knowledge.comment.destroy');
 
     // =============================================================
     // ROLE: MANAJEMEN KONTEN PENGETAHUAN
@@ -155,11 +164,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::patch('/validasi/{knowledge}/approve', function (Knowledge $knowledge) {
             $knowledge->update(['status' => 'Disetujui']);
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_APPROVE',
+                "Menyetujui konten pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
+                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
+            );
             return back()->with('success', 'Konten berhasil disetujui.');
         })->name('validasi.approve');
 
         Route::patch('/validasi/{knowledge}/reject', function (Knowledge $knowledge) {
             $knowledge->update(['status' => 'Ditolak']);
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_REJECT',
+                "Menolak konten pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
+                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
+            );
             return redirect()->route('validasi.index')->with('success', 'Konten berhasil ditolak.');
         })->name('validasi.reject');
     });

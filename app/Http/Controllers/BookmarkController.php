@@ -40,6 +40,13 @@ class BookmarkController extends Controller
             $message = 'Artikel berhasil disimpan ke daftar tersimpan.';
         }
 
+        \App\Models\AuditLog::record(
+            $bookmarked ? 'BOOKMARK_ADD' : 'BOOKMARK_REMOVE',
+            ($bookmarked ? 'Menyimpan' : 'Menghapus') . " bookmark artikel: '{$knowledge->judul}' (ID: {$knowledge->id})",
+            ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul],
+            $user
+        );
+
         $totalBookmarks = $knowledge->bookmarks()->count();
 
         return response()->json([

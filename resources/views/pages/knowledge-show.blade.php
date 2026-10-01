@@ -282,6 +282,264 @@
                     </div>
                 </section>
 
+                {{-- Rating / Like & Interaksi Bar --}}
+                <div class="mt-8 p-6 bg-gradient-to-r from-slate-50 via-blue-50/20 to-slate-50 dark:from-slate-800/90 dark:via-slate-800 dark:to-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span>Beri Rating & Tanggapan</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 font-semibold">Feedback</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            Apakah materi pengetahuan ini bermanfaat untuk Anda? Berikan apresiasi atau tinggalkan diskusi.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3 shrink-0">
+                        {{-- Tombol Like --}}
+                        <button
+                            id="btn-like"
+                            type="button"
+                            onclick="toggleLike({{ $knowledge->id }})"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border cursor-pointer {{ $isLiked ? 'bg-rose-50 text-rose-700 border-rose-300 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-700/60 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700' }}"
+                        >
+                            <svg 
+                                id="like-icon"
+                                class="w-5 h-5 transition-transform duration-200 {{ $isLiked ? 'text-rose-500 fill-rose-500 scale-110' : 'text-slate-400 fill-none' }}" 
+                                viewBox="0 0 24 24" 
+                                stroke="currentColor" 
+                                stroke-width="2"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <span id="like-text">{{ $isLiked ? 'Disukai' : 'Suka' }}</span>
+                            <span id="like-count" class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold {{ $isLiked ? 'bg-rose-200/80 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300' }}">
+                                {{ $likesCount }}
+                            </span>
+                        </button>
+
+                        {{-- Tombol Lompat ke Komentar --}}
+                        <a href="#komentar" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700">
+                            <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            <span>Komentar</span>
+                            <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                                {{ $commentsCount }}
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Section Komentar --}}
+                <section id="komentar" class="scroll-mt-28 space-y-6 pt-4" x-data="{ isCollapsed: false, replyToId: null, replyToName: '', setReply(id, name) { this.replyToId = id; this.replyToName = name; this.isCollapsed = false; this.$nextTick(() => { const el = document.getElementById('comment-textarea'); if(el) el.focus(); }); }, cancelReply() { this.replyToId = null; this.replyToName = ''; } }">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
+                            <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                            Diskusi & Komentar
+                            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold">
+                                {{ $commentsCount }}
+                            </span>
+                        </h2>
+                    </div>
+
+                    {{-- Flash Session Success --}}
+                    @if(session('success'))
+                    <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-sm flex items-center gap-2">
+                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                    @endif
+
+                    {{-- Daftar Komentar --}}
+                    @if($comments->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($comments as $comment)
+                                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm space-y-3">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-700 dark:text-slate-200">
+                                                @if($comment->user && $comment->user->foto_profil)
+                                                    <img src="{{ asset('storage/' . $comment->user->foto_profil) }}" alt="{{ $comment->user->name }}" class="w-full h-full object-cover">
+                                                @else
+                                                    {{ strtoupper(substr($comment->user?->name ?? 'A', 0, 1)) }}
+                                                @endif
+                                            </div>
+                                            <div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-sm text-slate-900 dark:text-white">
+                                                        {{ $comment->user?->name ?? 'Anonim' }}
+                                                    </span>
+                                                    @if($comment->user && in_array($comment->user->role, ['Super Admin', 'Admin Pusat', 'Admin']))
+                                                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300 font-semibold">Admin</span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-xs text-slate-400 dark:text-slate-500">
+                                                    {{ $comment->created_at->diffForHumans() }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {{-- Aksi Hapus Komentar jika pemilik atau admin --}}
+                                        @if(auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->isAdmin()))
+                                            <form action="{{ route('knowledge.comment.destroy', $comment->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus komentar ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-xs text-slate-400 hover:text-rose-600 transition p-1" title="Hapus komentar">
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+
+                                    <div class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed pl-1 sm:pl-3">
+                                        {{ $comment->konten }}
+                                    </div>
+
+                                    {{-- Tombol Balas --}}
+                                    @auth
+                                    <div class="pl-1 sm:pl-3 pt-1">
+                                        <button type="button" 
+                                                @click="setReply({{ $comment->id }}, '{{ addslashes($comment->user?->name ?? 'Anonim') }}')"
+                                                class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 transition cursor-pointer">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                            </svg>
+                                            Balas
+                                        </button>
+                                    </div>
+                                    @endauth
+
+                                    {{-- Balasan Bersarang (Replies) --}}
+                                    @if($comment->replies && $comment->replies->count() > 0)
+                                        <div class="ml-4 sm:ml-8 mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
+                                            @foreach($comment->replies as $reply)
+                                                <div class="bg-slate-50 dark:bg-slate-750/50 rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-700 space-y-2">
+                                                    <div class="flex items-start justify-between gap-2">
+                                                        <div class="flex items-center gap-2.5">
+                                                            <div class="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-700 dark:text-slate-200">
+                                                                @if($reply->user && $reply->user->foto_profil)
+                                                                    <img src="{{ asset('storage/' . $reply->user->foto_profil) }}" alt="{{ $reply->user->name }}" class="w-full h-full object-cover">
+                                                                @else
+                                                                    {{ strtoupper(substr($reply->user?->name ?? 'A', 0, 1)) }}
+                                                                @endif
+                                                            </div>
+                                                            <div>
+                                                                <span class="font-bold text-xs text-slate-900 dark:text-white">
+                                                                    {{ $reply->user?->name ?? 'Anonim' }}
+                                                                </span>
+                                                                <span class="text-[11px] text-slate-400 dark:text-slate-500 block">
+                                                                    {{ $reply->created_at->diffForHumans() }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->isAdmin()))
+                                                            <form action="{{ route('knowledge.comment.destroy', $reply->id) }}" method="POST" onsubmit="return confirm('Hapus balasan ini?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="text-xs text-slate-400 hover:text-rose-600 transition p-1" title="Hapus balasan">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    </div>
+                                                    <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pl-1 sm:pl-2">
+                                                        {{ $reply->konten }}
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="p-8 text-center bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+                            <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/60 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                            </div>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Belum ada komentar</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Jadilah yang pertama memberikan tanggapan atau pertanyaan pada pengetahuan ini!</p>
+                        </div>
+                    @endif
+
+                    {{-- Kotak Tulis Komentar Sticky / Floating (Mengikuti saat digeser ke atas & bawah persis seperti forum) --}}
+                    @auth
+                    <div class="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-300 dark:border-slate-700 p-4 transition-all duration-300">
+                        <div class="flex items-center justify-between" :class="{ 'mb-3': !isCollapsed }">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-primary-600 animate-pulse"></span>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                                    <span x-text="replyToId ? ('Membalas Komentar: ' + replyToName) : 'Tuliskan Komentar Anda'"></span>
+                                    <button 
+                                        x-show="replyToId !== null" 
+                                        @click="cancelReply()" 
+                                        type="button"
+                                        class="ml-2 text-xs text-rose-500 hover:text-rose-600 font-semibold transition cursor-pointer"
+                                    >
+                                        ✕ Batal
+                                    </button>
+                                </h3>
+                            </div>
+
+                            <!-- Minimize / Expand Toggle Button -->
+                            <button 
+                                type="button" 
+                                @click="isCollapsed = !isCollapsed" 
+                                class="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition select-none cursor-pointer font-medium"
+                            >
+                                <span x-text="isCollapsed ? 'Buka Form' : 'Sembunyikan'"></span>
+                                <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="isCollapsed ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form x-show="!isCollapsed" action="{{ route('knowledge.comment', $knowledge->id) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="parent_id" :value="replyToId">
+                            <textarea 
+                                id="comment-textarea"
+                                name="konten" 
+                                rows="3" 
+                                required 
+                                placeholder="Tuliskan komentar atau pertanyaan Anda di sini..." 
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition resize-none shadow-xs"
+                            ></textarea>
+                            <div class="flex items-center justify-between mt-2.5">
+                                <span class="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline">
+                                    Komentar Anda akan dapat dibaca oleh pembaca lainnya.
+                                </span>
+                                <button 
+                                    type="submit" 
+                                    class="ml-auto px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    Kirim Komentar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    @else
+                    <div class="text-center py-6 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-4">
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Silakan masuk ke akun Anda untuk memberikan rating dan komentar.</p>
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                            Masuk / Login
+                        </a>
+                    </div>
+                    @endauth
+                </section>
+
             </div>
 
             {{-- Kolom Kanan: Sidebar Sticky (Seperempat 24% & Melayang Tetap di Kanan) --}}
@@ -332,6 +590,7 @@
                             <a href="#detail" class="block text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Detail</a>
                             @endif
                             <a href="#metadata" class="block text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Meta Data</a>
+                            <a href="#komentar" class="block text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">Komentar & Rating</a>
                         </nav>
                     </div>
 
@@ -391,6 +650,54 @@ function toggleBookmark(knowledgeId) {
     .catch(err => {
         btn.disabled = false;
         console.error('Error toggling bookmark:', err);
+    });
+}
+
+function toggleLike(knowledgeId) {
+    const btn = document.getElementById('btn-like');
+    const icon = document.getElementById('like-icon');
+    const text = document.getElementById('like-text');
+    const count = document.getElementById('like-count');
+    
+    btn.disabled = true;
+
+    fetch(`/knowledge/${knowledgeId}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => {
+        if (res.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        return res.json();
+    })
+    .then(data => {
+        btn.disabled = false;
+        if (!data || data.status !== 'success') return;
+
+        if (data.liked) {
+            btn.className = "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border cursor-pointer bg-rose-50 text-rose-700 border-rose-300 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-700/60 shadow-sm";
+            icon.className = "w-5 h-5 transition-transform duration-200 text-rose-500 fill-rose-500 scale-125";
+            text.textContent = 'Disukai';
+            count.className = "ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-200/80 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200";
+            setTimeout(() => { icon.className = "w-5 h-5 transition-transform duration-200 text-rose-500 fill-rose-500 scale-110"; }, 250);
+        } else {
+            btn.className = "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border cursor-pointer bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700";
+            icon.className = "w-5 h-5 transition-transform duration-200 text-slate-400 fill-none";
+            text.textContent = 'Suka';
+            count.className = "ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300";
+        }
+
+        count.textContent = data.total_likes;
+    })
+    .catch(err => {
+        btn.disabled = false;
+        console.error('Error toggling like:', err);
     });
 }
 </script>
