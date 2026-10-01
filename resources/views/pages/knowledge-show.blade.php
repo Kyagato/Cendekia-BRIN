@@ -60,137 +60,8 @@
                 <span>Diperbarui: {{ $knowledge->updated_at ? $knowledge->updated_at->format('d-m-Y') : ($knowledge->created_at ? $knowledge->created_at->format('d-m-Y') : '-') }}</span>
             </div>
 
-            {{-- Tombol Aksi: Salin Link, Bagikan & Bookmark --}}
-            <div class="ml-auto shrink-0 flex items-center gap-2 flex-wrap" x-data="{ shareOpen: false }">
-                {{-- Tombol Salin Link Cepat --}}
-                <button
-                    id="btn-copy-link"
-                    type="button"
-                    onclick="copyKnowledgeLink()"
-                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700 shadow-xs cursor-pointer select-none"
-                    title="Salin tautan artikel ini"
-                >
-                    <svg id="copy-link-icon" class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    <span id="copy-link-text">Salin Link</span>
-                </button>
-
-                {{-- Dropdown Tombol Bagikan --}}
-                <div class="relative">
-                    <button
-                        type="button"
-                        @click="shareOpen = !shareOpen"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700 shadow-xs cursor-pointer select-none"
-                        :class="{ 'ring-2 ring-blue-500/20 border-blue-400 dark:border-blue-500': shareOpen }"
-                    >
-                        <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                        <span>Bagikan</span>
-                        <svg class="w-3 h-3 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': shareOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    <!-- Dropdown Popover Menu -->
-                    <div
-                        x-show="shareOpen"
-                        @click.outside="shareOpen = false"
-                        x-transition:enter="transition ease-out duration-150"
-                        x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
-                        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                        x-transition:leave="transition ease-in duration-100"
-                        x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                        x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
-                        class="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50"
-                        style="display: none;"
-                    >
-                        <div class="px-3.5 py-1 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                            Bagikan Ke
-                        </div>
-
-                        <!-- WhatsApp -->
-                        <a
-                            href="https://api.whatsapp.com/send?text={{ rawurlencode($knowledge->judul . ' - ' . url()->current()) }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            @click="shareOpen = false"
-                            class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-300 transition"
-                        >
-                            <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/60 dark:text-emerald-300 flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                                </svg>
-                            </span>
-                            <span>WhatsApp</span>
-                        </a>
-
-                        <!-- Telegram -->
-                        <a
-                            href="https://t.me/share/url?url={{ rawurlencode(url()->current()) }}&text={{ rawurlencode($knowledge->judul) }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            @click="shareOpen = false"
-                            class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-sky-50 dark:hover:bg-sky-950/40 hover:text-sky-700 dark:hover:text-sky-300 transition"
-                        >
-                            <span class="w-6 h-6 rounded-lg bg-sky-100 text-sky-600 dark:bg-sky-900/60 dark:text-sky-300 flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.536-.196 1.006.128.832.922z"/>
-                                </svg>
-                            </span>
-                            <span>Telegram</span>
-                        </a>
-
-                        <!-- Facebook -->
-                        <a
-                            href="https://www.facebook.com/sharer/sharer.php?u={{ rawurlencode(url()->current()) }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            @click="shareOpen = false"
-                            class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 transition"
-                        >
-                            <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/60 dark:text-blue-300 flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                </svg>
-                            </span>
-                            <span>Facebook</span>
-                        </a>
-
-                        <!-- X (Twitter) -->
-                        <a
-                            href="https://twitter.com/intent/tweet?text={{ rawurlencode($knowledge->judul) }}&url={{ rawurlencode(url()->current()) }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            @click="shareOpen = false"
-                            class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition"
-                        >
-                            <span class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                                </svg>
-                            </span>
-                            <span>X (Twitter)</span>
-                        </a>
-
-                        <!-- Native Web Share (Aplikasi Lainnya) -->
-                        <button
-                            type="button"
-                            onclick="triggerNativeShare('{{ addslashes($knowledge->judul) }}', '{{ url()->current() }}')"
-                            @click="shareOpen = false"
-                            class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-left cursor-pointer border-t border-slate-100 dark:border-slate-700/60 mt-1"
-                        >
-                            <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-950/50 dark:text-purple-300 flex items-center justify-center shrink-0">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                </svg>
-                            </span>
-                            <span>Aplikasi Lainnya...</span>
-                        </button>
-                    </div>
-                </div>
-
+            {{-- Tombol Aksi: Bookmark --}}
+            <div class="ml-auto shrink-0 flex items-center gap-2">
                 {{-- Tombol Bookmark / Simpan --}}
                 <button
                     id="btn-bookmark"
@@ -424,7 +295,7 @@
                         </p>
                     </div>
 
-                    <div class="flex items-center gap-3 shrink-0">
+                    <div class="flex items-center gap-3 shrink-0 flex-wrap" x-data="{ shareOpen: false }">
                         {{-- Tombol Like --}}
                         <button
                             id="btn-like"
@@ -457,6 +328,148 @@
                                 {{ $commentsCount }}
                             </span>
                         </a>
+
+                        {{-- Dropdown Tombol Bagikan & Salin Link --}}
+                        <div class="relative">
+                            <button
+                                type="button"
+                                @click="shareOpen = !shareOpen"
+                                class="animated-border-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700 shadow-xs cursor-pointer select-none"
+                                :class="{ 'ring-2 ring-blue-500/20 border-blue-400 dark:border-blue-500': shareOpen }"
+                                title="Bagikan atau salin link artikel ini"
+                            >
+                                <svg class="animated-border-svg" aria-hidden="true">
+                                    <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="12" ry="12" pathLength="100" class="animated-border-rect" />
+                                </svg>
+                                <svg class="w-5 h-5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                </svg>
+                                <span>Bagikan</span>
+                                <svg class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': shareOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Popover Menu -->
+                            <div
+                                x-show="shareOpen"
+                                @click.outside="shareOpen = false"
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                                class="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-2 z-50"
+                                style="display: none;"
+                            >
+                                {{-- Salin Tautan Cepat --}}
+                                <button
+                                    type="button"
+                                    id="btn-copy-link"
+                                    onclick="copyKnowledgeLink()"
+                                    class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/40 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition text-left cursor-pointer group"
+                                >
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                            <svg id="copy-link-icon" class="w-4 h-4 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <div id="copy-link-text" class="text-xs font-bold leading-tight">Salin Link</div>
+                                            <div class="text-[11px] text-slate-400 dark:text-slate-500 font-normal">Salin tautan ke clipboard</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700/60">URL</span>
+                                </button>
+
+                                <div class="h-px bg-slate-100 dark:bg-slate-700/60 my-1.5"></div>
+
+                                <div class="px-2.5 py-1 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                                    Bagikan Ke Media
+                                </div>
+
+                                <!-- WhatsApp -->
+                                <a
+                                    href="https://api.whatsapp.com/send?text={{ rawurlencode($knowledge->judul . ' - ' . url()->current()) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    @click="shareOpen = false"
+                                    class="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-lg transition"
+                                >
+                                    <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/60 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                                        </svg>
+                                    </span>
+                                    <span>WhatsApp</span>
+                                </a>
+
+                                <!-- Telegram -->
+                                <a
+                                    href="https://t.me/share/url?url={{ rawurlencode(url()->current()) }}&text={{ rawurlencode($knowledge->judul) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    @click="shareOpen = false"
+                                    class="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-sky-50 dark:hover:bg-sky-950/40 hover:text-sky-700 dark:hover:text-sky-300 rounded-lg transition"
+                                >
+                                    <span class="w-7 h-7 rounded-lg bg-sky-100 text-sky-600 dark:bg-sky-900/60 dark:text-sky-300 flex items-center justify-center shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.536-.196 1.006.128.832.922z"/>
+                                        </svg>
+                                    </span>
+                                    <span>Telegram</span>
+                                </a>
+
+                                <!-- Facebook -->
+                                <a
+                                    href="https://www.facebook.com/sharer/sharer.php?u={{ rawurlencode(url()->current()) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    @click="shareOpen = false"
+                                    class="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 rounded-lg transition"
+                                >
+                                    <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/60 dark:text-blue-300 flex items-center justify-center shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                        </svg>
+                                    </span>
+                                    <span>Facebook</span>
+                                </a>
+
+                                <!-- X (Twitter) -->
+                                <a
+                                    href="https://twitter.com/intent/tweet?text={{ rawurlencode($knowledge->judul) }}&url={{ rawurlencode(url()->current()) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    @click="shareOpen = false"
+                                    class="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white rounded-lg transition"
+                                >
+                                    <span class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                        </svg>
+                                    </span>
+                                    <span>X (Twitter)</span>
+                                </a>
+
+                                <!-- Native Web Share (Aplikasi Lainnya) -->
+                                <button
+                                    type="button"
+                                    onclick="triggerNativeShare('{{ addslashes($knowledge->judul) }}', '{{ url()->current() }}')"
+                                    @click="shareOpen = false"
+                                    class="w-full flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition text-left cursor-pointer border-t border-slate-100 dark:border-slate-700/60 mt-1 pt-2"
+                                >
+                                    <span class="w-7 h-7 rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-950/50 dark:text-purple-300 flex items-center justify-center shrink-0">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                        </svg>
+                                    </span>
+                                    <span>Aplikasi Lainnya...</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -685,6 +698,65 @@
 
     </div>
 </div>
+
+<style>
+    .animated-border-btn {
+        position: relative;
+        overflow: visible;
+    }
+
+    .animated-border-svg {
+        position: absolute;
+        inset: -1px;
+        width: calc(100% + 2px);
+        height: calc(100% + 2px);
+        pointer-events: none;
+        overflow: visible;
+        border-radius: 0.75rem;
+    }
+
+    .animated-border-rect {
+        x: 1px;
+        y: 1px;
+        width: calc(100% - 2px);
+        height: calc(100% - 2px);
+        rx: 12px;
+        ry: 12px;
+        stroke: #2563eb;
+        stroke-width: 2px;
+        stroke-linecap: round;
+        fill: none;
+        stroke-dasharray: 0 100;
+        stroke-dashoffset: 15;
+        opacity: 0;
+        filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.5));
+        transition: opacity 0.35s ease;
+    }
+
+    .dark .animated-border-rect {
+        stroke: #60a5fa;
+        filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.7));
+    }
+
+    .animated-border-btn:hover .animated-border-rect {
+        opacity: 1;
+        animation: border-draw-loop 1.8s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+    }
+
+    @keyframes border-draw-loop {
+        0% {
+            stroke-dasharray: 0 100;
+            stroke-dashoffset: 15;
+        }
+        25% {
+            stroke-dasharray: 35 65;
+        }
+        100% {
+            stroke-dasharray: 35 65;
+            stroke-dashoffset: -85;
+        }
+    }
+</style>
 
 <script>
 function toggleBookmark(knowledgeId) {
