@@ -59,6 +59,30 @@
                 <svg class="w-4 h-4 text-slate-400 shrink-0" width="16" height="16" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span>Diperbarui: {{ $knowledge->updated_at ? $knowledge->updated_at->format('d-m-Y') : ($knowledge->created_at ? $knowledge->created_at->format('d-m-Y') : '-') }}</span>
             </div>
+
+            {{-- Tombol Bookmark / Simpan --}}
+            <div class="ml-auto shrink-0 flex items-center gap-2">
+                <button
+                    id="btn-bookmark"
+                    type="button"
+                    onclick="toggleBookmark({{ $knowledge->id }})"
+                    class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 border {{ $isBookmarked ? 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700/60 shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700' }}"
+                >
+                    <svg 
+                        id="bookmark-icon"
+                        class="w-4 h-4 transition-transform duration-200 {{ $isBookmarked ? 'text-amber-500 fill-amber-500 scale-110' : 'text-slate-400 fill-none' }}" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor" 
+                        stroke-width="2"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    <span id="bookmark-text">{{ $isBookmarked ? 'Tersimpan' : 'Simpan Artikel' }}</span>
+                    <span id="bookmark-count" class="ml-1 px-1.5 py-0.2 rounded-full text-[11px] {{ $isBookmarked ? 'bg-amber-200/80 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300' }}">
+                        {{ $bookmarksCount }}
+                    </span>
+                </button>
+            </div>
         </div>
 
         {{-- Container: Konten Utama (Kiri 74%) + Sidebar Sticky (Kanan 24%) --}}
@@ -318,4 +342,56 @@
 
     </div>
 </div>
+
+<script>
+function toggleBookmark(knowledgeId) {
+    const btn = document.getElementById('btn-bookmark');
+    const icon = document.getElementById('bookmark-icon');
+    const text = document.getElementById('bookmark-text');
+    const count = document.getElementById('bookmark-count');
+    
+    // Disable temporarily
+    btn.disabled = true;
+
+    fetch(`/knowledge/${knowledgeId}/bookmark`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => {
+        if (res.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        return res.json();
+    })
+    .then(data => {
+        btn.disabled = false;
+        if (!data || data.status !== 'success') return;
+
+        if (data.bookmarked) {
+            // State: Tersimpan
+            btn.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 border bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700/60 shadow-sm";
+            icon.className = "w-4 h-4 transition-transform duration-200 text-amber-500 fill-amber-500 scale-110";
+            text.textContent = 'Tersimpan';
+            count.className = "ml-1 px-1.5 py-0.2 rounded-full text-[11px] bg-amber-200/80 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200";
+        } else {
+            // State: Belum disimpan
+            btn.className = "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 border bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700";
+            icon.className = "w-4 h-4 transition-transform duration-200 text-slate-400 fill-none";
+            text.textContent = 'Simpan Artikel';
+            count.className = "ml-1 px-1.5 py-0.2 rounded-full text-[11px] bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300";
+        }
+
+        count.textContent = data.total_bookmarks;
+    })
+    .catch(err => {
+        btn.disabled = false;
+        console.error('Error toggling bookmark:', err);
+    });
+}
+</script>
 @endsection

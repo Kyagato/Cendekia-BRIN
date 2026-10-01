@@ -61,6 +61,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ----- Dark Mode Toggle -----
     Route::post('/toggle-dark-mode', [HomeController::class, 'toggleDarkMode'])->name('toggle.darkmode');
 
+    // ----- Bookmark / Favorit Pengetahuan -----
+    Route::post('/knowledge/{knowledge}/bookmark', [\App\Http\Controllers\BookmarkController::class, 'toggle'])->name('knowledge.bookmark');
+    Route::get('/bookmarks', [\App\Http\Controllers\BookmarkController::class, 'index'])->name('bookmarks.index');
+
     // =============================================================
     // ROLE: MANAJEMEN KONTEN PENGETAHUAN
     // Super Admin, Admin Pusat, Admin, Analisis Pengetahuan, Kreator Pengetahuan

@@ -49,6 +49,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Knowledge::class);
     }
+
+    // Relasi ke Bookmark
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    // Relasi Many-to-Many ke Knowledge yang dibookmark
+    public function bookmarkedKnowledge()
+    {
+        return $this->belongsToMany(Knowledge::class, 'bookmarks', 'user_id', 'knowledge_id')
+                    ->withTimestamps();
+    }
     /**
      * Get the attributes that should be cast.
      *

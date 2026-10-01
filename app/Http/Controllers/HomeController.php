@@ -47,6 +47,21 @@ class HomeController extends Controller
             ->take(12)
             ->get();
 
+        // Attach is_bookmarked info if user logged in
+        $userId = auth()->id();
+        $userBookmarkIds = $userId ? \App\Models\Bookmark::where('user_id', $userId)->pluck('knowledge_id')->flip()->toArray() : [];
+
+        $attachBookmark = function($collection) use ($userBookmarkIds) {
+            return $collection->map(function($item) use ($userBookmarkIds) {
+                $item->is_bookmarked = isset($userBookmarkIds[$item->id]);
+                return $item;
+            });
+        };
+
+        $featuredKnowledges = $attachBookmark($featuredKnowledges);
+        $mostViewed = $attachBookmark($mostViewed);
+        $latest = $attachBookmark($latest);
+
         return Inertia::render('Home', compact('featuredKnowledges', 'mostViewed', 'latest', 'popularCategories', 'popularTags'));
     }
 
@@ -191,7 +206,12 @@ class HomeController extends Controller
         $wordCount = str_word_count(strip_tags($fullText));
         $readingTime = max(1, (int) ceil($wordCount / 200));
 
-        return view('pages.knowledge-show', compact('knowledge', 'readingTime'));
+        // Bookmark status & count
+        $currentUser = auth()->user();
+        $isBookmarked = $currentUser ? $knowledge->isBookmarkedBy($currentUser) : false;
+        $bookmarksCount = $knowledge->bookmarks()->count();
+
+        return view('pages.knowledge-show', compact('knowledge', 'readingTime', 'isBookmarked', 'bookmarksCount'));
     }
 
     public function toggleDarkMode(Request $request)

@@ -125,6 +125,17 @@
                 Profil Saya
               </Link>
 
+              <Link 
+                href="/bookmarks" 
+                @click="userMenuOpen = false"
+                class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
+              >
+                <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+                Bookmark
+              </Link>
+
               <a 
                 href="/dashboard" 
                 @click="userMenuOpen = false"

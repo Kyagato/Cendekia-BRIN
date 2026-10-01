@@ -44,6 +44,26 @@ class Knowledge extends Model
         return $this->hasMany(ForumThread::class, 'knowledge_id');
     }
 
+    // Relasi ke Bookmark
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    // Relasi Many-to-Many ke User yang mem-bookmark
+    public function bookmarkedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'bookmarks', 'knowledge_id', 'user_id')
+                    ->withTimestamps();
+    }
+
+    // Cek apakah dibookmark oleh user tertentu
+    public function isBookmarkedBy(?User $user): bool
+    {
+        if (!$user) return false;
+        return $this->bookmarks()->where('user_id', $user->id)->exists();
+    }
+
     /**
      * Local Scope untuk memfilter data pengetahuan secara dinamis.
      * Mengeliminasi duplikasi query di HomeController, SearchController, dan ApiSearch.

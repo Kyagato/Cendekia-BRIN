@@ -162,6 +162,19 @@
           </button>
 
           <button
+            v-if="isOwner"
+            type="button"
+            @click="activeTab = 'tersimpan'"
+            :class="activeTab === 'tersimpan' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
+            class="py-4 px-4 sm:px-6 text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2"
+          >
+            <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            <span>Bookmark ({{ totalBookmarks }})</span>
+          </button>
+
+          <button
             type="button"
             @click="activeTab = 'biodata'"
             :class="activeTab === 'biodata' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
@@ -328,6 +341,72 @@
           </div>
         </div>
 
+        <!-- Tab: Pengetahuan Tersimpan (Bookmarks) - Hanya untuk Pemilik Akun -->
+        <div v-if="isOwner" v-show="activeTab === 'tersimpan'" class="p-6 sm:p-8">
+          <div v-if="bookmarkedList && bookmarkedList.data && bookmarkedList.data.length > 0">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div
+                v-for="item in bookmarkedList.data"
+                :key="item.id"
+                class="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden card-hover flex flex-col h-full"
+              >
+                <div class="p-5 flex-grow flex flex-col justify-between">
+                  <div>
+                    <div class="flex justify-between items-center mb-3">
+                      <span
+                        class="px-2.5 py-1 text-xs font-semibold rounded-full"
+                        :class="getTypeBadgeClass(item.tipe)"
+                      >
+                        {{ item.tipe }}
+                      </span>
+                      <span class="text-xs text-slate-500 dark:text-slate-400">
+                        {{ timeAgo(item.created_at) }}
+                      </span>
+                    </div>
+
+                    <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 hover:text-[#2563eb] dark:hover:text-blue-400 transition">
+                      <a :href="`/knowledge/${item.id}`">
+                        {{ item.judul }}
+                      </a>
+                    </h4>
+
+                    <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 leading-relaxed">
+                      {{ item.deskripsi ? item.deskripsi.replace(/<[^>]*>/g, '') : '-' }}
+                    </p>
+                  </div>
+
+                  <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span class="truncate max-w-[130px] font-medium text-slate-700 dark:text-slate-300">
+                      {{ item.category?.nama_kategori || 'Umum' }}
+                    </span>
+                    <a
+                      :href="`/knowledge/${item.id}`"
+                      class="text-[#2563eb] dark:text-blue-400 font-semibold hover:underline flex items-center gap-1"
+                    >
+                      Buka Dokumen
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="py-16 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-50 dark:bg-slate-800 text-amber-500 flex items-center justify-center">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">Belum ada artikel tersimpan</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+              Simpan artikel atau dokumen penting yang sering Anda baca dengan menekan tombol simpan/bookmark di halaman pengetahuan.
+            </p>
+          </div>
+        </div>
+
         <!-- Tab 3: Informasi & Instansi -->
         <div v-show="activeTab === 'biodata'" class="p-6 sm:p-8">
           <div class="max-w-2xl mx-auto bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/60">
@@ -406,6 +485,14 @@ const props = defineProps({
     default: () => [],
   },
   totalThreads: {
+    type: Number,
+    default: 0,
+  },
+  bookmarkedList: {
+    type: Object,
+    default: () => ({ data: [], links: [] }),
+  },
+  totalBookmarks: {
     type: Number,
     default: 0,
   },

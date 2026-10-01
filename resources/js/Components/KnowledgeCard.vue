@@ -79,7 +79,7 @@
         </div>
       </div>
 
-      <!-- Metadata Row: Date & Views -->
+      <!-- Metadata Row: Date, Views & Bookmark Button -->
       <div class="mt-4 pt-3 border-t border-[#e2e8f0] dark:border-slate-800 flex items-center justify-between text-xs text-[#94a3b8] dark:text-slate-500">
         <div class="flex items-center gap-1.5 text-[12px] font-medium">
           <svg class="w-3.5 h-3.5 text-[#94a3b8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -88,12 +88,33 @@
           <span>{{ timeAgo }}</span>
         </div>
 
-        <div class="flex items-center gap-1 text-[12px] font-medium">
-          <svg class="w-3.5 h-3.5 text-[#94a3b8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          <span>{{ item.views_count || 0 }}</span>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 text-[12px] font-medium" title="Jumlah tayangan">
+            <svg class="w-3.5 h-3.5 text-[#94a3b8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span>{{ item.views_count || 0 }}</span>
+          </div>
+
+          <!-- Quick Bookmark Button -->
+          <button 
+            type="button"
+            @click.stop.prevent="toggleCardBookmark"
+            :disabled="bookmarkLoading"
+            class="relative z-30 p-1 rounded-md transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            :title="isBookmarked ? 'Hapus dari Tersimpan' : 'Simpan Artikel'"
+          >
+            <svg 
+              class="w-4 h-4 transition-all duration-200" 
+              :class="isBookmarked ? 'text-amber-500 fill-amber-500 scale-110' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 fill-none'" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor" 
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -170,4 +191,46 @@ const timeAgo = computed(() => {
   const date = new Date(props.item.created_at);
   return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 });
+
+// Bookmark State & Toggle
+const isBookmarked = ref(Boolean(props.item.is_bookmarked));
+const bookmarkLoading = ref(false);
+
+const toggleCardBookmark = async () => {
+  if (bookmarkLoading.value) return;
+  bookmarkLoading.value = true;
+
+  try {
+    const getCsrfToken = () => {
+      const meta = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      if (meta) return meta;
+      const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : '';
+    };
+
+    const res = await fetch(`/knowledge/${props.item.id}/bookmark`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': getCsrfToken(),
+        'X-XSRF-TOKEN': getCsrfToken(),
+        'Accept': 'application/json'
+      }
+    });
+
+    if (res.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
+
+    const data = await res.json();
+    if (data && data.status === 'success') {
+      isBookmarked.value = data.bookmarked;
+    }
+  } catch (err) {
+    console.error('Error toggling bookmark:', err);
+  } finally {
+    bookmarkLoading.value = false;
+  }
+};
 </script>

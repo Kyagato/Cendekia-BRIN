@@ -124,6 +124,20 @@ class ProfileController extends Controller
             ->where('status', 'approved')
             ->count();
 
+        // Daftar Bookmark Pengetahuan (hanya diambil jika user melihat profil miliknya sendiri)
+        $isOwner = auth()->check() && auth()->id() === $user->id;
+        $bookmarkedList = null;
+        $totalBookmarks = 0;
+
+        if ($isOwner) {
+            $bookmarkedList = $user->bookmarkedKnowledge()
+                ->where('status', 'Disetujui')
+                ->with(['category', 'tags'])
+                ->latest('bookmarks.created_at')
+                ->paginate(9);
+            $totalBookmarks = $user->bookmarkedKnowledge()->where('status', 'Disetujui')->count();
+        }
+
         return \Inertia\Inertia::render('Profile/Show', [
             'user' => $user,
             'knowledgeList' => $knowledgeList,
@@ -131,6 +145,8 @@ class ProfileController extends Controller
             'totalViews' => $totalViews,
             'forumThreads' => $forumThreads,
             'totalThreads' => $totalThreads,
+            'bookmarkedList' => $bookmarkedList,
+            'totalBookmarks' => $totalBookmarks,
         ]);
     }
 }
