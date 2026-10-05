@@ -15,11 +15,11 @@ class ModeratorForumController extends Controller
      */
     public function index(Request $request)
     {
-        $status = $request->get('status', 'pending');
+        $status = $request->get('status', ForumThread::STATUS_PENDING);
 
         // Validate status filter
-        if (!in_array($status, ['pending', 'approved', 'rejected'])) {
-            $status = 'pending';
+        if (!in_array($status, ForumThread::ALL_STATUSES)) {
+            $status = ForumThread::STATUS_PENDING;
         }
 
         $threads = ForumThread::with(['user', 'category', 'approvedBy'])
@@ -30,9 +30,9 @@ class ModeratorForumController extends Controller
             ->withQueryString();
 
         $counts = [
-            'pending'  => ForumThread::where('status', 'pending')->count(),
-            'approved' => ForumThread::where('status', 'approved')->count(),
-            'rejected' => ForumThread::where('status', 'rejected')->count(),
+            'pending'  => ForumThread::pending()->count(),
+            'approved' => ForumThread::approved()->count(),
+            'rejected' => ForumThread::rejected()->count(),
         ];
 
         return view('moderator.forum.approval', compact('threads', 'status', 'counts'));
@@ -44,9 +44,9 @@ class ModeratorForumController extends Controller
     public function approve(ForumThread $thread)
     {
         $thread->update([
-            'status'      => 'approved',
-            'approved_by' => Auth::id(),
-            'approved_at' => now(),
+            'status'         => ForumThread::STATUS_APPROVED,
+            'approved_by'    => Auth::id(),
+            'approved_at'    => now(),
             'rejection_note' => null,
         ]);
 
@@ -63,7 +63,7 @@ class ModeratorForumController extends Controller
         ]);
 
         $thread->update([
-            'status'         => 'rejected',
+            'status'         => ForumThread::STATUS_REJECTED,
             'approved_by'    => Auth::id(),
             'approved_at'    => now(),
             'rejection_note' => $request->rejection_note,

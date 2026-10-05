@@ -12,6 +12,16 @@ class ForumThread extends Model
     protected $table = 'forum_threads';
     protected $guarded = ['id'];
 
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_PENDING  = 'pending';
+    public const STATUS_REJECTED = 'rejected';
+
+    public const ALL_STATUSES = [
+        self::STATUS_APPROVED,
+        self::STATUS_PENDING,
+        self::STATUS_REJECTED,
+    ];
+
     protected $casts = [
         'approved_at' => 'datetime',
         'is_pinned'   => 'boolean',
@@ -29,6 +39,21 @@ class ForumThread extends Model
     public static function canAutoApprove(User $user): bool
     {
         return in_array($user->role, self::AUTO_APPROVE_ROLES);
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === self::STATUS_APPROVED;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === self::STATUS_REJECTED;
     }
 
     public function user()
@@ -58,11 +83,16 @@ class ForumThread extends Model
 
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', self::STATUS_APPROVED);
     }
 
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', self::STATUS_PENDING);
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', self::STATUS_REJECTED);
     }
 }

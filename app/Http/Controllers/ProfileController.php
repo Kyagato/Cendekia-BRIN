@@ -114,14 +114,14 @@ class ProfileController extends Controller
 
         // Thread forum yang dibuat oleh user ini
         $forumThreads = \App\Models\ForumThread::where('user_id', $user->id)
-            ->where('status', 'approved')
+            ->approved()
             ->withCount('replies')
             ->with('category')
             ->latest()
             ->take(6)
             ->get();
         $totalThreads = \App\Models\ForumThread::where('user_id', $user->id)
-            ->where('status', 'approved')
+            ->approved()
             ->count();
 
         // Daftar Bookmark Pengetahuan (hanya diambil jika user melihat profil miliknya sendiri)

@@ -126,9 +126,9 @@ class HomeController extends Controller
     {
         $sort = $request->get('sort', 'terbaru');
 
-        $query = ForumThread::with(['user', 'category'])
-            ->withCount('replies')
-            ->where('status', 'approved');
+        $query = ForumThread::approved()
+            ->with(['user', 'category'])
+            ->withCount('replies');
 
         switch ($sort) {
             case 'populer_umum':

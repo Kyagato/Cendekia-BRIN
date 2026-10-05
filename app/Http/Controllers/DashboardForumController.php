@@ -46,9 +46,9 @@ class DashboardForumController extends Controller
 
         $counts = [
             'total'    => ForumThread::where('user_id', $user->id)->count(),
-            'approved' => ForumThread::where('user_id', $user->id)->where('status', 'approved')->count(),
-            'pending'  => ForumThread::where('user_id', $user->id)->where('status', 'pending')->count(),
-            'rejected' => ForumThread::where('user_id', $user->id)->where('status', 'rejected')->count(),
+            'approved' => ForumThread::where('user_id', $user->id)->approved()->count(),
+            'pending'  => ForumThread::where('user_id', $user->id)->pending()->count(),
+            'rejected' => ForumThread::where('user_id', $user->id)->rejected()->count(),
             'trashed'  => ForumThread::onlyTrashed()->where('user_id', $user->id)->count(),
         ];
 

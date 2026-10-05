@@ -100,10 +100,10 @@ class ForumApiController extends Controller
         } elseif ($user) {
             $thread = $query->where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)
-                  ->orWhere('status', 'approved');
+                  ->orWhere('status', ForumThread::STATUS_APPROVED);
             })->find($id);
         } else {
-            $thread = $query->where('status', 'approved')->find($id);
+            $thread = $query->approved()->find($id);
         }
 
         if (!$thread) {
@@ -161,7 +161,7 @@ class ForumApiController extends Controller
             'knowledge_id' => $validated['knowledge_id'] ?? null,
             'judul' => strip_tags($validated['judul']),
             'konten' => strip_tags($validated['konten']),
-            'status' => $isAutoApprove ? 'approved' : 'pending',
+            'status' => $isAutoApprove ? ForumThread::STATUS_APPROVED : ForumThread::STATUS_PENDING,
             'approved_at' => $isAutoApprove ? now() : null,
             'approved_by' => $isAutoApprove ? $user->id : null,
         ]);
@@ -210,7 +210,7 @@ class ForumApiController extends Controller
             ], 404);
         }
 
-        if ($thread->status !== 'approved') {
+        if (!$thread->isApproved()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Thread ini belum disetujui, sehingga belum dapat menerima balasan.',

@@ -49,7 +49,7 @@ class ForumController extends Controller
 
         $user   = Auth::user();
         $isAutoApprove = ForumThread::canAutoApprove($user);
-        $status = $isAutoApprove ? 'approved' : 'pending';
+        $status = $isAutoApprove ? ForumThread::STATUS_APPROVED : ForumThread::STATUS_PENDING;
 
         $thread = ForumThread::create([
             'user_id'      => $user->id,
@@ -58,8 +58,8 @@ class ForumController extends Controller
             'konten'       => strip_tags($request->konten),
             'knowledge_id' => $request->knowledge_id,
             'status'       => $status,
-            'approved_by'  => $status === 'approved' ? $user->id : null,
-            'approved_at'  => $status === 'approved' ? now() : null,
+            'approved_by'  => $status === ForumThread::STATUS_APPROVED ? $user->id : null,
+            'approved_at'  => $status === ForumThread::STATUS_APPROVED ? now() : null,
         ]);
 
         \App\Models\AuditLog::record(
@@ -68,7 +68,7 @@ class ForumController extends Controller
             ['thread_id' => $thread->id, 'judul' => $thread->judul, 'category_id' => $thread->category_id]
         );
 
-        $message = $status === 'approved'
+        $message = $status === ForumThread::STATUS_APPROVED
             ? 'Topik diskusi berhasil dibuat dan langsung tayang.'
             : 'Topik diskusi berhasil dibuat dan menunggu persetujuan moderator.';
 
@@ -119,7 +119,7 @@ class ForumController extends Controller
         ]);
 
         $isResubmit = $request->boolean('resubmit') || $request->input('action_type') === 'resubmit';
-        $wasRejected = $thread->status === 'rejected';
+        $wasRejected = $thread->isRejected();
 
         $data = [
             'category_id'  => $request->category_id,
@@ -130,7 +130,7 @@ class ForumController extends Controller
 
         if ($wasRejected && $isResubmit) {
             $isAutoApprove = ForumThread::canAutoApprove($user);
-            $data['status'] = $isAutoApprove ? 'approved' : 'pending';
+            $data['status'] = $isAutoApprove ? ForumThread::STATUS_APPROVED : ForumThread::STATUS_PENDING;
             $data['rejection_note'] = null;
             $data['approved_by'] = $isAutoApprove ? $user->id : null;
             $data['approved_at'] = $isAutoApprove ? now() : null;
@@ -176,12 +176,12 @@ class ForumController extends Controller
             $thread = $threadQuery->where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)
                   ->orWhere(function ($approvedQ) {
-                      $approvedQ->where('status', 'approved')
+                      $approvedQ->where('status', ForumThread::STATUS_APPROVED)
                                 ->whereNull('deleted_at');
                   });
             })->findOrFail($id);
         } else {
-            $thread = ForumThread::where('status', 'approved')->findOrFail($id);
+            $thread = ForumThread::approved()->findOrFail($id);
         }
 
         // Increment view count hanya jika tidak di tong sampah
@@ -210,7 +210,7 @@ class ForumController extends Controller
             return back()->with('error', 'Topik ini telah dipindahkan ke tong sampah, Anda tidak bisa menambahkan balasan.');
         }
 
-        if ($thread->status !== 'approved') {
+        if (!$thread->isApproved()) {
             return back()->with('error', 'Topik diskusi ini belum disetujui, sehingga belum dapat menerima balasan.');
         }
 
