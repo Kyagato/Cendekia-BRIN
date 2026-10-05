@@ -29,8 +29,8 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <form @submit.prevent="submitSearch" class="flex flex-col md:flex-row gap-3">
           <!-- Search Input -->
-          <div class="relative flex-grow">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <div class="relative flex-grow btn-outline-sweep rounded-xl">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -39,7 +39,7 @@
               v-model="form.q" 
               type="text" 
               placeholder="Cari berdasarkan judul, deskripsi, label, penulis, atau instansi..." 
-              class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition"
+              class="block w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:border-[#2563eb] focus:ring-2 focus:ring-[#2563eb]/20 transition"
             />
           </div>
 

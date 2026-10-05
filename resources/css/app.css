@@ -185,6 +185,10 @@
         clip-path: inset(0 0 0 0);
     }
 
+    .dark .btn-outline-sweep::after {
+        border-color: #3b82f6;
+    }
+
     /* Slide fill animation: left → right fill on hover (base warna putih, hover slide jadi biru) */
     .btn-slide-fill {
         position: relative;
