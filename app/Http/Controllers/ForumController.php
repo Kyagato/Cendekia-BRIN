@@ -33,6 +33,7 @@ class ForumController extends Controller
             'categories' => $categories,
             'knowledges' => $knowledges,
             'linkedKnowledge' => $linkedKnowledge,
+            'ref' => $request->query('ref', ''),
         ]);
     }
 
@@ -70,14 +71,36 @@ class ForumController extends Controller
             ? 'Topik diskusi berhasil dibuat dan langsung tayang.'
             : 'Topik diskusi berhasil dibuat dan menunggu persetujuan moderator.';
 
+        if ($request->input('ref') === 'dashboard') {
+            return redirect()->route('dashboard.forum.index')->with('success', $message);
+        }
+
         return redirect()->route('forum.show', $thread->id)->with('success', $message);
     }
 
     // 3. Tampilkan Thread Detail + Replies
-    public function show(ForumThread $thread)
+    public function show(int $id)
     {
-        // Increment view count
-        $thread->increment('views_count');
+        $user = Auth::user();
+
+        // Cari thread, termasuk di tong sampah jika pemilik atau moderator/admin
+        $threadQuery = ForumThread::withTrashed();
+
+        if ($user && ($user->isAdmin() || $user->isModerator())) {
+            $thread = $threadQuery->findOrFail($id);
+        } elseif ($user) {
+            $thread = $threadQuery->where(function ($q) use ($user) {
+                $q->whereNull('deleted_at')
+                  ->orWhere('user_id', $user->id);
+            })->findOrFail($id);
+        } else {
+            $thread = ForumThread::where('status', 'approved')->findOrFail($id);
+        }
+
+        // Increment view count hanya jika tidak di tong sampah
+        if (!$thread->trashed()) {
+            $thread->increment('views_count');
+        }
 
         $thread->load(['user', 'category', 'knowledge.category']);
 
@@ -121,18 +144,26 @@ class ForumController extends Controller
 
     public function destroy(ForumThread $thread)
     {
-        Gate::authorize('manage-forum');
+        // Izinkan pemilik thread atau moderator/admin untuk menghapus
+        if (!Auth::user()->isAdmin() && !Auth::user()->isModerator() && $thread->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menghapus topik ini.');
+        }
+
         $title = $thread->judul;
         $id = $thread->id;
         $thread->delete();
 
         \App\Models\AuditLog::record(
             'FORUM_DELETE',
-            "Menghapus topik diskusi: '{$title}' (ID: {$id})",
+            "Menghapus topik diskusi ke tong sampah: '{$title}' (ID: {$id})",
             ['thread_id' => $id, 'judul' => $title]
         );
 
-        return redirect()->route('forum.index')->with('success', 'Topik berhasil dihapus.');
+        if (request()->has('from_dashboard')) {
+            return redirect()->route('dashboard.forum.index')->with('success', 'Topik diskusi berhasil dipindahkan ke tong sampah.');
+        }
+
+        return redirect()->route('forum.index')->with('success', 'Topik berhasil dipindahkan ke tong sampah.');
     }
 
     public function destroyReply(ForumReply $reply)

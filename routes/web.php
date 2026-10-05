@@ -83,6 +83,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
         Route::get('/knowledge/create', [KnowledgeController::class, 'create'])->name('knowledge.create');
         Route::post('/knowledge', [KnowledgeController::class, 'store'])->name('knowledge.store');
+        Route::get('/knowledge/trash', [KnowledgeController::class, 'trash'])->name('knowledge.trash');
+        Route::post('/knowledge/{id}/restore', [KnowledgeController::class, 'restore'])->name('knowledge.restore');
+        Route::delete('/knowledge/{id}/force-delete', [KnowledgeController::class, 'forceDelete'])->name('knowledge.forceDelete');
         Route::get('/knowledge/{knowledge}/edit', [KnowledgeController::class, 'edit'])->name('knowledge.edit');
         Route::put('/knowledge/{knowledge}', [KnowledgeController::class, 'update'])->name('knowledge.update');
         Route::delete('/knowledge/{knowledge}', [KnowledgeController::class, 'destroy'])->name('knowledge.destroy');
@@ -91,7 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     // Detail Knowledge (Dashboard Admin Preview — layout admin)
-    Route::get('/dashboard/knowledge/{knowledge}', [KnowledgeController::class, 'show'])->name('admin.knowledge.show');
+    Route::get('/dashboard/knowledge/{id}', [KnowledgeController::class, 'show'])->name('admin.knowledge.show');
 
     // =============================================================
     // ROLE: ANALISIS PENGETAHUAN + ADMIN
@@ -109,10 +112,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =============================================================
     // ROLE: ANGGOTA & SEMUA MEMBER
     // Forum Diskusi
-    // =============================================================
     Route::get('/forum/create', [App\Http\Controllers\ForumController::class, 'create'])->name('forum.create');
     Route::post('/forum', [App\Http\Controllers\ForumController::class, 'store'])->name('forum.store');
+    Route::delete('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
     Route::post('/forum/{thread}/reply', [App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+
+    // Dashboard Forum Manajemen & Soft Deletes Milik Sendiri
+    Route::prefix('dashboard/forum')->name('dashboard.forum.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\DashboardForumController::class, 'index'])->name('index');
+        Route::get('/trash', [\App\Http\Controllers\DashboardForumController::class, 'trash'])->name('trash');
+        Route::post('/{id}/restore', [\App\Http\Controllers\DashboardForumController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [\App\Http\Controllers\DashboardForumController::class, 'forceDelete'])->name('forceDelete');
+    });
 
     // =============================================================
     // ROLE: MODERATOR + ADMIN
@@ -123,7 +134,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('moderator.forum.approval');
         })->name('forum.manage');
 
-        Route::delete('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
         Route::delete('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
         Route::patch('/forum/{thread}/pin', [App\Http\Controllers\ForumController::class, 'pin'])->name('forum.pin');
         Route::patch('/forum/{thread}/lock', [App\Http\Controllers\ForumController::class, 'lock'])->name('forum.lock');

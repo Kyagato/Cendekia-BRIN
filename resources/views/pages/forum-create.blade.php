@@ -1,13 +1,18 @@
 @extends('layouts.public')
 @section('title', 'Buat Topik Baru')
 
+@php
+    $isFromDashboard = request('ref') === 'dashboard';
+    $backRoute = $isFromDashboard ? route('dashboard.forum.index') : route('forum.index');
+@endphp
+
 @section('content')
 <section class="pt-32 pb-12 bg-slate-50 dark:bg-slate-900 min-h-screen">
     <div class="container mx-auto px-4 max-w-4xl">
         <div class="mb-8">
-            <a href="{{ route('forum.index') }}" class="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition font-medium">
+            <a href="{{ $backRoute }}" class="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition font-medium">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                Kembali ke Forum
+                {{ $isFromDashboard ? 'Kembali ke Forum Saya' : 'Kembali ke Forum' }}
             </a>
         </div>
 
@@ -143,7 +148,10 @@
                     </div>
 
                     <div class="flex justify-end gap-3">
-                        <a href="{{ route('forum.index') }}" class="px-6 py-3 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                        @if($isFromDashboard)
+                            <input type="hidden" name="ref" value="dashboard">
+                        @endif
+                        <a href="{{ $backRoute }}" class="px-6 py-3 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
                             Batal
                         </a>
                         <button type="submit" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg shadow-sm transition">

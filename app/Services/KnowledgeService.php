@@ -195,9 +195,55 @@ class KnowledgeService
     }
 
     /**
-     * Menghapus artikel beserta membersihkan file fisik dan orphan tags.
+     * Menghapus artikel pengetahuan secara lembut (Soft Delete). File fisik tetap tersimpan untuk pemulihan.
      */
     public function deleteKnowledge(Knowledge $knowledge): bool
+    {
+        return DB::transaction(function () use ($knowledge) {
+            $knowledgeId = $knowledge->id;
+            $knowledgeTitle = $knowledge->judul;
+
+            $deleted = $knowledge->delete();
+
+            $this->invalidateStatsCache();
+
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_DELETE',
+                "Menghapus pengetahuan ke tong sampah: '{$knowledgeTitle}' (ID: {$knowledgeId})",
+                ['knowledge_id' => $knowledgeId, 'judul' => $knowledgeTitle]
+            );
+
+            return (bool) $deleted;
+        });
+    }
+
+    /**
+     * Memulihkan artikel pengetahuan dari tong sampah (Restore).
+     */
+    public function restoreKnowledge(Knowledge $knowledge): bool
+    {
+        return DB::transaction(function () use ($knowledge) {
+            $knowledgeId = $knowledge->id;
+            $knowledgeTitle = $knowledge->judul;
+
+            $restored = $knowledge->restore();
+
+            $this->invalidateStatsCache();
+
+            \App\Models\AuditLog::record(
+                'KNOWLEDGE_RESTORE',
+                "Memulihkan pengetahuan dari tong sampah: '{$knowledgeTitle}' (ID: {$knowledgeId})",
+                ['knowledge_id' => $knowledgeId, 'judul' => $knowledgeTitle]
+            );
+
+            return (bool) $restored;
+        });
+    }
+
+    /**
+     * Menghapus artikel pengetahuan secara permanen beserta file fisik dan orphan tags.
+     */
+    public function forceDeleteKnowledge(Knowledge $knowledge): bool
     {
         return DB::transaction(function () use ($knowledge) {
             $knowledgeId = $knowledge->id;
@@ -216,7 +262,7 @@ class KnowledgeService
 
             $tags = $knowledge->tags;
             $knowledge->tags()->detach();
-            $deleted = $knowledge->delete();
+            $deleted = $knowledge->forceDelete();
 
             // Hapus orphan tags
             foreach ($tags as $tag) {
@@ -228,8 +274,8 @@ class KnowledgeService
             $this->invalidateStatsCache();
 
             \App\Models\AuditLog::record(
-                'KNOWLEDGE_DELETE',
-                "Menghapus pengetahuan: '{$knowledgeTitle}' (ID: {$knowledgeId})",
+                'KNOWLEDGE_FORCE_DELETE',
+                "Menghapus permanen pengetahuan: '{$knowledgeTitle}' (ID: {$knowledgeId})",
                 ['knowledge_id' => $knowledgeId, 'judul' => $knowledgeTitle]
             );
 

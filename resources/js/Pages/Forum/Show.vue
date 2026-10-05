@@ -10,15 +10,27 @@
         </div>
       </transition>
 
+      <!-- Trashed Banner -->
+      <div v-if="thread.deleted_at" class="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm shadow-xs">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <span>Topik diskusi ini sedang berada di <strong>Tong Sampah</strong>.</span>
+        </div>
+        <button @click="restoreThread" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-xs flex items-center gap-1.5 shrink-0">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Pulihkan Topik Ini
+        </button>
+      </div>
+
       <!-- Top Action Bar -->
       <div class="flex flex-wrap items-center justify-between gap-4">
-        <Link href="/forum" class="inline-flex items-center gap-1.5 text-[#475569] dark:text-slate-300 hover:text-[#2563eb] dark:hover:text-blue-400 text-sm font-semibold transition">
+        <Link :href="thread.deleted_at ? '/dashboard/forum/trash' : '/forum'" class="inline-flex items-center gap-1.5 text-[#475569] dark:text-slate-300 hover:text-[#2563eb] dark:hover:text-blue-400 text-sm font-semibold transition">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          Kembali ke Forum
+          {{ thread.deleted_at ? 'Kembali ke Tong Sampah Forum' : 'Kembali ke Forum' }}
         </Link>
 
         <!-- Moderator Actions -->
-        <div v-if="canManageForum" class="flex items-center gap-2">
+        <div v-if="canManageForum && !thread.deleted_at" class="flex items-center gap-2">
           <button @click="togglePin" :class="thread.is_pinned ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 border-yellow-300' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-[#e2e8f0] dark:border-slate-700'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold border transition">
             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
             {{ thread.is_pinned ? 'Unpin' : 'Pin' }}
@@ -319,9 +331,13 @@ const toggleLock = () => {
 };
 
 const confirmDelete = () => {
-  if (confirm('Yakin ingin menghapus topik ini?')) {
+  if (confirm('Pindahkan topik diskusi ini ke tong sampah? Anda masih dapat memulihkannya kapan saja.')) {
     router.delete(`/forum/${props.thread.id}`);
   }
+};
+
+const restoreThread = () => {
+  router.post(`/dashboard/forum/${props.thread.id}/restore`);
 };
 
 const formatDate = (date) => {

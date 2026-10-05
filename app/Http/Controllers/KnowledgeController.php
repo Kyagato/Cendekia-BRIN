@@ -113,10 +113,26 @@ class KnowledgeController extends Controller
     /**
      * Menampilkan detail pengetahuan untuk pratinjau dashboard admin.
      */
-    public function show(Knowledge $knowledge): View
+    public function show(int $id): View
     {
-        $knowledge->increment('views_count');
-        $knowledge->load(['category', 'user', 'tags', 'threads.user']);
+        $user = Auth::user();
+
+        // Cari pengetahuan termasuk yang ada di tong sampah jika milik user sendiri atau user adalah admin
+        $knowledgeQuery = Knowledge::withTrashed()->with(['category', 'user', 'tags', 'threads.user']);
+
+        if (!$user->isAdmin()) {
+            $knowledge = $knowledgeQuery->where(function ($q) use ($user) {
+                $q->whereNull('deleted_at')
+                  ->orWhere('user_id', $user->id);
+            })->findOrFail($id);
+        } else {
+            $knowledge = $knowledgeQuery->findOrFail($id);
+        }
+
+        if (!$knowledge->trashed()) {
+            $knowledge->increment('views_count');
+        }
+
         return view('knowledge.show', compact('knowledge'));
     }
 
@@ -156,7 +172,7 @@ class KnowledgeController extends Controller
     }
 
     /**
-     * Menghapus artikel pengetahuan beserta file dan orphan tags.
+     * Menghapus artikel pengetahuan ke tong sampah (Soft Delete).
      */
     public function destroy(Knowledge $knowledge): RedirectResponse
     {
@@ -164,6 +180,64 @@ class KnowledgeController extends Controller
 
         $this->knowledgeService->deleteKnowledge($knowledge);
 
-        return redirect()->route('knowledge.index')->with('success', 'Pengetahuan berhasil dihapus.');
+        return redirect()->route('knowledge.index')->with('success', 'Pengetahuan berhasil dipindahkan ke tong sampah.');
+    }
+
+    /**
+     * Menampilkan daftar pengetahuan yang telah dihapus (Tong Sampah) milik user.
+     */
+    public function trash(Request $request): View
+    {
+        $user = Auth::user();
+
+        // Hanya tampilkan sampah milik user yang sedang login
+        $query = Knowledge::onlyTrashed()
+            ->with(['category', 'tags', 'user'])
+            ->where('user_id', $user->id)
+            ->latest('deleted_at');
+
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        $trashedKnowledges = $query->paginate(10)->withQueryString();
+
+        return view('knowledge.trash', compact('trashedKnowledges'));
+    }
+
+    /**
+     * Memulihkan artikel pengetahuan dari tong sampah (Restore).
+     */
+    public function restore(int $id): RedirectResponse
+    {
+        $user = Auth::user();
+
+        $knowledge = Knowledge::onlyTrashed()
+            ->where('user_id', $user->id)
+            ->findOrFail($id);
+
+        $this->knowledgeService->restoreKnowledge($knowledge);
+
+        return redirect()->route('knowledge.trash')->with('success', 'Pengetahuan berhasil dipulihkan.');
+    }
+
+    /**
+     * Menghapus artikel pengetahuan secara permanen dari tong sampah.
+     */
+    public function forceDelete(int $id): RedirectResponse
+    {
+        $user = Auth::user();
+
+        $knowledge = Knowledge::onlyTrashed()
+            ->where('user_id', $user->id)
+            ->findOrFail($id);
+
+        $this->knowledgeService->forceDeleteKnowledge($knowledge);
+
+        return redirect()->route('knowledge.trash')->with('success', 'Pengetahuan berhasil dihapus permanen.');
     }
 }

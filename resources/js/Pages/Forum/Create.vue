@@ -1,16 +1,16 @@
 <template>
   <PublicLayout>
     <div class="py-10 container mx-auto px-4 max-w-4xl space-y-6">
-      <!-- Back to Forum -->
+      <!-- Back Link -->
       <div>
         <Link
-          href="/forum"
+          :href="backUrl"
           class="inline-flex items-center gap-2 text-[#475569] dark:text-slate-400 hover:text-[#2563eb] dark:hover:text-blue-400 transition font-medium text-sm"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Kembali ke Forum
+          {{ isFromDashboard ? 'Kembali ke Forum Saya' : 'Kembali ke Forum' }}
         </Link>
       </div>
 
@@ -152,7 +152,7 @@
             <!-- Action Buttons -->
             <div class="flex justify-end gap-3">
               <Link
-                href="/forum"
+                :href="backUrl"
                 class="px-6 py-3 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm flex items-center justify-center"
               >
                 Batal
@@ -194,6 +194,23 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  ref: {
+    type: String,
+    default: '',
+  },
+});
+
+const isFromDashboard = computed(() => {
+  if (props.ref === 'dashboard') return true;
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('ref') === 'dashboard';
+  }
+  return false;
+});
+
+const backUrl = computed(() => {
+  return isFromDashboard.value ? '/dashboard/forum' : '/forum';
 });
 
 const form = useForm({
@@ -201,6 +218,7 @@ const form = useForm({
   judul: props.linkedKnowledge ? `Diskusi: ${props.linkedKnowledge.judul}` : '',
   category_id: props.linkedKnowledge?.category_id || '',
   konten: '',
+  ref: props.ref || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('ref') || '' : ''),
 });
 
 const searchKnowledge = ref(props.linkedKnowledge?.judul || '');
