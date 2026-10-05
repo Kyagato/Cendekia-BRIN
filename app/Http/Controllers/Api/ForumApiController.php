@@ -140,7 +140,7 @@ class ForumApiController extends Controller
             'knowledge_id' => 'nullable|exists:knowledge,id',
         ]);
 
-        $isAutoApprove = in_array($user->role, ForumThread::AUTO_APPROVE_ROLES);
+        $isAutoApprove = ForumThread::canAutoApprove($user);
 
         $thread = ForumThread::create([
             'user_id' => $user->id,

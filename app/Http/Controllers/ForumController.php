@@ -48,7 +48,8 @@ class ForumController extends Controller
         ]);
 
         $user   = Auth::user();
-        $status = $user->isAdmin() ? 'approved' : 'pending';
+        $isAutoApprove = ForumThread::canAutoApprove($user);
+        $status = $isAutoApprove ? 'approved' : 'pending';
 
         $thread = ForumThread::create([
             'user_id'      => $user->id,
@@ -78,7 +79,90 @@ class ForumController extends Controller
         return redirect()->route('forum.show', $thread->id)->with('success', $message);
     }
 
-    // 3. Tampilkan Thread Detail + Replies
+    // 3. Form Edit Thread
+    public function edit(Request $request, ForumThread $thread)
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isModerator() && $thread->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengedit topik ini.');
+        }
+
+        $categories = Category::all();
+        $knowledges = \App\Models\Knowledge::with('category')
+            ->where('status', 'Disetujui')
+            ->orderBy('judul')
+            ->get();
+
+        $thread->load(['category', 'knowledge']);
+
+        return Inertia::render('Forum/Edit', [
+            'thread' => $thread,
+            'categories' => $categories,
+            'knowledges' => $knowledges,
+            'ref' => $request->query('ref', ''),
+        ]);
+    }
+
+    // 4. Perbarui / Ajukan Kembali Thread
+    public function update(Request $request, ForumThread $thread)
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isModerator() && $thread->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengedit topik ini.');
+        }
+
+        $request->validate([
+            'judul'        => 'required|string|max:255',
+            'konten'       => 'required|string',
+            'category_id'  => 'required|exists:categories,id',
+            'knowledge_id' => 'nullable|exists:knowledge,id',
+        ]);
+
+        $isResubmit = $request->boolean('resubmit') || $request->input('action_type') === 'resubmit';
+        $wasRejected = $thread->status === 'rejected';
+
+        $data = [
+            'category_id'  => $request->category_id,
+            'judul'        => $request->judul,
+            'konten'       => $request->konten,
+            'knowledge_id' => $request->knowledge_id ?: null,
+        ];
+
+        if ($wasRejected && $isResubmit) {
+            $isAutoApprove = ForumThread::canAutoApprove($user);
+            $data['status'] = $isAutoApprove ? 'approved' : 'pending';
+            $data['rejection_note'] = null;
+            $data['approved_by'] = $isAutoApprove ? $user->id : null;
+            $data['approved_at'] = $isAutoApprove ? now() : null;
+
+            $message = $isAutoApprove
+                ? 'Topik diskusi berhasil diperbaiki dan langsung tayang.'
+                : 'Topik diskusi berhasil diajukan kembali dan kini berstatus menunggu persetujuan moderator.';
+        } else {
+            $message = 'Topik diskusi berhasil diperbarui.';
+        }
+
+        $thread->update($data);
+
+        \App\Models\AuditLog::record(
+            'FORUM_UPDATE',
+            "Memperbarui topik diskusi: '{$thread->judul}'" . ($wasRejected && $isResubmit ? " (Diajukan kembali, Status: {$thread->status})" : ""),
+            [
+                'thread_id' => $thread->id,
+                'judul'     => $thread->judul,
+                'status'    => $thread->status,
+                'resubmit'  => $isResubmit,
+            ]
+        );
+
+        if ($request->input('ref') === 'dashboard' || $request->has('from_dashboard')) {
+            return redirect()->route('dashboard.forum.index')->with('success', $message);
+        }
+
+        return redirect()->route('forum.show', $thread->id)->with('success', $message);
+    }
+
+    // 5. Tampilkan Thread Detail + Replies
     public function show(int $id)
     {
         $user = Auth::user();

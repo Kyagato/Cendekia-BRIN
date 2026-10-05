@@ -29,20 +29,35 @@
           {{ backLinkLabel }}
         </a>
 
-        <!-- Moderator Actions -->
-        <div v-if="canManageForum && !thread.deleted_at" class="flex items-center gap-2">
-          <button @click="togglePin" :class="thread.is_pinned ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 border-yellow-300' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-[#e2e8f0] dark:border-slate-700'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold border transition">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
-            {{ thread.is_pinned ? 'Unpin' : 'Pin' }}
-          </button>
-          <button @click="toggleLock" :class="thread.is_locked ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-[#e2e8f0] dark:border-slate-700'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold border transition">
-            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-            {{ thread.is_locked ? 'Buka Kunci' : 'Kunci' }}
-          </button>
-          <button @click="confirmDelete" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold bg-rose-600 hover:bg-rose-700 text-white transition shadow-sm">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            Hapus
-          </button>
+        <!-- Action Buttons (Edit, Pin, Lock, Hapus) -->
+        <div v-if="!thread.deleted_at" class="flex items-center gap-2">
+          <!-- Tombol Edit untuk Penulis atau Pengelola Forum -->
+          <a
+            v-if="canEditThread"
+            :href="`/forum/${thread.id}/edit`"
+            class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold bg-amber-500 hover:bg-amber-600 text-white transition shadow-sm"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            Edit
+          </a>
+
+          <!-- Moderator Actions -->
+          <template v-if="canManageForum">
+            <button @click="togglePin" :class="thread.is_pinned ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 border-yellow-300' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-[#e2e8f0] dark:border-slate-700'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold border transition">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
+              {{ thread.is_pinned ? 'Unpin' : 'Pin' }}
+            </button>
+            <button @click="toggleLock" :class="thread.is_locked ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-[#e2e8f0] dark:border-slate-700'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold border transition">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+              {{ thread.is_locked ? 'Buka Kunci' : 'Kunci' }}
+            </button>
+            <button @click="confirmDelete" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold bg-rose-600 hover:bg-rose-700 text-white transition shadow-sm">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              Hapus
+            </button>
+          </template>
         </div>
       </div>
 
@@ -326,6 +341,11 @@ watch(flashSuccess, (val) => {
 const canManageForum = computed(() => {
   if (!user.value) return false;
   return ['Super Admin', 'Admin Pusat', 'Admin', 'Moderator'].includes(user.value.role);
+});
+
+const canEditThread = computed(() => {
+  if (!user.value || props.thread.deleted_at) return false;
+  return user.value.id === props.thread.user_id || canManageForum.value;
 });
 
 const replyTo = ref(null);

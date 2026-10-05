@@ -18,8 +18,18 @@ class ForumThread extends Model
         'is_locked'   => 'boolean',
     ];
 
-    // Roles that get auto-approval
-    const AUTO_APPROVE_ROLES = User::ADMIN_ROLES;
+    // Roles that get auto-approval: Super Admin, Admin Pusat, Admin, Moderator
+    public const AUTO_APPROVE_ROLES = [
+        User::ROLE_SUPER_ADMIN,
+        User::ROLE_ADMIN_PUSAT,
+        User::ROLE_ADMIN,
+        User::ROLE_MODERATOR,
+    ];
+
+    public static function canAutoApprove(User $user): bool
+    {
+        return in_array($user->role, self::AUTO_APPROVE_ROLES);
+    }
 
     public function user()
     {

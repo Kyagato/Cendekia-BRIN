@@ -9,7 +9,17 @@
 @endsection
 
 @section('content')
-<div class="space-y-6" x-data="{ viewMode: '{{ ($errors->any() || request('action') === 'create') ? 'create' : 'list' }}', activeItem: null, showDeleteModal: false, deleteTarget: null }">
+<div class="space-y-6" x-data="{
+    viewMode: '{{ ($errors->any() || request('action') === 'create') ? 'create' : 'list' }}',
+    activeItem: null,
+    editItem: null,
+    showDeleteModal: false,
+    deleteTarget: null,
+    openEdit(item) {
+        this.editItem = JSON.parse(JSON.stringify(item));
+        this.viewMode = 'edit';
+    }
+}">
 
     {{-- Stats Cards (Hanya tampil saat mode list) --}}
     <div x-show="viewMode === 'list'" x-transition class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -102,6 +112,7 @@
                             'id' => $item->id,
                             'judul' => $item->judul,
                             'konten' => $item->konten,
+                            'category_id' => $item->category_id,
                             'kategori' => $item->category->nama_kategori ?? '-',
                             'status' => $item->status,
                             'rejection_note' => $item->rejection_note,
@@ -195,6 +206,16 @@
                                                     class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition text-left cursor-pointer">
                                                 <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                 <span>Lihat</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="py-1">
+                                            {{-- 2. Edit Topik --}}
+                                            <button type="button"
+                                                    @click="openEdit(@js($threadData)); open = false;"
+                                                    class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition text-left cursor-pointer">
+                                                <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                <span>Edit</span>
                                             </button>
                                         </div>
 
@@ -404,6 +425,11 @@
                         Buka di Forum Publik
                     </a>
                 </template>
+                <button type="button" @click="openEdit(activeItem)"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 transition shadow-xs cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Edit Topik
+                </button>
                 <button type="button" @click="deleteTarget = activeItem; showDeleteModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-700 text-white transition shadow-sm cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     Hapus ke Tong Sampah
@@ -413,12 +439,18 @@
 
         {{-- Status Alert Box --}}
         <template x-if="activeItem?.status === 'rejected'">
-            <div class="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl flex items-start gap-3 text-sm shadow-xs">
-                <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                <div>
-                    <strong class="font-bold block">Topik Ditolak</strong>
-                    <span x-text="activeItem?.rejection_note || 'Topik ini ditolak oleh moderator. Silakan perbaiki isi topik sebelum mengajukan kembali.'"></span>
+            <div class="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl flex items-start justify-between gap-3 text-sm shadow-xs">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <div>
+                        <strong class="font-bold block">Topik Ditolak</strong>
+                        <span x-text="activeItem?.rejection_note || 'Topik ini ditolak oleh moderator. Silakan perbaiki isi topik sebelum mengajukan kembali.'"></span>
+                    </div>
                 </div>
+                <button type="button" @click="openEdit(activeItem)" class="shrink-0 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition shadow-xs flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    <span>Perbaiki & Ajukan Kembali</span>
+                </button>
             </div>
         </template>
         <template x-if="activeItem?.status === 'pending'">
@@ -550,6 +582,226 @@
                         Belum ada balasan untuk topik diskusi ini.
                     </div>
                 </template>
+            </div>
+        </div>
+    </div>
+
+    {{-- VIEW 4: FORM EDIT TOPIK DISKUSI (IN-PAGE SWITCH VIEW) --}}
+    <div x-show="viewMode === 'edit'" x-cloak x-transition class="space-y-6" style="display: none;">
+        {{-- Top Bar Navigation Form --}}
+        <div class="flex items-center justify-between">
+            <button type="button" @click="viewMode = 'list'" class="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 font-semibold text-sm transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Kembali ke Daftar Topik
+            </button>
+        </div>
+
+        {{-- Card Form Edit --}}
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">
+                            <span x-text="editItem?.status === 'rejected' ? 'Perbaiki & Ajukan Kembali Topik' : 'Edit Topik Diskusi'"></span>
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            Perbarui rincian topik diskusi Anda.
+                        </p>
+                    </div>
+                    <template x-if="editItem?.status === 'rejected'">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800">
+                            Status: Ditolak
+                        </span>
+                    </template>
+                </div>
+            </div>
+
+            <div class="p-6 sm:p-8">
+                {{-- Banner Khusus Jika Status Ditolak --}}
+                <template x-if="editItem?.status === 'rejected'">
+                    <div class="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-sm flex items-start gap-3 shadow-xs">
+                        <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <div class="flex-1">
+                            <strong class="font-bold text-red-900 dark:text-red-200 block">Topik Diskusi Ini Sebelumnya Ditolak</strong>
+                            <p class="text-red-700 dark:text-red-300 mt-1">
+                                <span class="font-semibold">Alasan Penolakan:</span>
+                                <span class="italic" x-text="editItem?.rejection_note || 'Tidak ada catatan spesifik dari moderator.'"></span>
+                            </p>
+                            <p class="text-xs text-red-600 dark:text-red-400 mt-2">
+                                Silakan sesuaikan judul, kategori, atau isi konten di bawah ini. Klik tombol <strong>Ajukan Kembali</strong> untuk mengirim ulang ke status menunggu persetujuan moderator.
+                            </p>
+                        </div>
+                    </div>
+                </template>
+
+                <form :action="'/forum/' + (editItem ? editItem.id : '')" method="POST" x-data="{ resubmitFlag: 0 }">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="ref" value="dashboard">
+                    <input type="hidden" name="resubmit" :value="resubmitFlag">
+
+                    {{-- Hubungkan ke Materi Pengetahuan --}}
+                    <div class="mb-6 relative"
+                         x-data="{
+                             searchKnowledgeEdit: '',
+                             isDropdownOpenEdit: false,
+                             knowledges: {{ json_encode($knowledges->map(fn($k) => ['id' => $k->id, 'judul' => $k->judul, 'kategori' => $k->category->nama_kategori ?? null])) }},
+                             get filteredKnowledgesEdit() {
+                                 if (!this.searchKnowledgeEdit) return this.knowledges.slice(0, 10);
+                                 return this.knowledges.filter(k => k.judul.toLowerCase().includes(this.searchKnowledgeEdit.toLowerCase())).slice(0, 10);
+                             },
+                             select(item) {
+                                 if (editItem) {
+                                     editItem.knowledge_id = item.id;
+                                     editItem.knowledge_title = item.judul;
+                                 }
+                                 this.searchKnowledgeEdit = '';
+                                 this.isDropdownOpenEdit = false;
+                             },
+                             clear() {
+                                 if (editItem) {
+                                     editItem.knowledge_id = null;
+                                     editItem.knowledge_title = null;
+                                 }
+                                 this.searchKnowledgeEdit = '';
+                             }
+                         }"
+                         @click.outside="isDropdownOpenEdit = false">
+
+                        <input type="hidden" name="knowledge_id" :value="editItem?.knowledge_id || ''">
+
+                        <label class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                            Hubungkan ke Materi Pengetahuan <span class="text-xs text-slate-400 dark:text-slate-500 font-normal">(Opsional)</span>
+                        </label>
+
+                        <!-- Input Pencarian -->
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input type="text"
+                                   x-model="searchKnowledgeEdit"
+                                   @focus="isDropdownOpenEdit = true"
+                                   placeholder="🔍 Cari dan ganti materi pengetahuan..."
+                                   autocomplete="off"
+                                   class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
+
+                            <button type="button"
+                                    x-show="searchKnowledgeEdit"
+                                    @click="searchKnowledgeEdit = ''"
+                                    class="absolute right-3 top-3.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+
+                        <!-- Dropdown Hasil Pencarian -->
+                        <div x-show="isDropdownOpenEdit"
+                             x-cloak
+                             class="absolute z-30 mt-1.5 w-full bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700">
+                            <template x-for="item in filteredKnowledgesEdit" :key="item.id">
+                                <div @click="select(item)"
+                                     class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/60 cursor-pointer transition flex items-center justify-between text-sm">
+                                    <span class="font-medium text-slate-800 dark:text-slate-200 line-clamp-1" x-text="item.judul"></span>
+                                    <span x-show="item.kategori" class="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0 ml-2" x-text="item.kategori"></span>
+                                </div>
+                            </template>
+                            <div x-show="filteredKnowledgesEdit.length === 0" class="p-3 text-center text-xs text-slate-400">
+                                Materi tidak ditemukan
+                            </div>
+                        </div>
+
+                        <!-- Badge Terpilih -->
+                        <div x-show="editItem?.knowledge_title" x-cloak class="mt-2.5 flex items-center gap-2 p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+                            <svg class="w-4 h-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                            <span class="font-semibold truncate flex-1" x-text="editItem?.knowledge_title || ''"></span>
+                            <button type="button" @click="clear()" class="text-red-500 hover:text-red-700 text-xs font-semibold ml-2 shrink-0">Hapus</button>
+                        </div>
+                    </div>
+
+                    {{-- Judul Topik --}}
+                    <div class="mb-6">
+                        <label for="edit_judul" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                            Judul Topik Diskusi <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="edit_judul" name="judul" required
+                               x-model="editItem.judul"
+                               placeholder="Judul topik diskusi..."
+                               class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
+                    </div>
+
+                    {{-- Kategori --}}
+                    <div class="mb-6">
+                        <label for="edit_category_id" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                            Kategori <span class="text-red-500">*</span>
+                        </label>
+                        <select id="edit_category_id" name="category_id" required
+                                x-model="editItem.category_id"
+                                class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
+                            <option value="" disabled class="text-slate-400 dark:text-slate-500">Pilih Kategori</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->nama_kategori }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Konten / Pertanyaan --}}
+                    <div class="mb-8">
+                        <label for="edit_konten" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                            Konten / Pertanyaan <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="edit_konten" name="konten" rows="8" required
+                                  x-model="editItem.konten"
+                                  placeholder="Jelaskan secara detail topik diskusi Anda di sini..."
+                                  class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-primary-600 focus:border-primary-600 transition resize-y text-sm"></textarea>
+                    </div>
+
+                    {{-- Tombol Aksi --}}
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+                        <button type="button" @click="viewMode = 'list'"
+                                class="px-6 py-3 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition text-sm cursor-pointer">
+                            Batal
+                        </button>
+
+                        {{-- Khusus Status Ditolak: Tombol Ajukan Kembali (Outline Kuning) dan Simpan Perubahan --}}
+                        <template x-if="editItem?.status === 'rejected'">
+                            <div class="flex items-center gap-3">
+                                {{-- Tombol Ajukan Kembali (Outline Kuning) --}}
+                                <button type="submit"
+                                        @click="resubmitFlag = 1"
+                                        class="px-5 py-3 border-2 border-amber-500 hover:border-amber-600 bg-white hover:bg-amber-50 dark:bg-slate-800 dark:hover:bg-amber-950/30 text-amber-600 hover:text-amber-700 dark:text-amber-400 font-semibold rounded-lg transition text-sm flex items-center gap-2 cursor-pointer shadow-xs">
+                                    <svg class="w-4 h-4 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    <span>Ajukan Kembali</span>
+                                </button>
+
+                                {{-- Tombol Simpan Perubahan --}}
+                                <button type="submit"
+                                        @click="resubmitFlag = 0"
+                                        class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg shadow-sm transition text-sm flex items-center gap-2 cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span>Simpan Perubahan</span>
+                                </button>
+                            </div>
+                        </template>
+
+                        {{-- Status Bukan Ditolak: Hanya Simpan Perubahan --}}
+                        <template x-if="editItem?.status !== 'rejected'">
+                            <button type="submit"
+                                    @click="resubmitFlag = 0"
+                                    class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg shadow-sm transition text-sm flex items-center gap-2 cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Simpan Perubahan</span>
+                            </button>
+                        </template>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

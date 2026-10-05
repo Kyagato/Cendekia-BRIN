@@ -114,6 +114,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Forum Diskusi
     Route::get('/forum/create', [App\Http\Controllers\ForumController::class, 'create'])->name('forum.create');
     Route::post('/forum', [App\Http\Controllers\ForumController::class, 'store'])->name('forum.store');
+    Route::get('/forum/{thread}/edit', [App\Http\Controllers\ForumController::class, 'edit'])->name('forum.edit')->whereNumber('thread');
+    Route::put('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'update'])->name('forum.update')->whereNumber('thread');
     Route::delete('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
     Route::post('/forum/{thread}/reply', [App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
 
