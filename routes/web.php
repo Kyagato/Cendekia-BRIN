@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\KnowledgeValidationController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Knowledge;
 use Illuminate\Support\Facades\Route;
@@ -97,90 +98,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Validasi, approve, atau reject konten
     // =============================================================
     Route::middleware(['role:Super Admin,Admin Pusat,Admin,Analisis Pengetahuan,Analis Pengetahuan'])->group(function () {
-        Route::get('/validasi', function (\Illuminate\Http\Request $request) {
-            $query = Knowledge::with(['user', 'category'])->where('status', '!=', 'Draft')->latest();
-
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->where('judul', 'like', "%{$search}%")
-                      ->orWhere('penulis', 'like', "%{$search}%");
-                });
-            }
-
-            if ($request->filled('status')) {
-                $query->where('status', $request->status);
-            }
-
-            if ($request->filled('tipe')) {
-                $query->where('tipe', $request->tipe);
-            }
-
-            $knowledges = $query->paginate(10)->withQueryString();
-            return view('knowledge.validasi_index', compact('knowledges'));
-        })->name('validasi.index');
-
-        Route::get('/validasi/{knowledge}', function (Knowledge $knowledge) {
-            $categories = \App\Models\Category::all();
-            return view('knowledge.validasi', compact('knowledge', 'categories'));
-        })->name('validasi.show');
-
-        Route::put('/validasi/{knowledge}', function (\Illuminate\Http\Request $request, Knowledge $knowledge) {
-            $validated = $request->validate([
-                'judul'          => 'required|string|max:255',
-                'tipe'           => 'required|in:Teks,Gambar,Video,Audio',
-                'url_teks'       => 'nullable|string',
-                'penulis'        => 'nullable|string|max:255',
-                'kolaborator'    => 'nullable|string|max:255',
-                'deskripsi'      => 'nullable|string',
-                'detail'         => 'nullable|string',
-                'category_id'    => 'nullable|exists:categories,id',
-                'tanggal_terbit' => 'nullable|date',
-                'file'           => 'nullable|file|max:10240',
-            ]);
-
-            if ($request->hasFile('file')) {
-                $validated['file_path'] = $request->file('file')->store('knowledge_files', 'public');
-            }
-
-            $knowledge->update($validated);
-
-            if ($request->has('tags')) {
-                $tagsInput = explode(',', $request->tags ?? '');
-                $tagIds = [];
-                foreach ($tagsInput as $tagName) {
-                    $trimmed = trim($tagName);
-                    if ($trimmed) {
-                        $tag = \App\Models\Tag::firstOrCreate(['nama_label' => $trimmed]);
-                        $tagIds[] = $tag->id;
-                    }
-                }
-                $knowledge->tags()->sync($tagIds);
-            }
-
-            return back()->with('success', 'Data pengetahuan berhasil diperbarui.');
-        })->name('validasi.update');
-
-
-        Route::patch('/validasi/{knowledge}/approve', function (Knowledge $knowledge) {
-            $knowledge->update(['status' => 'Disetujui']);
-            \App\Models\AuditLog::record(
-                'KNOWLEDGE_APPROVE',
-                "Menyetujui konten pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
-                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
-            );
-            return back()->with('success', 'Konten berhasil disetujui.');
-        })->name('validasi.approve');
-
-        Route::patch('/validasi/{knowledge}/reject', function (Knowledge $knowledge) {
-            $knowledge->update(['status' => 'Ditolak']);
-            \App\Models\AuditLog::record(
-                'KNOWLEDGE_REJECT',
-                "Menolak konten pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
-                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
-            );
-            return redirect()->route('validasi.index')->with('success', 'Konten berhasil ditolak.');
-        })->name('validasi.reject');
+        Route::get('/validasi', [KnowledgeValidationController::class, 'index'])->name('validasi.index');
+        Route::get('/validasi/{knowledge}', [KnowledgeValidationController::class, 'show'])->name('validasi.show');
+        Route::put('/validasi/{knowledge}', [KnowledgeValidationController::class, 'update'])->name('validasi.update');
+        Route::patch('/validasi/{knowledge}/approve', [KnowledgeValidationController::class, 'approve'])->name('validasi.approve');
+        Route::patch('/validasi/{knowledge}/reject', [KnowledgeValidationController::class, 'reject'])->name('validasi.reject');
     });
 
 
