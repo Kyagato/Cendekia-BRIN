@@ -111,7 +111,9 @@ class ForumController extends Controller
             ->latest()
             ->paginate(15);
 
-        return Inertia::render('Forum/Show', compact('thread', 'replies'));
+        $from = request('from') ?? request('ref');
+
+        return Inertia::render('Forum/Show', compact('thread', 'replies', 'from'));
     }
 
     // 4. Tambah Balasan (Reply) — supports nested replies

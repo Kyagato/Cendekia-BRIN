@@ -103,6 +103,11 @@ it('soft deletes forum thread and allows owner to view in dashboard trash and re
     $threadA->refresh();
     expect($threadA->deleted_at)->toBeNull();
 
+    // User A membuka dashboard forum: halaman berhasil dirender tanpa error
+    $responseIndex = $this->actingAs($userA)->get(route('dashboard.forum.index'));
+    $responseIndex->assertStatus(200);
+    $responseIndex->assertSee('Topik Forum Milik A');
+
     // User A tidak bisa memulihkan topik milik User B (404)
     $this->actingAs($userA)->post(route('dashboard.forum.restore', $threadB->id))
         ->assertStatus(404);

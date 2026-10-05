@@ -9,14 +9,7 @@
 @endsection
 
 @section('content')
-<div class="space-y-6" x-data="{ viewMode: '{{ ($errors->any() || request('action') === 'create') ? 'create' : 'list' }}' }">
-
-    @if(session('success'))
-    <div class="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl flex items-center gap-3 text-sm shadow-sm">
-        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <span>{{ session('success') }}</span>
-    </div>
-    @endif
+<div class="space-y-6" x-data="{ viewMode: '{{ ($errors->any() || request('action') === 'create') ? 'create' : 'list' }}', activeItem: null, showDeleteModal: false, deleteTarget: null }">
 
     {{-- Stats Cards (Hanya tampil saat mode list) --}}
     <div x-show="viewMode === 'list'" x-transition class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -38,7 +31,7 @@
         </div>
     </div>
 
-    {{-- Main Container Card (LIST VIEW) --}}
+    {{-- VIEW 1: DAFTAR TOPIK DISKUSI SAYA (LIST VIEW) --}}
     <div x-show="viewMode === 'list'" x-transition class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <!-- Header -->
         <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -104,11 +97,47 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                     @forelse($threads as $item)
+                    @php
+                        $threadData = [
+                            'id' => $item->id,
+                            'judul' => $item->judul,
+                            'konten' => $item->konten,
+                            'kategori' => $item->category->nama_kategori ?? '-',
+                            'status' => $item->status,
+                            'rejection_note' => $item->rejection_note,
+                            'is_pinned' => (bool)$item->is_pinned,
+                            'is_locked' => (bool)$item->is_locked,
+                            'knowledge_id' => $item->knowledge_id,
+                            'knowledge_title' => $item->knowledge->judul ?? null,
+                            'created_at' => $item->created_at ? $item->created_at->translatedFormat('d M Y, H:i') : '-',
+                            'views_count' => $item->views_count ?? 0,
+                            'replies_count' => $item->replies_count ?? 0,
+                            'author' => [
+                                'name' => $item->user->name ?? 'Pengguna',
+                                'foto_profil' => $item->user->foto_profil ?? null,
+                                'instansi' => $item->user->instansi ?? ($item->user->role ?? 'Anggota'),
+                            ],
+                            'replies' => $item->replies->map(fn($r) => [
+                                'id' => $r->id,
+                                'konten' => $r->konten,
+                                'created_at' => $r->created_at ? $r->created_at->translatedFormat('d M Y, H:i') : '-',
+                                'user' => [
+                                    'name' => $r->user->name ?? 'Anonim',
+                                    'foto_profil' => $r->user->foto_profil ?? null,
+                                    'instansi' => $r->user->instansi ?? '',
+                                ]
+                            ])->values()->all(),
+                            'public_url' => route('forum.show', $item->id),
+                            'delete_url' => route('forum.destroy', $item->id),
+                        ];
+                    @endphp
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
                         <td class="py-4 px-6 max-w-sm">
-                            <div class="text-sm font-semibold text-slate-800 dark:text-slate-100 line-clamp-1">
+                            <button type="button"
+                                    @click="activeItem = @js($threadData); viewMode = 'preview';"
+                                    class="text-left font-semibold text-sm text-slate-800 dark:text-slate-100 hover:text-primary-600 dark:hover:text-primary-400 line-clamp-1 cursor-pointer transition">
                                 {{ $item->judul }}
-                            </div>
+                            </button>
                             <div class="text-xs text-slate-400 dark:text-slate-500 mt-1 line-clamp-1">
                                 {{ Str::limit(strip_tags($item->konten), 90) }}
                             </div>
@@ -147,7 +176,7 @@
                             {{ $item->created_at ? $item->created_at->translatedFormat('d M Y') : '-' }}
                         </td>
                         <td class="py-4 px-6 text-right">
-                            <div class="flex items-center justify-end" x-data="{ open: false, showDeleteModal: false }">
+                            <div class="flex items-center justify-end" x-data="{ open: false }">
                                 <div class="relative inline-block text-left" @mouseenter="open = true" @mouseleave="open = false">
                                     {{-- Tombol Titik Tiga --}}
                                     <button @click="open = !open" type="button" class="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition focus:outline-none cursor-pointer">
@@ -160,49 +189,27 @@
                                          style="display: none;">
                                         
                                         <div class="py-1">
-                                            {{-- 1. Lihat (Buka di halaman ini, bukan tab baru) --}}
-                                            <a href="{{ route('forum.show', $item->id) }}"
-                                               class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                                             {{-- 1. Lihat (In-Page Switch View ke Form Detail Forum di Dashboard) --}}
+                                            <button type="button"
+                                                    @click="activeItem = @js($threadData); viewMode = 'preview'; open = false;"
+                                                    class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition text-left cursor-pointer">
                                                 <svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                 <span>Lihat</span>
-                                            </a>
+                                            </button>
                                         </div>
 
                                         <div class="py-1">
                                             {{-- 2. Hapus ke Tong Sampah --}}
-                                            <button type="button" @click="showDeleteModal = true; open = false"
+                                            <button type="button"
+                                                    @click="deleteTarget = {
+                                                        id: {{ $item->id }},
+                                                        judul: @js($item->judul),
+                                                        delete_url: @js(route('forum.destroy', $item->id))
+                                                    }; showDeleteModal = true; open = false"
                                                     class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-left cursor-pointer">
                                                 <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                 <span>Hapus</span>
                                             </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Modal Konfirmasi Hapus ke Tong Sampah --}}
-                                <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm text-left">
-                                    <div @click.outside="showDeleteModal = false" class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md">
-                                        <div class="p-6">
-                                            <div class="flex items-center gap-3 mb-4">
-                                                <div class="w-10 h-10 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
-                                                    <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                                </div>
-                                                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Pindahkan ke Tong Sampah?</h3>
-                                            </div>
-                                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-5">
-                                                Topik diskusi "<strong class="text-slate-800 dark:text-slate-200">{{ $item->judul }}</strong>" akan dipindahkan ke tong sampah forum Anda dan dapat dipulihkan kapan saja.
-                                            </p>
-                                            <div class="flex justify-end gap-3">
-                                                <button type="button" @click="showDeleteModal = false"
-                                                        class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-                                                    Batal
-                                                </button>
-                                                <form action="{{ route('forum.destroy', $item->id) }}" method="POST" class="inline">
-                                                    @csrf @method('DELETE')
-                                                    <input type="hidden" name="from_dashboard" value="1">
-                                                    <button type="submit" class="px-4 py-2 rounded-lg text-sm font-semibold bg-red-600 hover:bg-red-700 text-white transition shadow-sm">Hapus</button>
-                                                </form>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -253,89 +260,77 @@
                     <input type="hidden" name="ref" value="dashboard">
 
                     {{-- Hubungkan ke Materi Pengetahuan (Single Search & Selection Autocomplete) --}}
-                    <div class="mb-6 relative" x-data="{
-                        open: false,
-                        search: @js(old('knowledge_id') ? '' : ''),
-                        selectedId: @js(old('knowledge_id', '')),
-                        selectedTitle: '',
-                        items: [
-                            @foreach($knowledges as $k)
-                                { id: {{ $k->id }}, judul: @js($k->judul), category_id: {{ $k->category_id }}, category_name: @js($k->category->nama_kategori ?? 'Umum') },
-                            @endforeach
-                        ],
-                        get filteredItems() {
-                            if (!this.search || this.search === this.selectedTitle) {
-                                return this.items;
-                            }
-                            return this.items.filter(item => 
-                                item.judul.toLowerCase().includes(this.search.toLowerCase()) ||
-                                item.category_name.toLowerCase().includes(this.search.toLowerCase())
-                            );
-                        },
-                        select(item) {
-                            this.selectedId = item.id;
-                            this.selectedTitle = item.judul;
-                            this.search = item.judul;
-                            this.open = false;
-                            
-                            const catSelect = document.getElementById('dashboard_category_id');
-                            if (catSelect && item.category_id) {
-                                catSelect.value = item.category_id;
-                            }
-                            
-                            const judulInput = document.getElementById('dashboard_judul');
-                            if (judulInput && (!judulInput.value || judulInput.value.startsWith('Diskusi: '))) {
-                                judulInput.value = 'Diskusi: ' + item.judul;
-                            }
-                        },
-                        clear() {
-                            this.selectedId = '';
-                            this.selectedTitle = '';
-                            this.search = '';
-                            this.open = false;
-                        }
-                    }">
-                        <label for="dashboard_knowledge_search_input" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                    <div class="mb-6 relative"
+                         x-data="{
+                             searchKnowledge: '',
+                             selectedKnowledge: null,
+                             isDropdownOpen: false,
+                             knowledges: {{ json_encode($knowledges->map(fn($k) => ['id' => $k->id, 'judul' => $k->judul, 'kategori' => $k->category->nama_kategori ?? null])) }},
+                             get filteredKnowledges() {
+                                 if (!this.searchKnowledge) return this.knowledges.slice(0, 10);
+                                 return this.knowledges.filter(k => k.judul.toLowerCase().includes(this.searchKnowledge.toLowerCase())).slice(0, 10);
+                             },
+                             select(item) {
+                                 this.selectedKnowledge = item;
+                                 this.searchKnowledge = '';
+                                 this.isDropdownOpen = false;
+                             },
+                             clear() {
+                                 this.selectedKnowledge = null;
+                                 this.searchKnowledge = '';
+                             }
+                         }"
+                         @click.outside="isDropdownOpen = false">
+
+                        <input type="hidden" name="knowledge_id" :value="selectedKnowledge ? selectedKnowledge.id : ''">
+
+                        <label class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
                             Hubungkan ke Materi Pengetahuan <span class="text-xs text-slate-400 dark:text-slate-500 font-normal">(Opsional)</span>
                         </label>
 
-                        <input type="hidden" name="knowledge_id" :value="selectedId">
-
-                        <div class="relative" @click.away="open = false">
-                            <div class="relative">
-                                <input type="text" id="dashboard_knowledge_search_input" 
-                                       x-model="search" 
-                                       @focus="open = true" 
-                                       @input="open = true; if(!search) clear()"
-                                       placeholder="🔍 Cari dan pilih materi pengetahuan..." 
-                                       autocomplete="off"
-                                       class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
-                                
-                                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <!-- Input Pencarian -->
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-
-                                <button type="button" x-show="search" @click="clear()" class="absolute right-3 top-3.5 text-slate-400 hover:text-red-500">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
                             </div>
+                            <input type="text"
+                                   x-model="searchKnowledge"
+                                   @focus="isDropdownOpen = true"
+                                   placeholder="🔍 Cari dan pilih materi pengetahuan..."
+                                   autocomplete="off"
+                                   class="w-full pl-10 pr-10 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
 
-                            <div x-show="open && filteredItems.length > 0" 
-                                 x-transition
-                                 class="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl max-h-60 overflow-y-auto py-1 text-sm">
-                                <template x-for="item in filteredItems" :key="item.id">
-                                    <div @click="select(item)" 
-                                         class="px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer flex items-center justify-between transition border-b border-slate-100 dark:border-slate-700/60 last:border-0">
-                                        <div>
-                                            <span class="font-medium text-slate-800 dark:text-slate-100 block" x-text="item.judul"></span>
-                                            <span class="text-xs text-slate-400 dark:text-slate-500" x-text="item.category_name"></span>
-                                        </div>
-                                        <span x-show="selectedId == item.id" class="text-primary-600 dark:text-primary-400 text-xs font-semibold">✓ Terpilih</span>
-                                    </div>
-                                </template>
+                            <button type="button"
+                                    x-show="searchKnowledge"
+                                    @click="searchKnowledge = ''"
+                                    class="absolute right-3 top-3.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+
+                        <!-- Dropdown Hasil Pencarian -->
+                        <div x-show="isDropdownOpen"
+                             x-cloak
+                             class="absolute z-30 mt-1.5 w-full bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700">
+                            <template x-for="item in filteredKnowledges" :key="item.id">
+                                <div @click="select(item)"
+                                     class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700/60 cursor-pointer transition flex items-center justify-between text-sm">
+                                    <span class="font-medium text-slate-800 dark:text-slate-200 line-clamp-1" x-text="item.judul"></span>
+                                    <span x-show="item.kategori" class="text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0 ml-2" x-text="item.kategori"></span>
+                                </div>
+                            </template>
+                            <div x-show="filteredKnowledges.length === 0" class="p-3 text-center text-xs text-slate-400">
+                                Materi tidak ditemukan
                             </div>
+                        </div>
+
+                        <!-- Badge Terpilih -->
+                        <div x-show="selectedKnowledge" x-cloak class="mt-2.5 flex items-center gap-2 p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+                            <svg class="w-4 h-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                            <span class="font-semibold truncate flex-1" x-text="selectedKnowledge ? selectedKnowledge.judul : ''"></span>
+                            <button type="button" @click="clear()" class="text-red-500 hover:text-red-700 text-xs font-semibold ml-2 shrink-0">Hapus</button>
                         </div>
                     </div>
 
@@ -344,8 +339,9 @@
                         <label for="dashboard_judul" class="block text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">
                             Judul Topik Diskusi <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="dashboard_judul" name="judul" value="{{ old('judul') }}" required
-                               placeholder="Contoh: Diskusi mengenai Pedoman Arsitektur SPBE"
+                        <input type="text" id="dashboard_judul" name="judul" required
+                               value="{{ old('judul') }}"
+                               placeholder="Contoh: Bagaimana implementasi arsitektur SPBE pada instansi daerah?"
                                class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
                         @error('judul') <span class="text-sm text-red-500 mt-1 block">{{ $message }}</span> @enderror
                     </div>
@@ -391,5 +387,200 @@
             </div>
         </div>
     </div>
+
+    {{-- VIEW 3: FORM / PRATINJAU DETAIL TOPIK DISKUSI SAYA (PERSIS SEPERTI FORUM BERANDA UTAMA) --}}
+    <div x-show="viewMode === 'preview'" x-cloak x-transition class="space-y-6" style="display: none;">
+        {{-- Top Bar Navigation Form --}}
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <button type="button" @click="viewMode = 'list'" class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 font-semibold text-sm transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Kembali ke Forum Saya
+            </button>
+            <div class="flex items-center gap-3">
+                <template x-if="activeItem?.status === 'approved'">
+                    <a :href="activeItem?.public_url" target="_blank"
+                       class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 transition shadow-xs">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                        Buka di Forum Publik
+                    </a>
+                </template>
+                <button type="button" @click="deleteTarget = activeItem; showDeleteModal = true" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-red-600 hover:bg-red-700 text-white transition shadow-sm cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Hapus ke Tong Sampah
+                </button>
+            </div>
+        </div>
+
+        {{-- Status Alert Box --}}
+        <template x-if="activeItem?.status === 'rejected'">
+            <div class="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl flex items-start gap-3 text-sm shadow-xs">
+                <svg class="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div>
+                    <strong class="font-bold block">Topik Ditolak</strong>
+                    <span x-text="activeItem?.rejection_note || 'Topik ini ditolak oleh moderator. Silakan perbaiki isi topik sebelum mengajukan kembali.'"></span>
+                </div>
+            </div>
+        </template>
+        <template x-if="activeItem?.status === 'pending'">
+            <div class="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-xl flex items-center gap-3 text-sm shadow-xs">
+                <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div>
+                    <span>Topik ini sedang dalam tahap <strong>Menunggu Peninjauan</strong> oleh tim moderator sebelum ditayangkan secara publik.</span>
+                </div>
+            </div>
+        </template>
+        <template x-if="activeItem?.status === 'approved'">
+            <div class="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl flex items-center gap-3 text-sm shadow-xs">
+                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div>
+                    <span>Topik diskusi ini telah <strong>Disetujui</strong> dan aktif ditayangkan di forum publik.</span>
+                </div>
+            </div>
+        </template>
+
+        {{-- Card Pratinjau Detail Konten Topik (Identik dengan Forum Publik Beranda Utama) --}}
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden"
+             :class="activeItem?.is_pinned ? 'border-primary-600 dark:border-primary-500' : ''">
+            <div class="p-6 sm:p-8">
+                <!-- Meta Badges -->
+                <div class="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4">
+                    <span x-show="activeItem?.is_pinned" class="bg-blue-50 text-primary-600 dark:bg-blue-950 dark:text-blue-300 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-blue-200/60">
+                        📌 Pinned
+                    </span>
+                    <span x-show="activeItem?.is_locked" class="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                        🔒 Dikunci
+                    </span>
+                    <span :class="{
+                        'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800': activeItem?.status === 'approved',
+                        'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800': activeItem?.status === 'pending',
+                        'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border-red-200 dark:border-red-800': activeItem?.status === 'rejected'
+                    }" class="px-2.5 py-0.5 rounded-full text-xs font-semibold border"
+                    x-text="activeItem?.status === 'approved' ? 'Disetujui' : (activeItem?.status === 'rejected' ? 'Ditolak' : 'Menunggu')">
+                    </span>
+                    <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2.5 py-0.5 rounded-full text-xs font-medium border border-slate-200 dark:border-slate-700"
+                          x-text="activeItem?.kategori">
+                    </span>
+                    <span class="text-xs" x-text="activeItem?.created_at"></span>
+                    <span class="flex items-center gap-1 text-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        <span x-text="activeItem?.views_count || 0"></span> tayangan
+                    </span>
+                </div>
+
+                <!-- Linked Knowledge Banner (Membahas Pengetahuan) -->
+                <template x-if="activeItem?.knowledge_title">
+                    <div class="mb-6 p-4 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900/50 text-primary-600 dark:text-blue-400 rounded-lg shrink-0">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-bold text-primary-600 dark:text-blue-400 uppercase tracking-wider block">Membahas Pengetahuan</span>
+                                <a :href="'/knowledge/' + activeItem?.knowledge_id" target="_blank" class="text-sm font-semibold text-slate-900 dark:text-slate-100 hover:text-primary-600 transition" x-text="activeItem?.knowledge_title">
+                                </a>
+                            </div>
+                        </div>
+                        <a :href="'/knowledge/' + activeItem?.knowledge_id" target="_blank" class="shrink-0 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">
+                            Lihat Materi
+                        </a>
+                    </div>
+                </template>
+
+                <!-- Thread Title & Content -->
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6" x-text="activeItem?.judul"></h1>
+                <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-8" x-html="activeItem?.konten"></div>
+
+                <!-- Author Info -->
+                <div class="flex items-center gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
+                    <template x-if="activeItem?.author?.foto_profil">
+                        <div class="w-10 h-10 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                            <img :src="'/storage/' + activeItem.author.foto_profil" class="w-full h-full object-cover" :alt="activeItem.author.name" />
+                        </div>
+                    </template>
+                    <template x-if="!activeItem?.author?.foto_profil">
+                        <div class="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold text-sm shrink-0"
+                             x-text="activeItem?.author?.name ? activeItem.author.name.charAt(0).toUpperCase() : 'U'">
+                        </div>
+                    </template>
+                    <div>
+                        <span class="font-semibold text-slate-900 dark:text-slate-100 text-sm block" x-text="activeItem?.author?.name"></span>
+                        <p class="text-xs text-slate-400 dark:text-slate-500" x-text="activeItem?.author?.instansi || ''"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Balasan / Replies Section (Persis Seperti Forum Publik Beranda Utama) --}}
+        <div>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4"
+                x-text="(activeItem?.replies?.length || 0) + ' Balasan'">
+            </h2>
+
+            <div class="space-y-4">
+                <template x-for="reply in (activeItem?.replies || [])" :key="reply.id">
+                    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
+                        <div class="flex items-start gap-3">
+                            <template x-if="reply.user?.foto_profil">
+                                <div class="w-9 h-9 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                                    <img :src="'/storage/' + reply.user.foto_profil" class="w-full h-full object-cover" :alt="reply.user.name" />
+                                </div>
+                            </template>
+                            <template x-if="!reply.user?.foto_profil">
+                                <div class="w-9 h-9 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold text-xs shrink-0"
+                                     x-text="reply.user?.name ? reply.user.name.charAt(0).toUpperCase() : 'U'">
+                                </div>
+                            </template>
+
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="font-semibold text-sm text-slate-900 dark:text-slate-100" x-text="reply.user?.name"></span>
+                                    <span class="text-xs text-slate-400 dark:text-slate-500" x-text="reply.created_at"></span>
+                                </div>
+                                <div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed" x-html="reply.konten"></div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="!activeItem?.replies || activeItem.replies.length === 0">
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                        <svg class="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        Belum ada balasan untuk topik diskusi ini.
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL KONFIRMASI HAPUS KE TONG SAMPAH (UNIVERSAL LIST & PREVIEW) --}}
+    <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm text-left">
+        <div @click.outside="showDeleteModal = false" class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center shrink-0">
+                        <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">Pindahkan ke Tong Sampah?</h3>
+                </div>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-5">
+                    Topik diskusi "<strong class="text-slate-800 dark:text-slate-200" x-text="deleteTarget?.judul"></strong>" akan dipindahkan ke tong sampah forum Anda dan dapat dipulihkan kapan saja.
+                </p>
+                <div class="flex justify-end gap-3">
+                    <button type="button" @click="showDeleteModal = false"
+                            class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        Batal
+                    </button>
+                    <form :action="deleteTarget?.delete_url" method="POST" class="inline">
+                        @csrf @method('DELETE')
+                        <input type="hidden" name="from_dashboard" value="1">
+                        <button type="submit" class="px-4 py-2 rounded-lg text-sm font-semibold bg-red-600 hover:bg-red-700 text-white transition shadow-sm cursor-pointer">Hapus</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection

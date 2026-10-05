@@ -24,10 +24,10 @@
 
       <!-- Top Action Bar -->
       <div class="flex flex-wrap items-center justify-between gap-4">
-        <Link :href="thread.deleted_at ? '/dashboard/forum/trash' : '/forum'" class="inline-flex items-center gap-1.5 text-[#475569] dark:text-slate-300 hover:text-[#2563eb] dark:hover:text-blue-400 text-sm font-semibold transition">
+        <a :href="backLinkUrl" class="inline-flex items-center gap-1.5 text-[#475569] dark:text-slate-300 hover:text-[#2563eb] dark:hover:text-blue-400 text-sm font-semibold transition">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          {{ thread.deleted_at ? 'Kembali ke Tong Sampah Forum' : 'Kembali ke Forum' }}
-        </Link>
+          {{ backLinkLabel }}
+        </a>
 
         <!-- Moderator Actions -->
         <div v-if="canManageForum && !thread.deleted_at" class="flex items-center gap-2">
@@ -195,7 +195,7 @@
 
       <!-- Reply Form (Sticky / Mengikuti User Saat Scroll) -->
       <div 
-        v-if="user && !thread.is_locked" 
+        v-if="user && !thread.is_locked && !thread.deleted_at" 
         class="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-[#cbd5e1] dark:border-slate-800 p-4 transition-all duration-300"
       >
         <div class="flex items-center justify-between" :class="{ 'mb-3': !isCollapsed }">
@@ -276,6 +276,39 @@ import UserPreviewPopover from '../../Components/UserPreviewPopover.vue';
 const props = defineProps({
   thread: Object,
   replies: Object,
+  from: {
+    type: String,
+    default: '',
+  },
+});
+
+const isFromDashboard = computed(() => {
+  if (props.from === 'dashboard') return true;
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('from') === 'dashboard' || params.get('ref') === 'dashboard';
+  }
+  return false;
+});
+
+const backLinkUrl = computed(() => {
+  if (props.thread?.deleted_at) {
+    return '/dashboard/forum/trash';
+  }
+  if (isFromDashboard.value) {
+    return '/dashboard/forum';
+  }
+  return '/forum';
+});
+
+const backLinkLabel = computed(() => {
+  if (props.thread?.deleted_at) {
+    return 'Kembali ke Tong Sampah Forum';
+  }
+  if (isFromDashboard.value) {
+    return 'Kembali ke Forum Saya';
+  }
+  return 'Kembali ke Forum';
 });
 
 const page = usePage();

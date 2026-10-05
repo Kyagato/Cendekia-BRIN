@@ -18,7 +18,14 @@ class DashboardForumController extends Controller
     {
         $user = Auth::user();
 
-        $query = ForumThread::with(['category', 'knowledge'])
+        $query = ForumThread::with([
+            'user',
+            'category',
+            'knowledge.category',
+            'replies' => function ($q) {
+                $q->with('user')->latest();
+            }
+        ])
             ->withCount('replies')
             ->where('user_id', $user->id)
             ->latest();
