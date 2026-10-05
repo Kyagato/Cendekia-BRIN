@@ -54,8 +54,8 @@ class ForumController extends Controller
         $thread = ForumThread::create([
             'user_id'      => $user->id,
             'category_id'  => $request->category_id,
-            'judul'        => $request->judul,
-            'konten'       => $request->konten,
+            'judul'        => strip_tags($request->judul),
+            'konten'       => strip_tags($request->konten),
             'knowledge_id' => $request->knowledge_id,
             'status'       => $status,
             'approved_by'  => $status === 'approved' ? $user->id : null,
@@ -123,8 +123,8 @@ class ForumController extends Controller
 
         $data = [
             'category_id'  => $request->category_id,
-            'judul'        => $request->judul,
-            'konten'       => $request->konten,
+            'judul'        => strip_tags($request->judul),
+            'konten'       => strip_tags($request->konten),
             'knowledge_id' => $request->knowledge_id ?: null,
         ];
 
@@ -174,8 +174,11 @@ class ForumController extends Controller
             $thread = $threadQuery->findOrFail($id);
         } elseif ($user) {
             $thread = $threadQuery->where(function ($q) use ($user) {
-                $q->whereNull('deleted_at')
-                  ->orWhere('user_id', $user->id);
+                $q->where('user_id', $user->id)
+                  ->orWhere(function ($approvedQ) {
+                      $approvedQ->where('status', 'approved')
+                                ->whereNull('deleted_at');
+                  });
             })->findOrFail($id);
         } else {
             $thread = ForumThread::where('status', 'approved')->findOrFail($id);
@@ -203,6 +206,14 @@ class ForumController extends Controller
     // 4. Tambah Balasan (Reply) — supports nested replies
     public function storeReply(Request $request, ForumThread $thread)
     {
+        if ($thread->trashed()) {
+            return back()->with('error', 'Topik ini telah dipindahkan ke tong sampah, Anda tidak bisa menambahkan balasan.');
+        }
+
+        if ($thread->status !== 'approved') {
+            return back()->with('error', 'Topik diskusi ini belum disetujui, sehingga belum dapat menerima balasan.');
+        }
+
         if ($thread->is_locked) {
             return back()->with('error', 'Topik ini sudah dikunci, Anda tidak bisa menambahkan balasan.');
         }
@@ -216,9 +227,9 @@ class ForumController extends Controller
         ForumReply::create([
             'thread_id'    => $thread->id,
             'user_id'      => Auth::id(),
-            'konten'       => $request->konten,
+            'konten'       => strip_tags($request->konten),
             'parent_id'    => $request->parent_id ?: null,
-            'mention_user' => $request->mention_user ?: null,
+            'mention_user' => $request->mention_user ? strip_tags($request->mention_user) : null,
         ]);
 
         return back()->with('success', 'Balasan berhasil ditambahkan.');

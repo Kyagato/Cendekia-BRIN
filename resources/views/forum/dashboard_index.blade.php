@@ -520,7 +520,7 @@
 
                 <!-- Thread Title & Content -->
                 <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-6" x-text="activeItem?.judul"></h1>
-                <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-8" x-html="activeItem?.konten"></div>
+                <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-8 whitespace-pre-line" x-text="activeItem?.konten"></div>
 
                 <!-- Author Info -->
                 <div class="flex items-center gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
@@ -568,7 +568,7 @@
                                     <span class="font-semibold text-sm text-slate-900 dark:text-slate-100" x-text="reply.user?.name"></span>
                                     <span class="text-xs text-slate-400 dark:text-slate-500" x-text="reply.created_at"></span>
                                 </div>
-                                <div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed" x-html="reply.konten"></div>
+                                <div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line" x-text="reply.konten"></div>
                             </div>
                         </div>
                     </div>

@@ -250,7 +250,7 @@
 
                 <!-- Konten Topik -->
                 <div class="border-t border-b border-slate-100 dark:border-slate-700/60 py-6">
-                    <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 leading-relaxed" x-html="activeItem?.konten"></div>
+                    <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line" x-text="activeItem?.konten"></div>
                 </div>
 
                 <!-- Footer Navigation -->

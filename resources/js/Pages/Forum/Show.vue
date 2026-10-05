@@ -102,7 +102,7 @@
 
           <!-- Thread Title & Content -->
           <h1 class="text-2xl sm:text-3xl font-bold text-[#0f172a] dark:text-white mb-6">{{ thread.judul }}</h1>
-          <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-[#475569] dark:text-slate-300 leading-relaxed mb-8" v-html="thread.konten"></div>
+          <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-[#475569] dark:text-slate-300 leading-relaxed mb-8 whitespace-pre-line">{{ thread.konten }}</div>
 
           <!-- Author Info -->
           <div class="flex items-center gap-3 pt-6 border-t border-[#e2e8f0] dark:border-slate-800">
@@ -165,7 +165,7 @@
                 </UserPreviewPopover>
                 <span class="text-xs text-[#94a3b8]">{{ formatDate(reply.created_at) }}</span>
               </div>
-              <div class="text-sm text-[#475569] dark:text-slate-300 leading-relaxed" v-html="reply.konten"></div>
+              <div class="text-sm text-[#475569] dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ reply.konten }}</div>
 
               <!-- Nested Replies -->
               <div v-if="reply.replies?.length > 0" class="mt-4 space-y-3 pl-4 border-l-2 border-[#e2e8f0] dark:border-slate-700">
@@ -194,13 +194,13 @@
                       </UserPreviewPopover>
                       <span class="text-xs text-[#94a3b8]">{{ formatDate(nested.created_at) }}</span>
                     </div>
-                    <div class="text-xs text-[#475569] dark:text-slate-300" v-html="nested.konten"></div>
+                    <div class="text-xs text-[#475569] dark:text-slate-300 whitespace-pre-line">{{ nested.konten }}</div>
                   </div>
                 </div>
               </div>
 
               <!-- Reply Button -->
-              <button v-if="!thread.is_locked && user" @click="handleReply(reply)" class="mt-3 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer">
+              <button v-if="!thread.is_locked && thread.status === 'approved' && user" @click="handleReply(reply)" class="mt-3 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer">
                 Balas
               </button>
             </div>
@@ -210,7 +210,7 @@
 
       <!-- Reply Form (Sticky / Mengikuti User Saat Scroll) -->
       <div 
-        v-if="user && !thread.is_locked && !thread.deleted_at" 
+        v-if="user && thread.status === 'approved' && !thread.is_locked && !thread.deleted_at" 
         class="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-[#cbd5e1] dark:border-slate-800 p-4 transition-all duration-300"
       >
         <div class="flex items-center justify-between" :class="{ 'mb-3': !isCollapsed }">
@@ -272,6 +272,12 @@
         <Link href="/login" class="px-4 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold transition shadow-sm">
           Masuk Sekarang
         </Link>
+      </div>
+
+      <div v-else-if="thread.status !== 'approved'" class="text-center py-6 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl">
+        <p class="text-sm text-amber-700 dark:text-amber-300 font-semibold">
+          Topik ini berstatus <strong>{{ thread.status === 'rejected' ? 'Ditolak' : 'Menunggu Persetujuan' }}</strong>, sehingga belum dapat menerima balasan.
+        </p>
       </div>
 
       <div v-else-if="thread.is_locked" class="text-center py-6 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900 rounded-xl">

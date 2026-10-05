@@ -82,16 +82,29 @@ class ForumApiController extends Controller
             new OA\Response(response: 404, description: 'Thread tidak ditemukan')
         ]
     )]
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
-        $thread = ForumThread::with([
+        $user = $request->user('sanctum');
+
+        $query = ForumThread::with([
             'user', 
             'category', 
             'knowledge', 
             'replies' => function ($q) {
                 $q->whereNull('parent_id')->with(['user', 'replies.user'])->latest();
             }
-        ])->withCount('replies')->find($id);
+        ])->withCount('replies');
+
+        if ($user && ($user->isAdmin() || $user->isModerator())) {
+            $thread = $query->find($id);
+        } elseif ($user) {
+            $thread = $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('status', 'approved');
+            })->find($id);
+        } else {
+            $thread = $query->where('status', 'approved')->find($id);
+        }
 
         if (!$thread) {
             return response()->json([
@@ -146,8 +159,8 @@ class ForumApiController extends Controller
             'user_id' => $user->id,
             'category_id' => $validated['category_id'],
             'knowledge_id' => $validated['knowledge_id'] ?? null,
-            'judul' => $validated['judul'],
-            'konten' => $validated['konten'],
+            'judul' => strip_tags($validated['judul']),
+            'konten' => strip_tags($validated['konten']),
             'status' => $isAutoApprove ? 'approved' : 'pending',
             'approved_at' => $isAutoApprove ? now() : null,
             'approved_by' => $isAutoApprove ? $user->id : null,
@@ -197,6 +210,13 @@ class ForumApiController extends Controller
             ], 404);
         }
 
+        if ($thread->status !== 'approved') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Thread ini belum disetujui, sehingga belum dapat menerima balasan.',
+            ], 400);
+        }
+
         if ($thread->is_locked) {
             return response()->json([
                 'status' => 'error',
@@ -213,7 +233,7 @@ class ForumApiController extends Controller
             'thread_id' => $thread->id,
             'user_id' => $request->user()->id,
             'parent_id' => $validated['parent_id'] ?? null,
-            'konten' => $validated['konten'],
+            'konten' => strip_tags($validated['konten']),
         ]);
 
         $reply->load('user');
