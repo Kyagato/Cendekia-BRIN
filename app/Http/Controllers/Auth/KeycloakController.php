@@ -16,6 +16,13 @@ class KeycloakController extends Controller
      */
     public function redirect()
     {
+        // Bersihkan sesi lokal lama jika masih ada sebelum diarahkan ke Keycloak
+        if (Auth::check()) {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+        }
+
         $baseUrl = config('services.keycloak.base_url');
         $clientId = config('services.keycloak.client_id');
 
@@ -40,7 +47,9 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
         }
 
         try {
-            $redirectResponse = Socialite::driver('keycloak')->redirect();
+            $redirectResponse = Socialite::driver('keycloak')
+                ->with(['prompt' => 'login'])
+                ->redirect();
             $targetUrl = $redirectResponse->getTargetUrl();
 
             if (request()->header('X-Inertia') || request()->wantsJson()) {
@@ -116,11 +125,6 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
      */
     public function callback()
     {
-        // 1. Jika user sudah dalam keadaan login (misal browser melakukan request ganda / reload di URL callback)
-        if (Auth::check()) {
-            return redirect('/');
-        }
-
         try {
             try {
                 $keycloakUser = Socialite::driver('keycloak')->user();

@@ -39,11 +39,29 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $hasKeycloak = !empty(config('services.keycloak.base_url')) && !empty(config('services.keycloak.client_id'));
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+
+        if ($hasKeycloak) {
+            try {
+                $clientId = config('services.keycloak.client_id');
+                $keycloakLogoutUrl = \Laravel\Socialite\Facades\Socialite::driver('keycloak')
+                    ->getLogoutUrl(url('/'), $clientId);
+
+                if ($request->header('X-Inertia') || $request->wantsJson()) {
+                    return Inertia::location($keycloakLogoutUrl);
+                }
+
+                return redirect($keycloakLogoutUrl);
+            } catch (\Exception $e) {
+                return redirect('/');
+            }
+        }
 
         return redirect('/');
     }
