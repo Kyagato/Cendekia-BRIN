@@ -106,14 +106,8 @@ class HomeController extends Controller
 
     public function categoryShow($id)
     {
-        $category = Category::findOrFail($id);
-        $knowledge = Knowledge::where('category_id', $id)
-            ->where('status', 'Disetujui')
-            ->with(['user', 'tags'])
-            ->latest()
-            ->paginate(12);
-
-        return view('pages.category-show', compact('category', 'knowledge'));
+        Category::findOrFail($id);
+        return redirect()->route('category.index', ['kategori' => $id]);
     }
 
     public function faq(Request $request)
