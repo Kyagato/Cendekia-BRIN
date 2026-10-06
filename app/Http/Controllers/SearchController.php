@@ -78,10 +78,14 @@ class SearchController extends Controller
         // Pencarian forum (jika ada keyword)
         $forumResults = collect();
         if ($request->filled('q')) {
-            $forumResults = ForumThread::with(['user', 'category'])
+            $keyword = $request->q;
+            $forumResults = ForumThread::approved()
+                ->with(['user', 'category'])
                 ->withCount('replies')
-                ->where('judul', 'like', "%{$request->q}%")
-                ->orWhere('konten', 'like', "%{$request->q}%")
+                ->where(function ($query) use ($keyword) {
+                    $query->where('judul', 'like', "%{$keyword}%")
+                          ->orWhere('konten', 'like', "%{$keyword}%");
+                })
                 ->latest()
                 ->take(5)
                 ->get();
