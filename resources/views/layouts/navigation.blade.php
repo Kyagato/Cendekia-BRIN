@@ -20,7 +20,7 @@
                     </x-nav-link>
                     
                     <!-- Menu Tambahan untuk MojoPedia -->
-                    @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Analisis Pengetahuan', 'Analis Pengetahuan']))
+                    @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAnalyst()))
                     <x-nav-link :href="route('knowledge.index')" :active="request()->routeIs('knowledge.*')">
                         {{ __('Repositori') }}
                     </x-nav-link>
@@ -81,7 +81,7 @@
     </x-responsive-nav-link>
 
     <!-- Menu Tambahan Mobile -->
-    @if(auth()->check() && in_array(auth()->user()->role, ['Super Admin', 'Admin Pusat', 'Admin', 'Analisis Pengetahuan', 'Analis Pengetahuan']))
+    @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAnalyst()))
     <x-responsive-nav-link :href="route('knowledge.index')" :active="request()->routeIs('knowledge.*')">
         {{ __('Repositori') }}
     </x-responsive-nav-link>

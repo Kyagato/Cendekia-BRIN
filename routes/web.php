@@ -76,10 +76,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/knowledge/comment/{comment}', [\App\Http\Controllers\KnowledgeInteractionController::class, 'destroyComment'])->name('knowledge.comment.destroy');
 
     // =============================================================
-    // ROLE: MANAJEMEN KONTEN PENGETAHUAN
-    // Super Admin, Admin Pusat, Admin, Analisis Pengetahuan, Kreator Pengetahuan
+    // ROLE: MANAJEMEN KONTEN PENGETAHUAN (Keycloak Realm Roles)
+    // Super Admin, Admin Pusat, Admin, Analisis Pengetahuan, Anggota, Moderator
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Analisis Pengetahuan,Analis Pengetahuan,Anggota,Kreator Pengetahuan,Moderator'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Analisis Pengetahuan,Anggota,Moderator'])->group(function () {
         Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
         Route::get('/knowledge/create', [KnowledgeController::class, 'create'])->name('knowledge.create');
         Route::post('/knowledge', [KnowledgeController::class, 'store'])->name('knowledge.store');
@@ -97,10 +97,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/knowledge/{id}', [KnowledgeController::class, 'show'])->name('admin.knowledge.show');
 
     // =============================================================
-    // ROLE: ANALISIS PENGETAHUAN + ADMIN
+    // ROLE: ANALISIS PENGETAHUAN + ADMIN (Keycloak Realm Roles)
     // Validasi, approve, atau reject konten
     // =============================================================
-    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Analisis Pengetahuan,Analis Pengetahuan'])->group(function () {
+    Route::middleware(['role:Super Admin,Admin Pusat,Admin,Analisis Pengetahuan'])->group(function () {
         Route::get('/validasi', [KnowledgeValidationController::class, 'index'])->name('validasi.index');
         Route::get('/validasi/{knowledge}', [KnowledgeValidationController::class, 'show'])->name('validasi.show');
         Route::put('/validasi/{knowledge}', [KnowledgeValidationController::class, 'update'])->name('validasi.update');

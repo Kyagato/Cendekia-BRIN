@@ -29,7 +29,15 @@ class RoleMiddleware
             return $next($request);
         }
 
-        if (!in_array($user->role, $roles)) {
+        // Normalisasi role lama ke standar resmi Keycloak
+        $userRole = match ($user->role) {
+            'Analis Pengetahuan'  => \App\Models\User::ROLE_ANALIS,
+            'Kreator Pengetahuan' => \App\Models\User::ROLE_ANGGOTA,
+            'Admin IPPD'          => \App\Models\User::ROLE_ADMIN,
+            default               => $user->role,
+        };
+
+        if (!in_array($userRole, $roles, true)) {
             abort(403, 'Anda tidak memiliki hak akses untuk halaman ini.');
         }
 
