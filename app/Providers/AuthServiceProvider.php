@@ -23,91 +23,50 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // ============================================================
-        // GATES — Otorisasi Berbasis Role untuk MojoPedia
+        // GATES — Otorisasi Berbasis Role untuk MojoPedia (Tersentralisasi)
         // ============================================================
 
-        // ----- Gate: Akses Panel Admin -----
-        // Super Admin & Admin Pusat bisa mengakses seluruh panel admin.
-        Gate::define('access-admin-panel', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat']);
-        });
+        // 1. Akses Panel Admin
+        Gate::define('access-admin-panel', fn (User $user) => $user->isSuperAdmin() || $user->isAdminPusat());
 
-        // ----- Gate: Mengelola User & Role -----
-        // Hanya Super Admin & Admin Pusat yang boleh CRUD user dan assign role.
-        Gate::define('manage-users', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat']);
-        });
+        // 2. Mengelola User & Role
+        Gate::define('manage-users', fn (User $user) => $user->isSuperAdmin() || $user->isAdminPusat());
 
-        // ----- Gate: Mengelola Konfigurasi Sistem -----
-        // Super Admin, Admin Pusat, dan Admin.
-        Gate::define('manage-settings', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin']);
-        });
+        // 3. Mengelola Konfigurasi Sistem
+        Gate::define('manage-settings', fn (User $user) => $user->isAdmin());
 
-        // ----- Gate: Mengelola Kategori & FAQ -----
-        // Admin bisa CRUD kategori dan FAQ.
-        Gate::define('manage-categories', function (User $user) {
-            return in_array($user->role, ['Super Admin', 'Admin Pusat', 'Admin']);
-        });
+        // 4. Mengelola Kategori & FAQ
+        Gate::define('manage-categories', fn (User $user) => $user->isAdmin());
 
-        // ----- Gate: Membuat Konten/Pengetahuan -----
-        // Anggota, Kreator Pengetahuan, Moderator, dan Admin bisa MEMBUAT konten baru.
-        Gate::define('create-knowledge', function (User $user) {
-            return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin', 'Anggota', 'Kreator Pengetahuan', 'Moderator',
-            ]);
-        });
+        // 5. Membuat Konten Baru
+        Gate::define('create-knowledge', fn (User $user) => $user->isAdmin() || $user->isMember() || $user->isModerator());
 
-        // ----- Gate: Mengedit Konten Sendiri -----
-        // Anggota, Kreator, Analis & Moderator hanya bisa edit konten miliknya. Admin bisa edit semua.
+        // 6. Mengedit Konten (Admin bisa edit semua, author mengedit milik sendiri)
         Gate::define('edit-knowledge', function (User $user, Knowledge $knowledge) {
             if ($user->isAdmin()) {
                 return true;
             }
-            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator', 'Analisis Pengetahuan', 'Analis Pengetahuan']) && $knowledge->user_id === $user->id) {
-                return true;
-            }
-            return false;
+            return ($user->isMember() || $user->isModerator() || $user->isAnalyst()) && $knowledge->user_id === $user->id;
         });
 
-        // ----- Gate: Menghapus Konten -----
-        // Anggota, Kreator, Analis & Moderator hanya bisa hapus konten miliknya. Admin bisa hapus semua.
+        // 7. Menghapus Konten (Admin bisa hapus semua, author menghapus milik sendiri)
         Gate::define('delete-knowledge', function (User $user, Knowledge $knowledge) {
             if ($user->isAdmin()) {
                 return true;
             }
-            if (in_array($user->role, ['Anggota', 'Kreator Pengetahuan', 'Moderator', 'Analisis Pengetahuan', 'Analis Pengetahuan']) && $knowledge->user_id === $user->id) {
-                return true;
-            }
-            return false;
+            return ($user->isMember() || $user->isModerator() || $user->isAnalyst()) && $knowledge->user_id === $user->id;
         });
 
-        // ----- Gate: Validasi/Approve Konten -----
-        // Hanya Analisis Pengetahuan dan Admin yang bisa approve/reject.
-        Gate::define('validate-knowledge', function (User $user) {
-            return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin', 'Analisis Pengetahuan',
-            ]);
-        });
+        // 8. Validasi / Verifikasi Pengetahuan
+        Gate::define('validate-knowledge', fn (User $user) => $user->isAdmin() || $user->isAnalyst());
 
-        // ----- Gate: Mengelola Forum Diskusi -----
-        // Moderator khusus mengelola forum. Seluruh Admin juga bisa.
-        Gate::define('manage-forum', function (User $user) {
-            return $user->isAdmin() || $user->isModerator();
-        });
+        // 9. Mengelola Forum Diskusi
+        Gate::define('manage-forum', fn (User $user) => $user->isAdmin() || $user->isModerator());
 
-        // ----- Gate: Melihat Laporan & Analitik -----
-        // Admin dan Analisis Pengetahuan.
-        Gate::define('view-reports', function (User $user) {
-            return in_array($user->role, [
-                'Super Admin', 'Admin Pusat', 'Admin', 'Analisis Pengetahuan',
-            ]);
-        });
+        // 10. Melihat Laporan & Analitik
+        Gate::define('view-reports', fn (User $user) => $user->isAdmin() || $user->isAnalyst());
 
-        // ----- Gate: Aksi Umum untuk Anggota (Profil, Favorit, Komentar) -----
-        // Semua user yang login bisa melakukan ini.
-        Gate::define('member-actions', function (User $user) {
-            return $user->role !== 'Guest';
-        });
+        // 11. Aksi Interaktif Member (Profil, Favorit, Komentar)
+        Gate::define('member-actions', fn (User $user) => $user->role !== 'Guest');
     }
 }

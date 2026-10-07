@@ -48,9 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('admin.statistik');
         }
 
-        if (in_array($user->role, ['Analisis Pengetahuan', 'Analis Pengetahuan', 'Anggota', 'Kreator Pengetahuan'])) {
+        if ($user->isAnalyst() || $user->isMember()) {
             return redirect()->route('knowledge.index');
-        } elseif (in_array($user->role, ['Moderator'])) {
+        } elseif ($user->isModerator()) {
             return redirect()->route('moderator.forum.approval');
         }
 
