@@ -41,20 +41,29 @@
                     Kembali
                 </a>
 
-                {{-- Tombol Batal Ajukan (hanya muncul jika status = Diajukan) --}}
+                <input type="hidden" name="status" id="knowledge_status" value="{{ $knowledge->status === 'Draft' ? 'Draft' : 'Diajukan' }}">
+
+                {{-- Tombol Batal Ajukan (hanya muncul jika status = Diajukan) atau Simpan sebagai Draft --}}
                 @if(isset($knowledge->status) && $knowledge->status == 'Diajukan')
                 <button type="button" onclick="document.getElementById('form-batal-ajukan').submit()" class="px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg text-sm font-medium transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                     Batal Ajukan
                 </button>
+                @else
+                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Draft'" class="px-5 py-2.5 border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                    Simpan sebagai Draft
+                </button>
                 @endif
 
-                {{-- Tombol Simpan --}}
-                <button type="submit" class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
+                {{-- Tombol Simpan & Ajukan --}}
+                <button type="submit" onclick="document.getElementById('knowledge_status').value = 'Diajukan'" class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                    Simpan & Ajukan
+                    Simpan &amp; Ajukan
                 </button>
             </div>
+        </div>
+
         {{-- Banner Catatan Penolakan (Jika status Ditolak) --}}
         @if($knowledge->status == 'Ditolak' && !empty($knowledge->catatan_penolakan))
         <div class="mb-6 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl p-5 shadow-sm">

@@ -138,7 +138,9 @@ class KnowledgeService
                 $wasRejected = ($knowledge->status === Knowledge::STATUS_DITOLAK);
 
                 // Tentukan status baru
-                if ($this->isAutoApproveUser($user)) {
+                if (!empty($data['status']) && $data['status'] === Knowledge::STATUS_DRAFT) {
+                    $newStatus = Knowledge::STATUS_DRAFT;
+                } elseif ($this->isAutoApproveUser($user)) {
                     $newStatus = Knowledge::STATUS_DISETUJUI;
                 } else {
                     $newStatus = in_array($knowledge->status, [Knowledge::STATUS_DRAFT, Knowledge::STATUS_DITOLAK])

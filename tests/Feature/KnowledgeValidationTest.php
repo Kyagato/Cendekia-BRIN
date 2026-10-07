@@ -145,4 +145,35 @@ it('prevents regular member from accessing validation routes', function () {
     $response->assertStatus(403);
 });
 
+it('allows author to save knowledge as draft from edit page', function () {
+    $member = User::factory()->create(['role' => 'Anggota']);
+    $category = Category::create(['nama_kategori' => 'Tata Kelola SPBE']);
+
+    $knowledge = Knowledge::create([
+        'user_id' => $member->id,
+        'category_id' => $category->id,
+        'judul' => 'Materi Sedang Ditulis',
+        'tipe' => 'Teks',
+        'status' => 'Draft',
+    ]);
+
+    $viewResponse = $this->actingAs($member)->get(route('knowledge.edit', $knowledge->id));
+    $viewResponse->assertStatus(200);
+    $viewResponse->assertSee('Simpan sebagai Draft');
+    $viewResponse->assertSee('Simpan &amp; Ajukan', false);
+
+    $response = $this->actingAs($member)->put(route('knowledge.update', $knowledge->id), [
+        'judul' => 'Materi Diperbarui Masih Draft',
+        'category_id' => $category->id,
+        'tipe' => 'Teks',
+        'status' => 'Draft',
+    ]);
+
+    $response->assertRedirect(route('knowledge.index'));
+    $knowledge->refresh();
+    expect($knowledge->status)->toBe('Draft');
+    expect($knowledge->judul)->toBe('Materi Diperbarui Masih Draft');
+});
+
+
 

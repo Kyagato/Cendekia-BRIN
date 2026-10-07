@@ -40,6 +40,7 @@ class UpdateKnowledgeRequest extends FormRequest
             'penulis'        => 'nullable|string|max:255',
             'kolaborator'    => 'nullable|string|max:255',
             'unggulan'       => 'nullable',
+            'status'         => 'nullable|string|in:Draft,Diajukan',
         ];
 
         if ($this->input('tipe') === 'Gambar') {
