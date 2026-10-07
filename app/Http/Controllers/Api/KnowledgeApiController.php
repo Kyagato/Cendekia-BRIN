@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\KnowledgeResource;
+use App\Models\AuditLog;
 use App\Models\Category;
 use App\Models\Knowledge;
 use App\Models\Tag;
 use App\Services\KnowledgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
@@ -156,61 +158,87 @@ class KnowledgeApiController extends Controller
             'gambar_sampul' => 'nullable|image|max:5120', // max 5MB
         ]);
 
-        $filePath = null;
-        $fileName = null;
-        $fileSize = null;
+        $uploadedFiles = [];
 
-        if ($request->hasFile('file')) {
-            $uploadedFile = $request->file('file');
-            $filePath = $uploadedFile->store('knowledge_files', 'public');
-            $fileName = $uploadedFile->getClientOriginalName();
-            $fileSize = $uploadedFile->getSize();
-        }
+        try {
+            $knowledge = DB::transaction(function () use ($request, $user, $validated, &$uploadedFiles) {
+                $filePath = null;
+                $fileName = null;
+                $fileSize = null;
 
-        $coverPath = null;
-        if ($request->hasFile('gambar_sampul')) {
-            $coverPath = $request->file('gambar_sampul')->store('knowledge_covers', 'public');
-        }
+                if ($request->hasFile('file')) {
+                    $uploadedFile = $request->file('file');
+                    $filePath = $uploadedFile->store('knowledge_files', 'public');
+                    $fileName = $uploadedFile->getClientOriginalName();
+                    $fileSize = $uploadedFile->getSize();
+                    $uploadedFiles[] = $filePath;
+                }
 
-        // Tentukan status awal: auto-approve jika role Admin / Analis
-        $status = ($user->isAdmin() || $user->isAnalyst()) ? 'Disetujui' : 'Diajukan';
+                $coverPath = null;
+                if ($request->hasFile('gambar_sampul')) {
+                    $coverPath = $request->file('gambar_sampul')->store('knowledge_covers', 'public');
+                    $uploadedFiles[] = $coverPath;
+                }
 
-        $knowledge = Knowledge::create([
-            'user_id' => $user->id,
-            'category_id' => $validated['category_id'],
-            'judul' => $validated['judul'],
-            'tipe' => $validated['tipe'],
-            'deskripsi' => $validated['deskripsi'] ?? null,
-            'detail' => $validated['detail'] ?? null,
-            'penulis' => $validated['penulis'] ?? $user->name,
-            'kolaborator' => $validated['kolaborator'] ?? null,
-            'status_akses' => $validated['status_akses'] ?? 'public',
-            'status' => $status,
-            'file_path' => $filePath,
-            'file_name' => $fileName,
-            'file_size' => $fileSize,
-            'gambar_sampul' => $coverPath,
-            'tanggal_terbit' => now(),
-        ]);
+                // Tentukan status awal: auto-approve jika role Admin / Analis
+                $status = ($user->isAdmin() || $user->isAnalyst()) ? 'Disetujui' : 'Diajukan';
 
-        // Simpan tags bila ada
-        if (!empty($validated['tags'])) {
-            $tagNames = array_map('trim', explode(',', $validated['tags']));
-            $tagIds = [];
-            foreach ($tagNames as $name) {
-                if ($name !== '') {
-                    $tag = Tag::firstOrCreate(['nama_label' => $name]);
-                    $tagIds[] = $tag->id;
+                $knowledge = Knowledge::create([
+                    'user_id' => $user->id,
+                    'category_id' => $validated['category_id'],
+                    'judul' => $validated['judul'],
+                    'tipe' => $validated['tipe'],
+                    'deskripsi' => $validated['deskripsi'] ?? null,
+                    'detail' => $validated['detail'] ?? null,
+                    'penulis' => $validated['penulis'] ?? $user->name,
+                    'kolaborator' => $validated['kolaborator'] ?? null,
+                    'status_akses' => $validated['status_akses'] ?? 'public',
+                    'status' => $status,
+                    'file_path' => $filePath,
+                    'file_name' => $fileName,
+                    'file_size' => $fileSize,
+                    'gambar_sampul' => $coverPath,
+                    'tanggal_terbit' => now(),
+                ]);
+
+                // Simpan tags bila ada
+                if (!empty($validated['tags'])) {
+                    $tagNames = array_map('trim', explode(',', $validated['tags']));
+                    $tagIds = [];
+                    foreach ($tagNames as $name) {
+                        if ($name !== '') {
+                            $tag = Tag::firstOrCreate(['nama_label' => $name]);
+                            $tagIds[] = $tag->id;
+                        }
+                    }
+                    $knowledge->tags()->sync($tagIds);
+                }
+
+                $this->knowledgeService->invalidateStatsCache();
+
+                AuditLog::record(
+                    'KNOWLEDGE_CREATE_API',
+                    "Membuat pengetahuan via API: '{$knowledge->judul}' (Tipe: {$knowledge->tipe}, Status: {$knowledge->status})",
+                    ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'tipe' => $knowledge->tipe, 'status' => $knowledge->status],
+                    $user
+                );
+
+                return $knowledge;
+            });
+        } catch (\Throwable $e) {
+            foreach ($uploadedFiles as $file) {
+                if ($file && Storage::disk('public')->exists($file)) {
+                    Storage::disk('public')->delete($file);
                 }
             }
-            $knowledge->tags()->sync($tagIds);
+            throw $e;
         }
 
         $knowledge->load(['category', 'user', 'tags']);
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Dokumen pengetahuan berhasil diajukan (' . $status . ')',
+            'message' => 'Dokumen pengetahuan berhasil diajukan (' . $knowledge->status . ')',
             'data' => new KnowledgeResource($knowledge),
         ], 201);
     }

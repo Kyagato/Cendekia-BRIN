@@ -36,162 +36,202 @@ class KnowledgeService
     /**
      * Menyimpan pengetahuan baru dengan database transaction.
      */
-    public function createKnowledge(array $data, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null, User $user): Knowledge
+    public function createKnowledge(array $data, ?User $user = null, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null): Knowledge
     {
-        return DB::transaction(function () use ($data, $fileUpload, $audioFile, $user) {
-            $filePath = null;
-            $urlTeks = $data['url_teks'] ?? null;
-            $tipe = $data['tipe'] ?? 'Teks';
+        $user = $user ?? auth()->user();
+        $newFiles = [];
 
-            // Penanganan unggahan berkas berdasarkan tipe media
-            if ($tipe === 'Audio') {
-                $audioPath = null;
-                if ($audioFile) {
-                    $audioPath = $audioFile->store('uploads', 'public');
-                }
+        try {
+            return DB::transaction(function () use ($data, $fileUpload, $audioFile, $user, &$newFiles) {
+                $filePath = null;
+                $urlTeks = $data['url_teks'] ?? null;
+                $tipe = $data['tipe'] ?? 'Teks';
 
-                if ($fileUpload) {
-                    // Ada thumbnail gambar yang diunggah
-                    $filePath = $fileUpload->store('uploads', 'public');
-                    $urlTeks = $audioPath;
+                // Penanganan unggahan berkas berdasarkan tipe media
+                if ($tipe === 'Audio') {
+                    $audioPath = null;
+                    if ($audioFile) {
+                        $audioPath = $audioFile->store('uploads', 'public');
+                        $newFiles[] = $audioPath;
+                    }
+
+                    if ($fileUpload) {
+                        // Ada thumbnail gambar yang diunggah
+                        $filePath = $fileUpload->store('uploads', 'public');
+                        $newFiles[] = $filePath;
+                        $urlTeks = $audioPath;
+                    } else {
+                        // Tanpa thumbnail gambar terpisah, simpan path audio di file_path
+                        $filePath = $audioPath;
+                    }
                 } else {
-                    // Tanpa thumbnail gambar terpisah, simpan path audio di file_path
-                    $filePath = $audioPath;
+                    if ($fileUpload) {
+                        $filePath = $fileUpload->store('uploads', 'public');
+                        $newFiles[] = $filePath;
+                    }
                 }
-            } else {
-                if ($fileUpload) {
-                    $filePath = $fileUpload->store('uploads', 'public');
+
+                // Tentukan status persetujuan
+                $statusInput = $data['status'] ?? 'Diajukan';
+                if ($statusInput !== 'Draft') {
+                    $status = $this->isAutoApproveUser($user) ? 'Disetujui' : 'Diajukan';
+                } else {
+                    $status = 'Draft';
+                }
+
+                $knowledge = Knowledge::create([
+                    'user_id'        => $user->id,
+                    'category_id'    => $data['category_id'],
+                    'judul'          => $data['judul'],
+                    'deskripsi'      => $data['deskripsi'] ?? null,
+                    'detail'         => $data['detail'] ?? null,
+                    'tanggal_terbit' => $data['tanggal_terbit'] ?? now(),
+                    'status_akses'   => $data['status_akses'] ?? 'public',
+                    'tipe'           => $tipe,
+                    'file_path'      => $filePath,
+                    'status'         => $status,
+                    'penulis'        => $data['penulis'] ?? $user->name,
+                    'kolaborator'    => $data['kolaborator'] ?? null,
+                    'url_teks'       => $urlTeks,
+                    'unggulan'       => !empty($data['unggulan']),
+                ]);
+
+                // Sinkronisasi Tag
+                if (!empty($data['tags'])) {
+                    $this->syncTags($knowledge, $data['tags']);
+                }
+
+                $this->invalidateStatsCache();
+
+                \App\Models\AuditLog::record(
+                    'KNOWLEDGE_CREATE',
+                    "Membuat pengetahuan baru: '{$knowledge->judul}' (Tipe: {$knowledge->tipe}, Status: {$knowledge->status})",
+                    ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'tipe' => $knowledge->tipe, 'status' => $knowledge->status],
+                    $user
+                );
+
+                return $knowledge;
+            });
+        } catch (\Throwable $e) {
+            foreach ($newFiles as $file) {
+                if ($file && Storage::disk('public')->exists($file)) {
+                    Storage::disk('public')->delete($file);
                 }
             }
-
-            // Tentukan status persetujuan
-            $statusInput = $data['status'] ?? 'Diajukan';
-            if ($statusInput !== 'Draft') {
-                $status = $this->isAutoApproveUser($user) ? 'Disetujui' : 'Diajukan';
-            } else {
-                $status = 'Draft';
-            }
-
-            $knowledge = Knowledge::create([
-                'user_id'        => $user->id,
-                'category_id'    => $data['category_id'],
-                'judul'          => $data['judul'],
-                'deskripsi'      => $data['deskripsi'] ?? null,
-                'detail'         => $data['detail'] ?? null,
-                'tanggal_terbit' => $data['tanggal_terbit'] ?? now(),
-                'status_akses'   => $data['status_akses'] ?? 'public',
-                'tipe'           => $tipe,
-                'file_path'      => $filePath,
-                'status'         => $status,
-                'penulis'        => $data['penulis'] ?? $user->name,
-                'kolaborator'    => $data['kolaborator'] ?? null,
-                'url_teks'       => $urlTeks,
-                'unggulan'       => !empty($data['unggulan']),
-            ]);
-
-            // Sinkronisasi Tag
-            if (!empty($data['tags'])) {
-                $this->syncTags($knowledge, $data['tags']);
-            }
-
-            $this->invalidateStatsCache();
-
-            \App\Models\AuditLog::record(
-                'KNOWLEDGE_CREATE',
-                "Membuat pengetahuan baru: '{$knowledge->judul}' (Tipe: {$knowledge->tipe}, Status: {$knowledge->status})",
-                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'tipe' => $knowledge->tipe, 'status' => $knowledge->status],
-                $user
-            );
-
-            return $knowledge;
-        });
+            throw $e;
+        }
     }
 
     /**
      * Memperbarui pengetahuan yang sudah ada dengan database transaction.
      */
-    public function updateKnowledge(Knowledge $knowledge, array $data, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null, User $user): Knowledge
+    public function updateKnowledge(Knowledge $knowledge, array $data, ?User $user = null, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null): Knowledge
     {
-        return DB::transaction(function () use ($knowledge, $data, $fileUpload, $audioFile, $user) {
-            $tipe = $data['tipe'] ?? $knowledge->tipe;
+        $user = $user ?? auth()->user();
+        $newFiles = [];
+        $oldFilesToDelete = [];
 
-            // Tentukan status baru
-            if ($this->isAutoApproveUser($user)) {
-                $newStatus = 'Disetujui';
-            } else {
-                $newStatus = ($knowledge->status === 'Draft') ? 'Diajukan' : $knowledge->status;
-            }
+        try {
+            $updated = DB::transaction(function () use ($knowledge, $data, $fileUpload, $audioFile, $user, &$newFiles, &$oldFilesToDelete) {
+                $tipe = $data['tipe'] ?? $knowledge->tipe;
 
-            $updateData = [
-                'category_id'    => $data['category_id'],
-                'judul'          => $data['judul'],
-                'deskripsi'      => $data['deskripsi'] ?? null,
-                'detail'         => $data['detail'] ?? null,
-                'tanggal_terbit' => $data['tanggal_terbit'] ?? $knowledge->tanggal_terbit,
-                'status_akses'   => $data['status_akses'] ?? 'public',
-                'tipe'           => $tipe,
-                'status'         => $newStatus,
-                'penulis'        => $data['penulis'] ?? null,
-                'kolaborator'    => $data['kolaborator'] ?? null,
-                'url_teks'       => $data['url_teks'] ?? null,
-                'unggulan'       => !empty($data['unggulan']),
-            ];
-
-            if ($tipe === 'Audio') {
-                $audioPath = $knowledge->url_teks;
-                $audioExtensions = ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma', 'mp4', 'webm', 'mpga'];
-
-                if (!$audioPath && $knowledge->file_path && in_array(strtolower(pathinfo($knowledge->file_path, PATHINFO_EXTENSION)), $audioExtensions)) {
-                    $audioPath = $knowledge->file_path;
-                }
-
-                if ($audioFile) {
-                    if ($knowledge->url_teks && Storage::disk('public')->exists($knowledge->url_teks)) {
-                        Storage::disk('public')->delete($knowledge->url_teks);
-                    }
-                    $audioPath = $audioFile->store('uploads', 'public');
-                }
-
-                if ($fileUpload) {
-                    if ($knowledge->file_path && $knowledge->file_path !== $audioPath && Storage::disk('public')->exists($knowledge->file_path)) {
-                        Storage::disk('public')->delete($knowledge->file_path);
-                    }
-                    $updateData['file_path'] = $fileUpload->store('uploads', 'public');
-                    $updateData['url_teks'] = $audioPath;
+                // Tentukan status baru
+                if ($this->isAutoApproveUser($user)) {
+                    $newStatus = 'Disetujui';
                 } else {
-                    if ($knowledge->file_path && $knowledge->file_path !== $audioPath) {
+                    $newStatus = ($knowledge->status === 'Draft') ? 'Diajukan' : $knowledge->status;
+                }
+
+                $updateData = [
+                    'category_id'    => $data['category_id'],
+                    'judul'          => $data['judul'],
+                    'deskripsi'      => $data['deskripsi'] ?? null,
+                    'detail'         => $data['detail'] ?? null,
+                    'tanggal_terbit' => $data['tanggal_terbit'] ?? $knowledge->tanggal_terbit,
+                    'status_akses'   => $data['status_akses'] ?? 'public',
+                    'tipe'           => $tipe,
+                    'status'         => $newStatus,
+                    'penulis'        => $data['penulis'] ?? null,
+                    'kolaborator'    => $data['kolaborator'] ?? null,
+                    'url_teks'       => $data['url_teks'] ?? null,
+                    'unggulan'       => !empty($data['unggulan']),
+                ];
+
+                if ($tipe === 'Audio') {
+                    $audioPath = $knowledge->url_teks;
+                    $audioExtensions = ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma', 'mp4', 'webm', 'mpga'];
+
+                    if (!$audioPath && $knowledge->file_path && in_array(strtolower(pathinfo($knowledge->file_path, PATHINFO_EXTENSION)), $audioExtensions)) {
+                        $audioPath = $knowledge->file_path;
+                    }
+
+                    if ($audioFile) {
+                        if ($knowledge->url_teks && Storage::disk('public')->exists($knowledge->url_teks)) {
+                            $oldFilesToDelete[] = $knowledge->url_teks;
+                        }
+                        $audioPath = $audioFile->store('uploads', 'public');
+                        $newFiles[] = $audioPath;
+                    }
+
+                    if ($fileUpload) {
+                        if ($knowledge->file_path && $knowledge->file_path !== $audioPath && Storage::disk('public')->exists($knowledge->file_path)) {
+                            $oldFilesToDelete[] = $knowledge->file_path;
+                        }
+                        $updateData['file_path'] = $fileUpload->store('uploads', 'public');
+                        $newFiles[] = $updateData['file_path'];
                         $updateData['url_teks'] = $audioPath;
                     } else {
-                        $updateData['file_path'] = $audioPath;
+                        if ($knowledge->file_path && $knowledge->file_path !== $audioPath) {
+                            $updateData['url_teks'] = $audioPath;
+                        } else {
+                            $updateData['file_path'] = $audioPath;
+                        }
+                    }
+                } else {
+                    if ($fileUpload) {
+                        if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
+                            $oldFilesToDelete[] = $knowledge->file_path;
+                        }
+                        $updateData['file_path'] = $fileUpload->store('uploads', 'public');
+                        $newFiles[] = $updateData['file_path'];
                     }
                 }
-            } else {
-                if ($fileUpload) {
-                    if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
-                        Storage::disk('public')->delete($knowledge->file_path);
-                    }
-                    $updateData['file_path'] = $fileUpload->store('uploads', 'public');
+
+                $knowledge->update($updateData);
+
+                // Sinkronisasi Tag
+                if (isset($data['tags'])) {
+                    $this->syncTags($knowledge, $data['tags']);
+                }
+
+                $this->invalidateStatsCache();
+
+                \App\Models\AuditLog::record(
+                    'KNOWLEDGE_UPDATE',
+                    "Memperbarui pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
+                    ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'status' => $knowledge->status],
+                    $user
+                );
+
+                return $knowledge;
+            });
+
+            // Hapus file lama hanya jika transaksi database sukses
+            foreach ($oldFilesToDelete as $oldFile) {
+                if ($oldFile && Storage::disk('public')->exists($oldFile)) {
+                    Storage::disk('public')->delete($oldFile);
                 }
             }
 
-            $knowledge->update($updateData);
-
-            // Sinkronisasi Tag
-            if (isset($data['tags'])) {
-                $this->syncTags($knowledge, $data['tags']);
+            return $updated;
+        } catch (\Throwable $e) {
+            foreach ($newFiles as $file) {
+                if ($file && Storage::disk('public')->exists($file)) {
+                    Storage::disk('public')->delete($file);
+                }
             }
-
-            $this->invalidateStatsCache();
-
-            \App\Models\AuditLog::record(
-                'KNOWLEDGE_UPDATE',
-                "Memperbarui pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
-                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'status' => $knowledge->status],
-                $user
-            );
-
-            return $knowledge;
-        });
+            throw $e;
+        }
     }
 
     /**
@@ -284,16 +324,21 @@ class KnowledgeService
     }
 
     /**
-     * Memproses teks tag ("spbe, panduan") menjadi ID relasi tag di database.
+     * Memproses teks tag ("spbe, panduan" atau array) menjadi ID relasi tag di database.
      */
-    protected function syncTags(Knowledge $knowledge, ?string $tagsString): void
+    protected function syncTags(Knowledge $knowledge, array|string|null $tags): void
     {
-        if (empty($tagsString)) {
+        if (empty($tags)) {
             $knowledge->tags()->detach();
             return;
         }
 
-        $tagNames = array_map('trim', explode(',', $tagsString));
+        if (is_string($tags)) {
+            $tagNames = array_map('trim', explode(',', $tags));
+        } else {
+            $tagNames = array_map('trim', $tags);
+        }
+
         $tagIds = [];
 
         foreach ($tagNames as $tagName) {

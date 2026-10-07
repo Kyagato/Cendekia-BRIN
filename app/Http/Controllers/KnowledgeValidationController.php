@@ -8,6 +8,7 @@ use App\Models\Tag;
 use App\Models\AuditLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -71,34 +72,52 @@ class KnowledgeValidationController extends Controller
             'file'           => 'nullable|file|max:10240',
         ]);
 
-        if ($request->hasFile('file')) {
-            // Hapus file lama jika ada dan file baru diupload
-            if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
-                Storage::disk('public')->delete($knowledge->file_path);
-            }
-            $validated['file_path'] = $request->file('file')->store('knowledge_files', 'public');
-        }
+        $newUploadedFile = null;
+        $oldFileToDelete = null;
 
-        $knowledge->update($validated);
-
-        if ($request->has('tags')) {
-            $tagsInput = explode(',', $request->tags ?? '');
-            $tagIds = [];
-            foreach ($tagsInput as $tagName) {
-                $trimmed = trim($tagName);
-                if ($trimmed !== '') {
-                    $tag = Tag::firstOrCreate(['nama_label' => $trimmed]);
-                    $tagIds[] = $tag->id;
+        try {
+            DB::transaction(function () use ($request, $knowledge, $validated, &$newUploadedFile, &$oldFileToDelete) {
+                if ($request->hasFile('file')) {
+                    if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
+                        $oldFileToDelete = $knowledge->file_path;
+                    }
+                    $newUploadedFile = $request->file('file')->store('knowledge_files', 'public');
+                    $validated['file_path'] = $newUploadedFile;
                 }
-            }
-            $knowledge->tags()->sync($tagIds);
-        }
 
-        AuditLog::record(
-            'KNOWLEDGE_VALIDATE_UPDATE',
-            "Memperbarui data artikel pada proses validasi: '{$knowledge->judul}' (ID: {$knowledge->id})",
-            ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
-        );
+                $knowledge->update($validated);
+
+                if ($request->has('tags')) {
+                    $tagsInput = explode(',', $request->tags ?? '');
+                    $tagIds = [];
+                    foreach ($tagsInput as $tagName) {
+                        $trimmed = trim($tagName);
+                        if ($trimmed !== '') {
+                            $tag = Tag::firstOrCreate(['nama_label' => $trimmed]);
+                            $tagIds[] = $tag->id;
+                        }
+                    }
+                    $knowledge->tags()->sync($tagIds);
+                }
+
+                AuditLog::record(
+                    'KNOWLEDGE_VALIDATE_UPDATE',
+                    "Memperbarui data artikel pada proses validasi: '{$knowledge->judul}' (ID: {$knowledge->id})",
+                    ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
+                );
+            });
+
+            // Hapus berkas lama hanya setelah transaksi database berhasil di-commit
+            if ($oldFileToDelete && Storage::disk('public')->exists($oldFileToDelete)) {
+                Storage::disk('public')->delete($oldFileToDelete);
+            }
+        } catch (\Throwable $e) {
+            // Bersihkan file yang baru diunggah jika transaksi dibatalkan
+            if ($newUploadedFile && Storage::disk('public')->exists($newUploadedFile)) {
+                Storage::disk('public')->delete($newUploadedFile);
+            }
+            throw $e;
+        }
 
         return back()->with('success', 'Data pengetahuan berhasil diperbarui.');
     }
