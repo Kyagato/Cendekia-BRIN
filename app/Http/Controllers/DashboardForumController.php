@@ -58,7 +58,12 @@ class DashboardForumController extends Controller
             ->orderBy('judul')
             ->get();
 
-        return view('forum.dashboard_index', compact('threads', 'counts', 'categories', 'knowledges'));
+        $linkedKnowledge = null;
+        if ($request->filled('knowledge_id')) {
+            $linkedKnowledge = \App\Models\Knowledge::with('category')->find($request->knowledge_id);
+        }
+
+        return view('forum.dashboard_index', compact('threads', 'counts', 'categories', 'knowledges', 'linkedKnowledge'));
     }
 
     /**

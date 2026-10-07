@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="space-y-6" x-data="{
-    viewMode: '{{ ($errors->any() || request('action') === 'create') ? 'create' : 'list' }}',
+    viewMode: '{{ ($errors->any() || request('action') === 'create' || !empty($linkedKnowledge)) ? 'create' : 'list' }}',
     activeItem: null,
     editItem: null,
     showDeleteModal: false,
@@ -281,32 +281,43 @@
             </div>
 
             <div class="p-6 sm:p-8">
-                <form action="{{ route('forum.store') }}" method="POST">
+                <form action="{{ route('forum.store') }}" method="POST"
+                      x-data="{
+                          judul: '{{ addslashes(old('judul', !empty($linkedKnowledge) ? "Diskusi: {$linkedKnowledge->judul}" : '')) }}',
+                          categoryId: '{{ old('category_id', !empty($linkedKnowledge) ? $linkedKnowledge->category_id : '') }}',
+                          searchKnowledge: '',
+                          selectedKnowledge: {{ old('knowledge_id') ? json_encode($knowledges->where('id', old('knowledge_id'))->map(fn($k) => ['id' => $k->id, 'judul' => $k->judul, 'category_id' => $k->category_id, 'kategori' => $k->category->nama_kategori ?? null])->first()) : (!empty($linkedKnowledge) ? json_encode(['id' => $linkedKnowledge->id, 'judul' => $linkedKnowledge->judul, 'category_id' => $linkedKnowledge->category_id, 'kategori' => $linkedKnowledge->category->nama_kategori ?? null]) : 'null') }},
+                          isDropdownOpen: false,
+                          knowledges: {{ json_encode($knowledges->map(fn($k) => ['id' => $k->id, 'judul' => $k->judul, 'category_id' => $k->category_id, 'kategori' => $k->category->nama_kategori ?? null])) }},
+                          get filteredKnowledges() {
+                              if (!this.searchKnowledge) return this.knowledges.slice(0, 10);
+                              return this.knowledges.filter(k => k.judul.toLowerCase().includes(this.searchKnowledge.toLowerCase())).slice(0, 10);
+                          },
+                          select(item) {
+                              this.selectedKnowledge = item;
+                              this.searchKnowledge = '';
+                              this.isDropdownOpen = false;
+
+                              // Otomatis isi kategori sesuai materi yang dipilih (sama seperti di beranda utama)
+                              if (item.category_id) {
+                                  this.categoryId = item.category_id;
+                              }
+
+                              // Otomatis isi judul topik jika masih kosong atau berawalan 'Diskusi: '
+                              if (!this.judul || this.judul.startsWith('Diskusi: ')) {
+                                  this.judul = 'Diskusi: ' + item.judul;
+                              }
+                          },
+                          clear() {
+                              this.selectedKnowledge = null;
+                              this.searchKnowledge = '';
+                          }
+                      }">
                     @csrf
                     <input type="hidden" name="ref" value="dashboard">
 
                     {{-- Hubungkan ke Materi Pengetahuan (Single Search & Selection Autocomplete) --}}
-                    <div class="mb-6 relative"
-                         x-data="{
-                             searchKnowledge: '',
-                             selectedKnowledge: null,
-                             isDropdownOpen: false,
-                             knowledges: {{ json_encode($knowledges->map(fn($k) => ['id' => $k->id, 'judul' => $k->judul, 'kategori' => $k->category->nama_kategori ?? null])) }},
-                             get filteredKnowledges() {
-                                 if (!this.searchKnowledge) return this.knowledges.slice(0, 10);
-                                 return this.knowledges.filter(k => k.judul.toLowerCase().includes(this.searchKnowledge.toLowerCase())).slice(0, 10);
-                             },
-                             select(item) {
-                                 this.selectedKnowledge = item;
-                                 this.searchKnowledge = '';
-                                 this.isDropdownOpen = false;
-                             },
-                             clear() {
-                                 this.selectedKnowledge = null;
-                                 this.searchKnowledge = '';
-                             }
-                         }"
-                         @click.outside="isDropdownOpen = false">
+                    <div class="mb-6 relative" @click.outside="isDropdownOpen = false">
 
                         <input type="hidden" name="knowledge_id" :value="selectedKnowledge ? selectedKnowledge.id : ''">
 
@@ -366,6 +377,7 @@
                             Judul Topik Diskusi <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="dashboard_judul" name="judul" required
+                               x-model="judul"
                                value="{{ old('judul') }}"
                                placeholder="Contoh: Bagaimana implementasi arsitektur SPBE pada instansi daerah?"
                                class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
@@ -378,8 +390,9 @@
                             Kategori <span class="text-red-500">*</span>
                         </label>
                         <select id="dashboard_category_id" name="category_id" required
+                                x-model="categoryId"
                                 class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-primary-600 focus:border-primary-600 transition text-sm">
-                            <option value="" disabled {{ old('category_id') ? '' : 'selected' }} class="text-slate-400 dark:text-slate-500">Pilih Kategori</option>
+                            <option value="" disabled class="text-slate-400 dark:text-slate-500">Pilih Kategori</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->nama_kategori }}</option>
                             @endforeach
@@ -650,7 +663,7 @@
                          x-data="{
                              searchKnowledgeEdit: '',
                              isDropdownOpenEdit: false,
-                             knowledges: {{ json_encode($knowledges->map(fn($k) => ['id' => $k->id, 'judul' => $k->judul, 'kategori' => $k->category->nama_kategori ?? null])) }},
+                             knowledges: {{ json_encode($knowledges->map(fn($k) => ['id' => $k->id, 'judul' => $k->judul, 'category_id' => $k->category_id, 'kategori' => $k->category->nama_kategori ?? null])) }},
                              get filteredKnowledgesEdit() {
                                  if (!this.searchKnowledgeEdit) return this.knowledges.slice(0, 10);
                                  return this.knowledges.filter(k => k.judul.toLowerCase().includes(this.searchKnowledgeEdit.toLowerCase())).slice(0, 10);
@@ -659,6 +672,12 @@
                                  if (editItem) {
                                      editItem.knowledge_id = item.id;
                                      editItem.knowledge_title = item.judul;
+                                     if (item.category_id) {
+                                         editItem.category_id = item.category_id;
+                                     }
+                                     if (!editItem.judul || editItem.judul.startsWith('Diskusi: ')) {
+                                         editItem.judul = 'Diskusi: ' + item.judul;
+                                     }
                                  }
                                  this.searchKnowledgeEdit = '';
                                  this.isDropdownOpenEdit = false;
