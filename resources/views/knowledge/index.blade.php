@@ -116,11 +116,19 @@
                     <td class="py-3 px-6 text-sm text-slate-600 dark:text-slate-300">{{ $item->tipe }}</td>
                     <td class="py-3 px-6 text-sm text-slate-600 dark:text-slate-300">{{ $item->category->nama_kategori ?? '-' }}</td>
                     <td class="py-3 px-6">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border
-                            {{ $item->status == 'Disetujui' ? 'bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800' :
-                              ($item->status == 'Ditolak' ? 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800') }}">
-                            {{ $item->status }}
-                        </span>
+                        <div class="flex flex-col items-start gap-1">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border
+                                {{ $item->status == 'Disetujui' ? 'bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800' :
+                                  ($item->status == 'Ditolak' ? 'bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800' : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800') }}">
+                                {{ $item->status }}
+                            </span>
+                            @if($item->status == 'Ditolak' && !empty($item->catatan_penolakan))
+                                <span class="text-[11px] text-red-600 dark:text-red-400 truncate max-w-[180px] cursor-help inline-flex items-center gap-1" title="Catatan Validator: {{ $item->catatan_penolakan }}">
+                                    <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    {{ Str::limit($item->catatan_penolakan, 20) }}
+                                </span>
+                            @endif
+                        </div>
                     </td>
                     <td class="py-3 px-6 text-sm text-slate-600 dark:text-slate-300">{{ $item->user->name ?? '-' }}</td>
                     <td class="py-3 px-6 text-sm text-slate-600 dark:text-slate-300">{{ $item->created_at ? $item->created_at->format('d M Y') : '-' }}</td>

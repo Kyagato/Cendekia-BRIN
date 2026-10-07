@@ -160,7 +160,9 @@ class KnowledgeController extends Controller
             return redirect()->route('knowledge.index')->with('success', 'Pengajuan berhasil dibatalkan. Status kembali ke Draft.');
         }
 
-        $this->knowledgeService->updateKnowledge(
+        $wasRejected = ($knowledge->status === Knowledge::STATUS_DITOLAK);
+
+        $updatedKnowledge = $this->knowledgeService->updateKnowledge(
             knowledge: $knowledge,
             data: $request->validated(),
             fileUpload: $request->file('file_upload'),
@@ -168,7 +170,14 @@ class KnowledgeController extends Controller
             user: $request->user()
         );
 
-        return redirect()->route('knowledge.index')->with('success', 'Pengetahuan berhasil diperbarui.');
+        $successMessage = 'Pengetahuan berhasil diperbarui.';
+        if ($wasRejected && $updatedKnowledge->status === Knowledge::STATUS_DIAJUKAN) {
+            $successMessage = 'Pengetahuan berhasil diperbaiki dan diajukan kembali untuk validasi.';
+        } elseif ($wasRejected && $updatedKnowledge->status === Knowledge::STATUS_DISETUJUI) {
+            $successMessage = 'Pengetahuan berhasil diperbaiki dan langsung disetujui.';
+        }
+
+        return redirect()->route('knowledge.index')->with('success', $successMessage);
     }
 
     /**

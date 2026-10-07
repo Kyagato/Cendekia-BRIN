@@ -135,11 +135,15 @@ class KnowledgeService
             $updated = DB::transaction(function () use ($knowledge, $data, $fileUpload, $audioFile, $user, &$newFiles, &$oldFilesToDelete) {
                 $tipe = $data['tipe'] ?? $knowledge->tipe;
 
+                $wasRejected = ($knowledge->status === Knowledge::STATUS_DITOLAK);
+
                 // Tentukan status baru
                 if ($this->isAutoApproveUser($user)) {
-                    $newStatus = 'Disetujui';
+                    $newStatus = Knowledge::STATUS_DISETUJUI;
                 } else {
-                    $newStatus = ($knowledge->status === 'Draft') ? 'Diajukan' : $knowledge->status;
+                    $newStatus = in_array($knowledge->status, [Knowledge::STATUS_DRAFT, Knowledge::STATUS_DITOLAK])
+                        ? Knowledge::STATUS_DIAJUKAN
+                        : $knowledge->status;
                 }
 
                 $updateData = [
@@ -156,6 +160,11 @@ class KnowledgeService
                     'url_teks'       => $data['url_teks'] ?? null,
                     'unggulan'       => !empty($data['unggulan']),
                 ];
+
+                // Jika status disetujui atau diajukan kembali dari status ditolak, bersihkan catatan penolakan
+                if ($newStatus === Knowledge::STATUS_DISETUJUI || $wasRejected) {
+                    $updateData['catatan_penolakan'] = null;
+                }
 
                 if ($tipe === 'Audio') {
                     $audioPath = $knowledge->url_teks;
@@ -206,10 +215,15 @@ class KnowledgeService
 
                 $this->invalidateStatsCache();
 
+                $auditLogMessage = "Memperbarui pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})";
+                if ($wasRejected) {
+                    $auditLogMessage .= " (Diajukan kembali setelah perbaikan penolakan, Status: {$knowledge->status})";
+                }
+
                 \App\Models\AuditLog::record(
                     'KNOWLEDGE_UPDATE',
-                    "Memperbarui pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
-                    ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'status' => $knowledge->status],
+                    $auditLogMessage,
+                    ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul, 'status' => $knowledge->status, 'resubmitted' => $wasRejected],
                     $user
                 );
 

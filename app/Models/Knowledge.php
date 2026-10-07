@@ -14,11 +14,43 @@ class Knowledge extends Model
     protected $guarded = ['id'];
 
 
+    public const STATUS_DRAFT = 'Draft';
+    public const STATUS_DIAJUKAN = 'Diajukan';
+    public const STATUS_DISETUJUI = 'Disetujui';
+    public const STATUS_DITOLAK = 'Ditolak';
+
+    public const ALL_STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_DIAJUKAN,
+        self::STATUS_DISETUJUI,
+        self::STATUS_DITOLAK,
+    ];
+
     protected $casts = [
         'unggulan' => 'boolean',
         'views_count' => 'integer',
         'tanggal_terbit' => 'date',
     ];
+
+    public function isDraft(): bool
+    {
+        return $this->status === self::STATUS_DRAFT;
+    }
+
+    public function isSubmitted(): bool
+    {
+        return $this->status === self::STATUS_DIAJUKAN;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === self::STATUS_DISETUJUI;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === self::STATUS_DITOLAK;
+    }
 
     // Relasi ke Tag/Label
     public function tags()

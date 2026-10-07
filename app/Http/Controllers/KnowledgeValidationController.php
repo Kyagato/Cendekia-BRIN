@@ -127,7 +127,10 @@ class KnowledgeValidationController extends Controller
      */
     public function approve(Knowledge $knowledge): RedirectResponse
     {
-        $knowledge->update(['status' => 'Disetujui']);
+        $knowledge->update([
+            'status' => Knowledge::STATUS_DISETUJUI,
+            'catatan_penolakan' => null,
+        ]);
 
         AuditLog::record(
             'KNOWLEDGE_APPROVE',
@@ -139,17 +142,27 @@ class KnowledgeValidationController extends Controller
     }
 
     /**
-     * Menolak (Reject) konten pengetahuan.
+     * Menolak (Reject) konten pengetahuan dengan catatan penolakan.
      */
     public function reject(Request $request, Knowledge $knowledge): RedirectResponse
     {
-        $alasanTolak = $request->input('alasan_tolak');
+        $validated = $request->validate([
+            'alasan_tolak' => 'required|string|max:1000',
+        ], [
+            'alasan_tolak.required' => 'Alasan penolakan wajib diisi agar pengunggah mengetahui bagian yang perlu direvisi.',
+            'alasan_tolak.max'      => 'Alasan penolakan maksimal 1000 karakter.',
+        ]);
 
-        $knowledge->update(['status' => 'Ditolak']);
+        $alasanTolak = $validated['alasan_tolak'];
+
+        $knowledge->update([
+            'status' => Knowledge::STATUS_DITOLAK,
+            'catatan_penolakan' => $alasanTolak,
+        ]);
 
         AuditLog::record(
             'KNOWLEDGE_REJECT',
-            "Menolak konten pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})" . ($alasanTolak ? " dengan alasan: {$alasanTolak}" : ""),
+            "Menolak konten pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id}) dengan alasan: {$alasanTolak}",
             [
                 'knowledge_id' => $knowledge->id,
                 'judul'        => $knowledge->judul,
@@ -157,6 +170,6 @@ class KnowledgeValidationController extends Controller
             ]
         );
 
-        return redirect()->route('validasi.index')->with('success', 'Konten berhasil ditolak.');
+        return redirect()->route('validasi.index')->with('success', 'Konten berhasil ditolak dan catatan revisi telah dikirim.');
     }
 }

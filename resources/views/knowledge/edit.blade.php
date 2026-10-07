@@ -55,7 +55,23 @@
                     Simpan & Ajukan
                 </button>
             </div>
+        {{-- Banner Catatan Penolakan (Jika status Ditolak) --}}
+        @if($knowledge->status == 'Ditolak' && !empty($knowledge->catatan_penolakan))
+        <div class="mb-6 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl p-5 shadow-sm">
+            <div class="flex items-start gap-3.5">
+                <div class="p-2.5 bg-red-100 dark:bg-red-900/60 rounded-xl text-red-600 dark:text-red-400 shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-bold text-red-900 dark:text-red-200">Catatan Penolakan dari Validator</h3>
+                    <p class="text-sm text-red-700 dark:text-red-300 mt-1.5 leading-relaxed whitespace-pre-line">{{ $knowledge->catatan_penolakan }}</p>
+                    <p class="text-xs text-red-600/80 dark:text-red-400/80 mt-2.5 font-medium">💡 Silakan perbaiki data artikel Anda di bawah ini sesuai masukan validator. Saat Anda menekan "Simpan &amp; Ajukan", status artikel akan otomatis diajukan kembali untuk ditinjau ulang.</p>
+                </div>
+            </div>
         </div>
+        @endif
 
         {{-- Main Card --}}
         <div class="bg-white dark:bg-slate-800 shadow-md rounded-xl p-8 border border-transparent dark:border-slate-700">

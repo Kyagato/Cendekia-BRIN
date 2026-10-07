@@ -24,11 +24,30 @@
             <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Validasi &amp; Edit Pengetahuan</h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Ubah data artikel dan tentukan keputusan persetujuan atau penolakan</p>
         </div>
-        <a href="{{ route('validasi.index') }}" class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2 shadow-sm">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            Kembali
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('validasi.index') }}" class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2 shadow-sm">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Kembali
+            </a>
+        </div>
     </div>
+
+    {{-- Banner Catatan Penolakan / Revisi Sebelumnya --}}
+    @if(!empty($knowledge->catatan_penolakan))
+    <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl p-4 shadow-sm">
+        <div class="flex items-start gap-3">
+            <div class="p-2 bg-amber-100 dark:bg-amber-900/60 rounded-lg text-amber-700 dark:text-amber-400 shrink-0">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-amber-900 dark:text-amber-200">Catatan Penolakan / Revisi Sebelumnya:</h3>
+                <p class="text-sm text-amber-800 dark:text-amber-300 mt-1 leading-relaxed whitespace-pre-line">{{ $knowledge->catatan_penolakan }}</p>
+            </div>
+        </div>
+    </div>
+    @endif
 
     {{-- Main Edit Form --}}
     <form action="{{ route('validasi.update', $knowledge->id) }}" method="POST" enctype="multipart/form-data">
@@ -63,10 +82,33 @@
 
                     {{-- URL Teks / Media --}}
                     <div>
-                        <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">URL {{ $knowledge->tipe }}</label>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-bold text-slate-800 dark:text-slate-200">URL {{ $knowledge->tipe }}</label>
+                            @if($knowledge->url_teks)
+                            <a href="{{ $knowledge->url_teks }}" target="_blank" class="text-xs text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1 font-semibold">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                Buka Tautan Media
+                            </a>
+                            @endif
+                        </div>
                         <input type="text" name="url_teks" value="{{ old('url_teks', $knowledge->url_teks) }}" placeholder="https://..."
                                class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition">
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pastikan URL dapat diakses dengan baik</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pastikan URL dapat diakses dengan baik oleh publik.</p>
+
+                        {{-- Embed Player jika URL YouTube --}}
+                        @if($knowledge->url_teks && (str_contains($knowledge->url_teks, 'youtube.com') || str_contains($knowledge->url_teks, 'youtu.be')))
+                            @php
+                                $ytId = null;
+                                if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $knowledge->url_teks, $match)) {
+                                    $ytId = $match[1];
+                                }
+                            @endphp
+                            @if($ytId)
+                            <div class="mt-3 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 aspect-video bg-black shadow-xs">
+                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $ytId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            @endif
+                        @endif
                     </div>
 
                     {{-- Penulis & Kolaborator --}}
@@ -97,15 +139,82 @@
                                   class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm leading-relaxed focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition resize-y">{{ old('detail', $knowledge->detail) }}</textarea>
                     </div>
 
-                    {{-- Upload Thumbnail / File --}}
+                    {{-- Upload Thumbnail / File Lampiran --}}
                     <div>
-                        <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Thumbnail / File Lampiran</label>
+                        <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Berkas Lampiran &amp; Thumbnail</label>
                         @if($knowledge->file_path)
-                            <div class="mb-3 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center gap-3">
-                                <img src="{{ asset('storage/' . $knowledge->file_path) }}" alt="Thumbnail" class="w-14 h-14 object-cover rounded border border-slate-200 dark:border-slate-700">
-                                <span class="text-xs text-slate-600 dark:text-slate-400">File terpasang saat ini</span>
+                            @php
+                                $filePathExt = strtolower(pathinfo($knowledge->file_path, PATHINFO_EXTENSION));
+                                $isImgFile = in_array($filePathExt, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                $isPdfFile = ($filePathExt === 'pdf');
+                                $isAudioFile = in_array($filePathExt, ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac']);
+                                $isVideoFile = in_array($filePathExt, ['mp4', 'mkv', 'webm', 'mov', 'avi']);
+                            @endphp
+                            <div class="mb-4 p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl space-y-3">
+                                <div class="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        @if($isImgFile)
+                                            <a href="{{ asset('storage/' . $knowledge->file_path) }}" target="_blank" class="block shrink-0">
+                                                <img src="{{ asset('storage/' . $knowledge->file_path) }}" alt="Thumbnail" class="w-14 h-14 object-cover rounded-lg border border-slate-200 dark:border-slate-700 hover:opacity-90 transition shadow-xs">
+                                            </a>
+                                        @elseif($isPdfFile)
+                                            <div class="w-14 h-14 bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 rounded-lg flex flex-col items-center justify-center shrink-0 border border-red-200 dark:border-red-800">
+                                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                                <span class="text-[9px] font-bold uppercase tracking-wider">PDF</span>
+                                            </div>
+                                        @elseif($isAudioFile)
+                                            <div class="w-14 h-14 bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-lg flex flex-col items-center justify-center shrink-0 border border-amber-200 dark:border-amber-800">
+                                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/></svg>
+                                                <span class="text-[9px] font-bold uppercase tracking-wider">AUDIO</span>
+                                            </div>
+                                        @elseif($isVideoFile)
+                                            <div class="w-14 h-14 bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-lg flex flex-col items-center justify-center shrink-0 border border-purple-200 dark:border-purple-800">
+                                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                                <span class="text-[9px] font-bold uppercase tracking-wider">VIDEO</span>
+                                            </div>
+                                        @else
+                                            <div class="w-14 h-14 bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-lg flex flex-col items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
+                                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                                <span class="text-[9px] font-bold uppercase tracking-wider">{{ $filePathExt ?: 'FILE' }}</span>
+                                            </div>
+                                        @endif
+                                        <div class="min-w-0">
+                                            <div class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate max-w-xs" title="{{ basename($knowledge->file_path) }}">
+                                                {{ basename($knowledge->file_path) }}
+                                            </div>
+                                            <span class="text-[11px] text-slate-500 dark:text-slate-400">Berkas terpasang saat ini</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <a href="{{ asset('storage/' . $knowledge->file_path) }}" target="_blank" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1.5 shadow-xs">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                            Buka / Pratinjau
+                                        </a>
+                                        <a href="{{ asset('storage/' . $knowledge->file_path) }}" download class="px-3.5 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-xs">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                            Unduh
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {{-- Inline Player untuk Audio / Video --}}
+                                @if($isAudioFile)
+                                    <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+                                        <audio controls class="w-full">
+                                            <source src="{{ asset('storage/' . $knowledge->file_path) }}">
+                                        </audio>
+                                    </div>
+                                @elseif($isVideoFile)
+                                    <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+                                        <video controls class="w-full max-h-64 rounded-lg bg-black">
+                                            <source src="{{ asset('storage/' . $knowledge->file_path) }}">
+                                        </video>
+                                    </div>
+                                @endif
                             </div>
                         @endif
+
+                        <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Ganti berkas lampiran (Opsional, jika ingin mengunggah berkas revisi):</label>
                         <input type="file" name="file" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-200 dark:hover:file:bg-slate-600 transition">
                     </div>
 
@@ -274,9 +383,9 @@
                 @csrf
                 @method('PATCH')
                 <div class="px-6 py-5 space-y-4">
-                    <p class="text-sm text-slate-600 dark:text-slate-300">Apakah Anda yakin ingin menolak pengajuan ini?</p>
-                    <textarea name="alasan_tolak" rows="4" placeholder="Tulis alasan penolakan..."
-                              class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800 dark:text-slate-100 resize-none"></textarea>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Tuliskan alasan penolakan atau instruksi perbaikan yang jelas untuk pengunggah:</p>
+                    <textarea name="alasan_tolak" rows="4" placeholder="Tulis alasan penolakan dan instruksi revisi..." required maxlength="1000"
+                              class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800 dark:text-slate-100 resize-none">{{ old('alasan_tolak', $knowledge->catatan_penolakan) }}</textarea>
                 </div>
                 <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
                     <button type="button" @click="showTolakModal = false"
@@ -285,7 +394,7 @@
                     </button>
                     <button type="submit"
                             class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition shadow-sm">
-                        Tolak
+                        Tolak Pengajuan
                     </button>
                 </div>
             </form>
