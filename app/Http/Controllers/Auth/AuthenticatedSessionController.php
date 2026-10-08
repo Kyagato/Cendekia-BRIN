@@ -11,6 +11,7 @@ use Illuminate\View\View;
 
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -37,7 +38,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): Response
     {
         $hasKeycloak = !empty(config('services.keycloak.base_url')) && !empty(config('services.keycloak.client_id'));
 

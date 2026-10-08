@@ -23,3 +23,14 @@ test('users can logout', function () {
     $this->assertGuest();
     $response->assertRedirect();
 });
+
+test('users can logout via inertia request without type error', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/logout', [], ['X-Inertia' => 'true']);
+
+    $this->assertGuest();
+    // Inertia::location returns a 409 Conflict with X-Inertia-Location header, or a redirect if Keycloak is not configured
+    expect($response->status())->toBeIn([409, 302]);
+});
+
