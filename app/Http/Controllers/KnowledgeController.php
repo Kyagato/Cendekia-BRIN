@@ -32,10 +32,8 @@ class KnowledgeController extends Controller
         $query = Knowledge::with(['category', 'user', 'tags'])
             ->whereIn('status', ['Diajukan', 'Disetujui', 'Ditolak']);
 
-        // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (kecuali Admin)
-        if (!$user->isAdmin()) {
-            $query->where('user_id', $user->id);
-        }
+        // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (semua role termasuk admin hanya melihat miliknya sendiri)
+        $query->where('user_id', $user->id);
 
         $query->latest();
 

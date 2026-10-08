@@ -112,3 +112,38 @@ it('soft deletes forum thread and allows owner to view in dashboard trash and re
     $this->actingAs($userA)->post(route('dashboard.forum.restore', $threadB->id))
         ->assertStatus(404);
 });
+
+it('only shows knowledge uploaded by the authenticated user in knowledge index even if user is admin', function () {
+    $adminUser = User::factory()->create(['role' => 'Super Admin']);
+    $memberUser = User::factory()->create(['role' => 'Anggota']);
+    $category = Category::create(['nama_kategori' => 'Kategori Pengetahuan']);
+
+    $adminKnowledge = Knowledge::create([
+        'user_id' => $adminUser->id,
+        'category_id' => $category->id,
+        'judul' => 'Pengetahuan Milik Admin',
+        'tipe' => 'Teks',
+        'status' => 'Disetujui',
+    ]);
+
+    $memberKnowledge = Knowledge::create([
+        'user_id' => $memberUser->id,
+        'category_id' => $category->id,
+        'judul' => 'Pengetahuan Milik Member',
+        'tipe' => 'Teks',
+        'status' => 'Disetujui',
+    ]);
+
+    // Admin mengakses index pengetahuan: HANYA melihat artikel miliknya
+    $responseAdmin = $this->actingAs($adminUser)->get(route('knowledge.index'));
+    $responseAdmin->assertStatus(200);
+    $responseAdmin->assertSee('Pengetahuan Milik Admin');
+    $responseAdmin->assertDontSee('Pengetahuan Milik Member');
+
+    // Member mengakses index pengetahuan: HANYA melihat artikel miliknya
+    $responseMember = $this->actingAs($memberUser)->get(route('knowledge.index'));
+    $responseMember->assertStatus(200);
+    $responseMember->assertSee('Pengetahuan Milik Member');
+    $responseMember->assertDontSee('Pengetahuan Milik Admin');
+});
+
