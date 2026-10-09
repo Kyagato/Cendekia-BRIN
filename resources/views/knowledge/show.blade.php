@@ -37,6 +37,29 @@
     </div>
     @endif
 
+    @if($knowledge->status == 'Ditolak' && !empty($knowledge->catatan_penolakan))
+    <div class="p-5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl shadow-xs">
+        <div class="flex items-start gap-3.5">
+            <div class="p-2.5 bg-red-100 dark:bg-red-900/60 rounded-xl text-red-600 dark:text-red-400 shrink-0 mt-0.5">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-bold text-red-900 dark:text-red-200">Catatan Penolakan dari Validator</h3>
+                <p class="text-sm text-red-700 dark:text-red-300 mt-1.5 leading-relaxed whitespace-pre-line">{{ $knowledge->catatan_penolakan }}</p>
+                @can('edit-knowledge', $knowledge)
+                <div class="mt-3">
+                    <a href="{{ route('knowledge.edit', $knowledge->id) }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition shadow-xs">
+                        Perbaiki & Ajukan Ulang
+                    </a>
+                </div>
+                @endcan
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Top Action Bar --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -66,10 +89,19 @@
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                     Kembali
                 </a>
+                @can('edit-knowledge', $knowledge)
                 <a href="{{ route('knowledge.edit', $knowledge->id) }}" class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     Edit
                 </a>
+                @endcan
+
+                @if($knowledge->status === 'Diajukan' && (auth()->user()?->isAdmin() || auth()->user()?->isAnalyst()))
+                <a href="{{ route('validasi.show', $knowledge->id) }}" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Validasi Sekarang
+                </a>
+                @endif
             @endif
         </div>
     </div>
@@ -234,20 +266,24 @@
                     </div>
 
                     {{-- Danger Zone --}}
-                    <div class="bg-red-50 dark:bg-slate-900 rounded-xl p-5 border border-red-200 dark:border-slate-700">
-                        <h3 class="text-sm font-bold text-red-800 dark:text-red-400 mb-2">Pindahkan ke Tong Sampah?</h3>
-                        <p class="text-xs text-red-600 dark:text-red-300 mb-4 leading-relaxed">
-                            Pengetahuan ini akan dipindahkan ke tong sampah Anda dan dapat dipulihkan kembali sewaktu-waktu.
-                        </p>
-                        <form action="{{ route('knowledge.destroy', $knowledge->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memindahkan pengetahuan ini ke tong sampah? Anda dapat memulihkannya kembali dari menu Tong Sampah.');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold rounded-lg text-sm transition shadow-md flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                Pindahkan ke Tong Sampah
-                            </button>
-                        </form>
-                    </div>
+                    @if(!$knowledge->trashed())
+                        @can('delete-knowledge', $knowledge)
+                        <div class="bg-red-50 dark:bg-slate-900 rounded-xl p-5 border border-red-200 dark:border-slate-700">
+                            <h3 class="text-sm font-bold text-red-800 dark:text-red-400 mb-2">Pindahkan ke Tong Sampah?</h3>
+                            <p class="text-xs text-red-600 dark:text-red-300 mb-4 leading-relaxed">
+                                Pengetahuan ini akan dipindahkan ke tong sampah Anda dan dapat dipulihkan kembali sewaktu-waktu.
+                            </p>
+                            <form action="{{ route('knowledge.destroy', $knowledge->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memindahkan pengetahuan ini ke tong sampah? Anda dapat memulihkannya kembali dari menu Tong Sampah.');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-full px-4 py-2.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold rounded-lg text-sm transition shadow-md flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    Pindahkan ke Tong Sampah
+                                </button>
+                            </form>
+                        </div>
+                        @endcan
+                    @endif
 
 
                 </div>

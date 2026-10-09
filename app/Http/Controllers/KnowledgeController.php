@@ -127,6 +127,20 @@ class KnowledgeController extends Controller
             $knowledge = $knowledgeQuery->findOrFail($id);
         }
 
+        // Jika materi berada di tong sampah, hanya pemilik asli atau admin yang dapat melihat
+        if ($knowledge->trashed() && !$user->isAdmin() && $knowledge->user_id !== $user->id) {
+            abort(404);
+        }
+
+        // Otorisasi status non-Disetujui:
+        // Materi yang belum disetujui (Draft, Diajukan, Ditolak) hanya boleh dilihat oleh pengunggah asli, Analisis Pengetahuan, atau Admin
+        if ($knowledge->status !== 'Disetujui') {
+            $canView = ($knowledge->user_id === $user->id) || $user->isAdmin() || $user->isAnalyst();
+            if (!$canView) {
+                abort(403, 'Anda tidak memiliki hak akses untuk melihat materi ini.');
+            }
+        }
+
         if (!$knowledge->trashed()) {
             $knowledge->increment('views_count');
         }
