@@ -207,9 +207,12 @@
               <div
                 v-for="item in knowledgeList.data"
                 :key="item.id"
-                class="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden card-hover flex flex-col h-full"
+                class="relative group bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden card-hover flex flex-col h-full"
               >
-                <div class="p-5 flex-grow flex flex-col justify-between">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="10" pathLength="100" class="outline-card-stroke" :style="{ stroke: getOutlineColor(item.tipe) }" />
+                </svg>
+                <div class="p-5 flex-grow flex flex-col justify-between relative z-10">
                   <div>
                     <!-- Header Tipe & Waktu -->
                     <div class="flex justify-between items-center mb-3">
@@ -361,9 +364,12 @@
               <div
                 v-for="item in bookmarkedList.data"
                 :key="item.id"
-                class="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden card-hover flex flex-col h-full"
+                class="relative group bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden card-hover flex flex-col h-full"
               >
-                <div class="p-5 flex-grow flex flex-col justify-between">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="10" pathLength="100" class="outline-card-stroke" :style="{ stroke: getOutlineColor(item.tipe) }" />
+                </svg>
+                <div class="p-5 flex-grow flex flex-col justify-between relative z-10">
                   <div>
                     <div class="flex justify-between items-center mb-3">
                       <span
@@ -666,8 +672,20 @@ const getTypeBadgeClass = (type) => {
       return 'bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300';
     case 'Gambar':
       return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/60 dark:text-yellow-300';
+    case 'Audio':
+      return 'bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-300';
     default:
-      return 'bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300';
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300';
+  }
+};
+
+// Warna outline hover sesuai tipe: Teks biru, Audio hijau, Gambar kuning, Video merah
+const getOutlineColor = (type) => {
+  switch (type) {
+    case 'Video': return '#dc2626';
+    case 'Gambar': return '#eab308';
+    case 'Audio': return '#16a34a';
+    default: return '#2563eb';
   }
 };
 
