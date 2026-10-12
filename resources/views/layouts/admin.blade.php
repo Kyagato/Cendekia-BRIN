@@ -106,7 +106,8 @@
                 @endif
 
 
-                {{-- Pengguna: Super Admin, Admin Pusat, Admin --}}
+                {{-- Menu Pengguna di-hide karena manajemen pengguna & role dikelola langsung via Keycloak --}}
+                {{--
                 @if(auth()->check() && auth()->user()->isAdmin())
                     <a href="{{ route('admin.users.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
@@ -116,6 +117,7 @@
                         Pengguna
                     </a>
                 @endif
+                --}}
                 </nav>
                 @endif
             </div>
@@ -247,11 +249,14 @@
                   {{ request()->routeIs('admin.faq.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Edit FAQs</a>
         @endif
 
+        {{-- Menu Pengguna di-hide karena manajemen pengguna & role dikelola langsung via Keycloak --}}
+        {{--
         @if(auth()->check() && auth()->user()->isAdmin())
         <a href="{{ route('admin.users.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('admin.users.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengguna</a>
         @endif
+        --}}
     </div>
     @endif
 
