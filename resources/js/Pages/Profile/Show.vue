@@ -185,6 +185,19 @@
             </svg>
             <span>Informasi & Instansi</span>
           </button>
+
+          <button
+            v-if="canManageApiToken"
+            type="button"
+            @click="activeTab = 'apitoken'"
+            :class="activeTab === 'apitoken' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
+            class="py-4 px-4 sm:px-6 text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+            </svg>
+            <span>API Token</span>
+          </button>
         </div>
 
         <!-- Tab 1: Pengetahuan Terbit -->
@@ -447,6 +460,72 @@
           </div>
         </div>
 
+        <!-- Tab 4: API Token Swagger (khusus Super Admin pemilik profil) -->
+        <div v-if="canManageApiToken" v-show="activeTab === 'apitoken'" class="p-6 sm:p-8 space-y-5">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">API Token Swagger</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Buat token lalu salin, kemudian tempel pada tombol <b>Authorize</b> di
+              <a href="/api/documentation" target="_blank" class="text-[#2563eb] hover:underline">Swagger UI</a>.
+            </p>
+          </div>
+
+          <!-- Token baru (hanya tampil sekali) -->
+          <div v-if="apiToken" class="space-y-2">
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                readonly
+                :value="apiToken"
+                @focus="$event.target.select()"
+                class="flex-1 px-3.5 py-2.5 font-mono text-xs bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-100"
+              />
+              <button
+                type="button"
+                @click="copyToken"
+                class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white rounded-lg shadow-sm transition"
+                :class="tokenCopied ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-[#2563eb] hover:bg-[#1d4ed8]'"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path v-if="!tokenCopied" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>{{ tokenCopied ? 'Tersalin!' : 'Salin Token' }}</span>
+              </button>
+            </div>
+            <p class="text-xs text-amber-600 dark:text-amber-400">
+              ⚠️ Simpan token ini sekarang. Demi keamanan, token tidak akan ditampilkan lagi setelah halaman dimuat ulang.
+            </p>
+          </div>
+
+          <div v-else-if="apiTokenInfo" class="text-sm text-slate-600 dark:text-slate-300">
+            Token aktif dibuat pada <b>{{ formatTokenDate(apiTokenInfo.created_at) }}</b>
+            <span v-if="apiTokenInfo.last_used_at">, terakhir dipakai {{ formatTokenDate(apiTokenInfo.last_used_at) }}</span>.
+            Generate ulang jika Anda lupa/kehilangan token.
+          </div>
+          <div v-else class="text-sm text-slate-500 dark:text-slate-400">Belum ada token aktif.</div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              @click="generateToken"
+              :disabled="tokenForm.processing"
+              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg shadow-sm transition disabled:opacity-50"
+            >
+              {{ tokenForm.processing ? 'Memproses...' : (apiTokenInfo ? 'Generate Ulang Token' : 'Generate Token') }}
+            </button>
+            <button
+              v-if="apiTokenInfo"
+              type="button"
+              @click="revokeToken"
+              :disabled="tokenForm.processing"
+              class="px-4 py-2 text-sm font-semibold text-red-600 border border-red-300 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition disabled:opacity-50"
+            >
+              Cabut Token
+            </button>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -454,8 +533,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref, computed, watch } from 'vue';
+import { Link, usePage, useForm } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 
 const page = usePage();
@@ -496,10 +575,48 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  canManageApiToken: { type: Boolean, default: false },
+  apiToken: { type: String, default: null },
+  apiTokenInfo: { type: Object, default: null },
+  initialTab: { type: String, default: null },
 });
 
-const activeTab = ref('pengetahuan');
+const activeTab = ref(props.initialTab || 'pengetahuan');
 const isCopied = ref(false);
+
+// ===== API Token Swagger =====
+const tokenForm = useForm({});
+const tokenCopied = ref(false);
+
+watch(() => props.initialTab, (tab) => { if (tab) activeTab.value = tab; });
+
+const generateToken = () => {
+  if (props.apiTokenInfo && !confirm('Token lama akan dicabut dan diganti token baru. Lanjutkan?')) return;
+  tokenForm.post('/profile/api-token', { preserveScroll: true });
+};
+
+const revokeToken = () => {
+  if (!confirm('Cabut token? Swagger tidak akan bisa memakai token ini lagi.')) return;
+  tokenForm.delete('/profile/api-token', { preserveScroll: true });
+};
+
+const copyToken = async () => {
+  try {
+    await navigator.clipboard.writeText(props.apiToken);
+  } catch {
+    // Fallback untuk HTTP non-secure context
+    const el = document.createElement('textarea');
+    el.value = props.apiToken;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    el.remove();
+  }
+  tokenCopied.value = true;
+  setTimeout(() => (tokenCopied.value = false), 2000);
+};
+
+const formatTokenDate = (d) => new Date(d).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
 
 const userInitials = computed(() => {
   return props.user?.name ? props.user.name.charAt(0).toUpperCase() : 'U';

@@ -63,6 +63,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // ----- API Token Swagger (khusus Super Admin, dicek di controller) -----
+    Route::post('/profile/api-token', [ProfileController::class, 'generateApiToken'])->name('profile.api-token.generate');
+    Route::delete('/profile/api-token', [ProfileController::class, 'revokeApiToken'])->name('profile.api-token.revoke');
+
     // ----- Dark Mode Toggle -----
     Route::post('/toggle-dark-mode', [HomeController::class, 'toggleDarkMode'])->name('toggle.darkmode');
 

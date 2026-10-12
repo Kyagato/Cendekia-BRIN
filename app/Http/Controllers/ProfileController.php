@@ -22,6 +22,38 @@ class ProfileController extends Controller
         ]);
     }
 
+    private const SWAGGER_TOKEN_NAME = 'swagger-token';
+
+    /**
+     * Generate API Token (Sanctum) untuk Swagger — khusus Super Admin.
+     * Token lama dengan nama yang sama akan dicabut.
+     */
+    public function generateApiToken(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($user->isSuperAdmin(), 403, 'Hanya Super Admin yang dapat membuat API Token.');
+
+        $user->tokens()->where('name', self::SWAGGER_TOKEN_NAME)->delete();
+        $token = $user->createToken(self::SWAGGER_TOKEN_NAME)->plainTextToken;
+
+        return Redirect::route('users.show', $user)
+            ->with('api_token', $token)
+            ->with('profile_tab', 'apitoken');
+    }
+
+    /**
+     * Cabut (revoke) API Token Swagger milik Super Admin.
+     */
+    public function revokeApiToken(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($user->isSuperAdmin(), 403);
+
+        $user->tokens()->where('name', self::SWAGGER_TOKEN_NAME)->delete();
+
+        return Redirect::route('users.show', $user)->with('profile_tab', 'apitoken');
+    }
+
     /**
      * Update the user's profile information.
      */
@@ -147,6 +179,13 @@ class ProfileController extends Controller
             'totalThreads' => $totalThreads,
             'bookmarkedList' => $bookmarkedList,
             'totalBookmarks' => $totalBookmarks,
+            'canManageApiToken' => $canManageApiToken = $isOwner && $user->isSuperAdmin(),
+            // Token plain text hanya tersedia sekali (flash) setelah digenerate
+            'apiToken' => $canManageApiToken ? session('api_token') : null,
+            'apiTokenInfo' => $canManageApiToken
+                ? $user->tokens()->where('name', self::SWAGGER_TOKEN_NAME)->latest()->first(['id', 'created_at', 'last_used_at'])
+                : null,
+            'initialTab' => $canManageApiToken ? session('profile_tab') : null,
         ]);
     }
 }
