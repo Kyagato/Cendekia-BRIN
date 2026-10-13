@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\AuditLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,7 @@ class ProfileController extends Controller
         $user->tokens()->where('name', self::SWAGGER_TOKEN_NAME)->delete();
         $token = $user->createToken(self::SWAGGER_TOKEN_NAME)->plainTextToken;
 
-        \App\Models\AuditLog::record(
+        AuditLog::record(
             'API_TOKEN_GENERATED',
             "Super Admin '{$user->name}' ({$user->email}) membuat Sanctum API token baru untuk Swagger.",
             ['token_name' => self::SWAGGER_TOKEN_NAME, 'user_id' => $user->id]
@@ -57,7 +58,7 @@ class ProfileController extends Controller
 
         $user->tokens()->where('name', self::SWAGGER_TOKEN_NAME)->delete();
 
-        \App\Models\AuditLog::record(
+        AuditLog::record(
             'API_TOKEN_REVOKED',
             "Super Admin '{$user->name}' ({$user->email}) mencabut Sanctum API token Swagger.",
             ['token_name' => self::SWAGGER_TOKEN_NAME, 'user_id' => $user->id]

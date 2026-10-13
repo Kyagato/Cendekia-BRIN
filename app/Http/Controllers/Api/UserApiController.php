@@ -332,6 +332,21 @@ class UserApiController extends Controller
         $oldRole = $user->role;
         $newRole = $validated['role'];
 
+        if ($oldRole === $newRole) {
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Role tidak berubah.',
+                'data'    => [
+                    'id'              => $user->id,
+                    'name'            => $user->name,
+                    'email'           => $user->email,
+                    'old_role'        => $oldRole,
+                    'new_role'        => $newRole,
+                    'keycloak_synced' => false,
+                ],
+            ]);
+        }
+
         $keycloakSynced = false;
         $keycloakMessage = null;
 
