@@ -12,7 +12,7 @@
 <div class="space-y-6" x-data="{
     viewMode: '{{ ($errors->any() || request('action') === 'create' || !empty($linkedKnowledge)) ? 'create' : 'list' }}',
     activeItem: null,
-    editItem: null,
+    editItem: { id: null, judul: '', category_id: '', konten: '', knowledge_id: null, knowledge_title: null, status: null, rejection_note: null },
     showDeleteModal: false,
     deleteTarget: null,
     openEdit(item) {
@@ -652,7 +652,7 @@
                     </div>
                 </template>
 
-                <form :action="'/forum/' + (editItem ? editItem.id : '')" method="POST" x-data="{ resubmitFlag: 0 }">
+                <form :action="'/forum/' + (editItem?.id || '')" method="POST" x-data="{ resubmitFlag: 0 }">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="ref" value="dashboard">

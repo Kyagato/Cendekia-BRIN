@@ -158,12 +158,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =============================================================
     Route::prefix('admin')->name('admin.')->middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
         Route::get('/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('statistik');
-        Route::resource('/users', App\Http\Controllers\UserController::class);
-        Route::resource('/faq', App\Http\Controllers\FaqController::class);
+        Route::resource('/users', App\Http\Controllers\UserController::class)->except(['show']);
+        Route::resource('/faq', App\Http\Controllers\FaqController::class)->except(['create', 'show', 'edit']);
         Route::post('/faq-section', [App\Http\Controllers\FaqController::class, 'storeSection'])->name('faq.storeSection');
         Route::put('/faq-section/update', [App\Http\Controllers\FaqController::class, 'updateSection'])->name('faq.updateSection');
         Route::delete('/faq-section', [App\Http\Controllers\FaqController::class, 'destroySection'])->name('faq.destroySection');
         Route::resource('/direktori-kategori', App\Http\Controllers\Admin\CategoryController::class)
+            ->only(['index', 'store', 'update', 'destroy'])
             ->parameters(['direktori-kategori' => 'category'])
             ->names('categories');
     });
