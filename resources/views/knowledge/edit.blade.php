@@ -252,7 +252,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- Kategori --}}
                         <div>
-                            <label for="category_id" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Kategori</label>
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="category_id" class="block text-sm font-bold text-slate-800 dark:text-slate-200">Kategori</label>
+                                @if(auth()->check() && auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.categories.index') }}" target="_blank" class="text-xs text-primary-600 dark:text-primary-400 hover:underline font-semibold flex items-center gap-1" title="Buka kelola direktori di tab baru">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                        Edit Direktori
+                                    </a>
+                                @endif
+                            </div>
                             <div class="relative">
                                 <select id="category_id" name="category_id" class="w-full px-4 py-3 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100" required>
                                     <option value="" disabled selected>Pilih Kategori</option>
