@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Knowledge;
 use App\Models\Tag;
 use App\Models\User;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -83,8 +84,8 @@ class KnowledgeService
                     'user_id'        => $user->id,
                     'category_id'    => $data['category_id'],
                     'judul'          => $data['judul'],
-                    'deskripsi'      => $data['deskripsi'] ?? null,
-                    'detail'         => $data['detail'] ?? null,
+                    'deskripsi'      => isset($data['deskripsi']) ? HtmlSanitizer::clean($data['deskripsi']) : null,
+                    'detail'         => isset($data['detail']) ? HtmlSanitizer::clean($data['detail']) : null,
                     'tanggal_terbit' => $data['tanggal_terbit'] ?? now(),
                     'status_akses'   => $data['status_akses'] ?? 'public',
                     'tipe'           => $tipe,
@@ -151,8 +152,8 @@ class KnowledgeService
                 $updateData = [
                     'category_id'    => $data['category_id'],
                     'judul'          => $data['judul'],
-                    'deskripsi'      => $data['deskripsi'] ?? null,
-                    'detail'         => $data['detail'] ?? null,
+                    'deskripsi'      => isset($data['deskripsi']) ? HtmlSanitizer::clean($data['deskripsi']) : null,
+                    'detail'         => isset($data['detail']) ? HtmlSanitizer::clean($data['detail']) : null,
                     'tanggal_terbit' => $data['tanggal_terbit'] ?? $knowledge->tanggal_terbit,
                     'status_akses'   => $data['status_akses'] ?? 'public',
                     'tipe'           => $tipe,

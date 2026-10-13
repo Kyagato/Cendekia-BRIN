@@ -9,6 +9,7 @@ use App\Models\ForumReply;
 use App\Models\ForumThread;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use OpenApi\Attributes as OA;
 
 class ForumApiController extends Controller
@@ -225,8 +226,11 @@ class ForumApiController extends Controller
         }
 
         $validated = $request->validate([
-            'konten' => 'required|string',
-            'parent_id' => 'nullable|exists:forum_replies,id',
+            'konten'    => 'required|string',
+            'parent_id' => [
+                'nullable',
+                Rule::exists('forum_replies', 'id')->where(fn ($query) => $query->where('thread_id', $thread->id)),
+            ],
         ]);
 
         $reply = ForumReply::create([

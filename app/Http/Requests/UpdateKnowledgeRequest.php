@@ -15,6 +15,23 @@ class UpdateKnowledgeRequest extends FormRequest
     }
 
     /**
+     * Prepare inputs for validation by sanitizing rich text HTML.
+     */
+    protected function prepareForValidation(): void
+    {
+        $merge = [];
+        if ($this->has('deskripsi')) {
+            $merge['deskripsi'] = \App\Support\HtmlSanitizer::clean($this->input('deskripsi'));
+        }
+        if ($this->has('detail')) {
+            $merge['detail'] = \App\Support\HtmlSanitizer::clean($this->input('detail'));
+        }
+        if (!empty($merge)) {
+            $this->merge($merge);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>

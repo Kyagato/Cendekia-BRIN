@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class KnowledgeInteractionController extends Controller
 {
@@ -84,17 +85,21 @@ class KnowledgeInteractionController extends Controller
 
         $validated = $request->validate([
             'konten'    => 'required|string|max:3000',
-            'parent_id' => 'nullable|exists:knowledge_comments,id',
+            'parent_id' => [
+                'nullable',
+                Rule::exists('knowledge_comments', 'id')->where(fn ($query) => $query->where('knowledge_id', $knowledge->id)),
+            ],
         ], [
-            'konten.required' => 'Komentar tidak boleh kosong.',
-            'konten.max'      => 'Komentar maksimal 3000 karakter.',
+            'konten.required'  => 'Komentar tidak boleh kosong.',
+            'konten.max'       => 'Komentar maksimal 3000 karakter.',
+            'parent_id.exists' => 'Komentar induk tidak valid atau tidak ditemukan pada artikel ini.',
         ]);
 
         $comment = KnowledgeComment::create([
             'knowledge_id' => $knowledge->id,
             'user_id'      => $user->id,
             'parent_id'    => $validated['parent_id'] ?? null,
-            'konten'       => trim($validated['konten']),
+            'konten'       => strip_tags(trim($validated['konten'])),
         ]);
 
         AuditLog::record(

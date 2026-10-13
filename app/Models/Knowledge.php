@@ -32,6 +32,16 @@ class Knowledge extends Model
         'tanggal_terbit' => 'date',
     ];
 
+    public function setDeskripsiAttribute($value): void
+    {
+        $this->attributes['deskripsi'] = \App\Support\HtmlSanitizer::clean($value);
+    }
+
+    public function setDetailAttribute($value): void
+    {
+        $this->attributes['detail'] = \App\Support\HtmlSanitizer::clean($value);
+    }
+
     public function isDraft(): bool
     {
         return $this->status === self::STATUS_DRAFT;

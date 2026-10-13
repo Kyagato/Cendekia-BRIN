@@ -8,7 +8,7 @@ use App\Models\ForumThread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ForumController extends Controller
@@ -220,7 +220,10 @@ class ForumController extends Controller
 
         $request->validate([
             'konten'      => 'required|string',
-            'parent_id'   => 'nullable|exists:forum_replies,id',
+            'parent_id'   => [
+                'nullable',
+                Rule::exists('forum_replies', 'id')->where(fn ($query) => $query->where('thread_id', $thread->id)),
+            ],
             'mention_user'=> 'nullable|string|max:255',
         ]);
 
