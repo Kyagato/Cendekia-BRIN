@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\AuditLog;
 use App\Models\User;
 use App\Services\KeycloakAdminService;
 use Illuminate\Http\JsonResponse;
@@ -342,6 +343,21 @@ class UserApiController extends Controller
         }
 
         $user->update(['role' => $newRole]);
+
+        AuditLog::record(
+            'USER_ROLE_CHANGED',
+            "Role user '{$user->name}' ({$user->email}) diubah dari '{$oldRole}' menjadi '{$newRole}' via API.",
+            [
+                'actor_id'        => $currentUser?->id,
+                'actor_email'     => $currentUser?->email,
+                'target_user_id'  => $user->id,
+                'target_user'     => $user->email,
+                'old_role'        => $oldRole,
+                'new_role'        => $newRole,
+                'keycloak_synced' => $keycloakSynced,
+            ],
+            $currentUser
+        );
 
         $message = "Role berhasil diubah dari '{$oldRole}' menjadi '{$newRole}'.";
         if ($keycloakMessage) {

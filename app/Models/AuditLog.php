@@ -39,7 +39,7 @@ class AuditLog extends Model
     public static function record(string $action, string $description, ?array $properties = null, ?User $user = null): ?self
     {
         try {
-            $currentUser = $user ?? auth()->user();
+            $currentUser = $user ?? request()?->user() ?? auth()->user();
 
             return self::create([
                 'user_id'     => $currentUser?->id,

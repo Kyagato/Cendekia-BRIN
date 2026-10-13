@@ -36,6 +36,12 @@ class ProfileController extends Controller
         $user->tokens()->where('name', self::SWAGGER_TOKEN_NAME)->delete();
         $token = $user->createToken(self::SWAGGER_TOKEN_NAME)->plainTextToken;
 
+        \App\Models\AuditLog::record(
+            'API_TOKEN_GENERATED',
+            "Super Admin '{$user->name}' ({$user->email}) membuat Sanctum API token baru untuk Swagger.",
+            ['token_name' => self::SWAGGER_TOKEN_NAME, 'user_id' => $user->id]
+        );
+
         return Redirect::route('users.show', $user)
             ->with('api_token', $token)
             ->with('profile_tab', 'apitoken');
@@ -50,6 +56,12 @@ class ProfileController extends Controller
         abort_unless($user->isSuperAdmin(), 403);
 
         $user->tokens()->where('name', self::SWAGGER_TOKEN_NAME)->delete();
+
+        \App\Models\AuditLog::record(
+            'API_TOKEN_REVOKED',
+            "Super Admin '{$user->name}' ({$user->email}) mencabut Sanctum API token Swagger.",
+            ['token_name' => self::SWAGGER_TOKEN_NAME, 'user_id' => $user->id]
+        );
 
         return Redirect::route('users.show', $user)->with('profile_tab', 'apitoken');
     }
