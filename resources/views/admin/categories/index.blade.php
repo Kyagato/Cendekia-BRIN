@@ -122,54 +122,41 @@
         </div>
     @endif
 
-    {{-- Stats Cards & Quick Search Filter --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {{-- Card: Total Direktori --}}
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    {{-- Filter & Actions Bar (Dibuat identik seperti search bar di halaman Pengetahuan) --}}
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        {{-- Search Form: w-full sm:w-64 --}}
+        <form method="GET" action="{{ route('admin.categories.index') }}" class="relative w-full sm:w-64">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
-            <div>
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Direktori</p>
-                <p class="text-xl font-bold text-slate-900 dark:text-white">{{ $categories->count() }}</p>
-            </div>
-        </div>
-
-        {{-- Card: Dokumen Terkategori --}}
-        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Pengetahuan</p>
-                <p class="text-xl font-bold text-slate-900 dark:text-white">{{ $categories->sum('knowledge_count') }}</p>
-            </div>
-        </div>
-
-        {{-- Search Input (Colspan 2) --}}
-        <div class="md:col-span-2 bg-white dark:bg-slate-800 rounded-xl p-2.5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center">
-            <form method="GET" action="{{ route('admin.categories.index') }}" class="w-full flex items-center gap-2">
-                <div class="relative flex-1">
-                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <input type="text" 
+                   name="q" 
+                   value="{{ request('q') }}" 
+                   placeholder="Pencarian..."
+                   class="w-full pl-9 {{ request('q') ? 'pr-8' : 'pr-3' }} py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-primary-600 focus:border-primary-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition shadow-2xs">
+            @if(request('q'))
+                <a href="{{ route('admin.categories.index') }}" 
+                   class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" 
+                   title="Hapus pencarian">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <input type="text" 
-                           name="q" 
-                           value="{{ request('q') }}" 
-                           placeholder="Cari nama direktori kategori..." 
-                           class="w-full pl-9 pr-3 py-1.5 text-sm bg-transparent border-none focus:outline-none focus:ring-0 text-slate-800 dark:text-slate-200 placeholder-slate-400">
-                </div>
-                @if(request('q'))
-                    <a href="{{ route('admin.categories.index') }}" class="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium px-2 py-1">Reset</a>
-                @endif
-                <button type="submit" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
-                    Cari
-                </button>
-            </form>
+                </a>
+            @endif
+        </form>
+
+        {{-- Stats Badges --}}
+        <div class="flex items-center gap-2.5 flex-wrap">
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                Total Direktori: <strong class="text-slate-900 dark:text-white">{{ $categories->count() }}</strong>
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Total Pengetahuan: <strong class="text-slate-900 dark:text-white">{{ $categories->sum('knowledge_count') }}</strong>
+            </span>
         </div>
     </div>
 
