@@ -9,19 +9,27 @@
             <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100">Daftar Pengetahuan</h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manajemen artikel pengetahuan</p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('knowledge.create') }}" class="group inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
+                <svg class="w-4 h-4 transition-transform group-hover-spin-brief" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Tambah</span>
+            </a>
+            @if(auth()->check() && auth()->user()->isAdmin())
+                <a href="{{ route('admin.categories.index') }}" class="group inline-flex items-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3.5 py-2 rounded-lg text-sm font-semibold transition border border-slate-300 dark:border-slate-600 shadow-2xs" title="Kelola Direktori Kategori">
+                    <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span>Edit Kategori</span>
+                </a>
+            @endif
             <a href="{{ route('knowledge.trash') }}" class="group inline-flex items-center gap-2 bg-red-50/50 hover:bg-red-50 dark:bg-red-950/20 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 px-3.5 py-2 rounded-lg text-sm font-semibold transition border border-red-300 dark:border-red-800 shadow-xs">
                 <svg class="w-4 h-4 text-red-500 dark:text-red-400 overflow-visible transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path class="trash-lid" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16 M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3" style="transform-origin: 4px 7px;" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6" />
                 </svg>
                 <span>Tong Sampah</span>
-            </a>
-            <a href="{{ route('knowledge.create') }}" class="group inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm">
-                <svg class="w-4 h-4 transition-transform group-hover-spin-brief" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                <span>Tambah</span>
             </a>
         </div>
     </div>

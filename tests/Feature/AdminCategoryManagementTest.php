@@ -147,3 +147,35 @@ it('allows deleting an empty category and records audit log', function () {
     expect($log)->not->toBeNull();
     expect($log->properties['nama_kategori'])->toBe('Kategori Kosong');
 });
+
+it('shows Edit Kategori button on knowledge index exclusively for 3 admin roles', function () {
+    // 3 Admin roles can see the button
+    $this->actingAs($this->superAdmin)->get(route('knowledge.index'))
+        ->assertStatus(200)
+        ->assertSee('Edit Kategori')
+        ->assertSee(route('admin.categories.index'));
+
+    $this->actingAs($this->adminPusat)->get(route('knowledge.index'))
+        ->assertStatus(200)
+        ->assertSee('Edit Kategori')
+        ->assertSee(route('admin.categories.index'));
+
+    $this->actingAs($this->adminRegular)->get(route('knowledge.index'))
+        ->assertStatus(200)
+        ->assertSee('Edit Kategori')
+        ->assertSee(route('admin.categories.index'));
+
+    // Other roles CANNOT see the button
+    $this->actingAs($this->analyst)->get(route('knowledge.index'))
+        ->assertStatus(200)
+        ->assertDontSee('Edit Kategori');
+
+    $this->actingAs($this->member)->get(route('knowledge.index'))
+        ->assertStatus(200)
+        ->assertDontSee('Edit Kategori');
+
+    $this->actingAs($this->moderator)->get(route('knowledge.index'))
+        ->assertStatus(200)
+        ->assertDontSee('Edit Kategori');
+});
+

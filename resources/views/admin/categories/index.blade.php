@@ -5,7 +5,13 @@
     <li>
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
-    <li class="text-slate-800 dark:text-slate-100 font-bold">Edit Direktori</li>
+    <li>
+        <a href="{{ route('knowledge.index') }}" class="hover:text-primary-600 transition">Pengetahuan</a>
+    </li>
+    <li>
+        <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </li>
+    <li class="text-slate-800 dark:text-slate-100 font-bold">Edit Kategori</li>
 @endsection
 
 @section('content')
@@ -66,8 +72,15 @@
             </p>
         </div>
 
-        {{-- Action Button: Tambah Direktori Baru --}}
+        {{-- Action Buttons --}}
         <div class="flex items-center gap-3">
+            <a href="{{ route('knowledge.index') }}" 
+               class="inline-flex items-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 shadow-2xs transition">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Kembali</span>
+            </a>
             <button @click="openCreateModal()" 
                     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition hover:shadow cursor-pointer shrink-0">
                 <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

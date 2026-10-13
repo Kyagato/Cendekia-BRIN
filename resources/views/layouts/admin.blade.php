@@ -54,7 +54,7 @@
                 @if(auth()->check())
                     <a href="{{ route('knowledge.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
-                              {{ request()->routeIs('knowledge.*')
+                              {{ (request()->routeIs('knowledge.*') || request()->routeIs('admin.categories.*'))
                                   ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Pengetahuan
@@ -90,18 +90,6 @@
                                   ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Atur Forum
-                    </a>
-                @endif
-
-
-                {{-- Edit Direktori: Super Admin, Admin Pusat, Admin --}}
-                @if(auth()->check() && auth()->user()->isAdmin())
-                    <a href="{{ route('admin.categories.index') }}"
-                       class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
-                              {{ request()->routeIs('admin.categories.*')
-                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
-                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
-                        Edit Direktori
                     </a>
                 @endif
 
@@ -233,7 +221,7 @@
         @if(auth()->check())
         <a href="{{ route('knowledge.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('knowledge.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
+                  {{ (request()->routeIs('knowledge.*') || request()->routeIs('admin.categories.*')) ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
         <a href="{{ route('dashboard.forum.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('dashboard.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Forum Saya</a>
@@ -252,12 +240,6 @@
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
-        @endif
-
-        @if(auth()->check() && auth()->user()->isAdmin())
-        <a href="{{ route('admin.categories.index') }}"
-           class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('admin.categories.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Edit Direktori</a>
         @endif
 
         @if(auth()->check() && auth()->user()->isAdmin())
