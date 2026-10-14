@@ -82,7 +82,7 @@
               >
                 <div class="min-w-0 pr-3">
                   <h4 class="text-sm font-semibold text-[#0f172a] dark:text-white truncate">{{ item.judul }}</h4>
-                  <p class="text-xs text-[#475569] dark:text-slate-400 mt-0.5">{{ item.kategori?.nama_kategori }}</p>
+                  <p class="text-xs text-[#475569] dark:text-slate-400 mt-0.5">{{ item.category?.nama_kategori || item.kategori?.nama_kategori }}</p>
                 </div>
                 <span class="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-[#eff6ff] text-[#2563eb] dark:bg-blue-950 dark:text-blue-300 shrink-0">
                   {{ item.tipe }}

@@ -302,24 +302,19 @@ class KnowledgeService
      */
     public function forceDeleteKnowledge(Knowledge $knowledge): bool
     {
-        return DB::transaction(function () use ($knowledge) {
+        $filesToDelete = array_filter([
+            $knowledge->file_path,
+            $knowledge->url_teks,
+            $knowledge->gambar_sampul,
+        ]);
+
+        $deleted = DB::transaction(function () use ($knowledge) {
             $knowledgeId = $knowledge->id;
             $knowledgeTitle = $knowledge->judul;
 
-            // Hapus file fisik jika ada
-            if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
-                Storage::disk('public')->delete($knowledge->file_path);
-            }
-            if ($knowledge->url_teks && Storage::disk('public')->exists($knowledge->url_teks)) {
-                Storage::disk('public')->delete($knowledge->url_teks);
-            }
-            if ($knowledge->gambar_sampul && Storage::disk('public')->exists($knowledge->gambar_sampul)) {
-                Storage::disk('public')->delete($knowledge->gambar_sampul);
-            }
-
             $tags = $knowledge->tags;
             $knowledge->tags()->detach();
-            $deleted = $knowledge->forceDelete();
+            $result = $knowledge->forceDelete();
 
             // Hapus orphan tags
             foreach ($tags as $tag) {
@@ -336,8 +331,19 @@ class KnowledgeService
                 ['knowledge_id' => $knowledgeId, 'judul' => $knowledgeTitle]
             );
 
-            return (bool) $deleted;
+            return (bool) $result;
         });
+
+        // Hapus file fisik hanya setelah transaksi database berhasil di-commit
+        if ($deleted) {
+            foreach ($filesToDelete as $filePath) {
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
+            }
+        }
+
+        return $deleted;
     }
 
     /**

@@ -161,20 +161,22 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                 $updateData = [
                     'keycloak_id' => $keycloakUser->getId(),
                     'name' => $keycloakUser->getName() ?? $user->name,
-                    'email_verified_at' => $user->email_verified_at ?? now(),
                 ];
+                if (!$user->email_verified_at) {
+                    $updateData['email_verified_at'] = now();
+                }
                 if ($assignedRole) {
                     $updateData['role'] = $assignedRole;
                 }
-                $user->update($updateData);
+                $user->forceFill($updateData)->save();
             } else {
-                $user = User::create([
+                $user = new User([
                     'name' => $keycloakUser->getName() ?? $keycloakUser->getNickname() ?? 'Keycloak User',
                     'email' => $keycloakUser->getEmail(),
                     'keycloak_id' => $keycloakUser->getId(),
                     'role' => $assignedRole ?? User::ROLE_ANGGOTA,
-                    'email_verified_at' => now(),
                 ]);
+                $user->forceFill(['email_verified_at' => now()])->save();
             }
 
             Auth::login($user, true);

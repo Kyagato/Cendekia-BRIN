@@ -41,7 +41,7 @@ class SearchController extends Controller
      */
     public function apiSearch(Request $request)
     {
-        $results = Knowledge::with(['category', 'user', 'tags'])
+        $results = Knowledge::with(['category', 'user:id,name,foto_profil', 'tags'])
             ->where('status', 'Disetujui')
             ->filter($request->all())
             ->take(10)
@@ -56,7 +56,7 @@ class SearchController extends Controller
      */
     public function index(Request $request)
     {
-        $results = Knowledge::with(['category', 'user', 'tags'])
+        $results = Knowledge::with(['category', 'user:id,name,foto_profil', 'tags'])
             ->where('status', 'Disetujui')
             ->filter($request->all())
             ->paginate(12)
@@ -80,7 +80,7 @@ class SearchController extends Controller
         if ($request->filled('q')) {
             $keyword = $request->q;
             $forumResults = ForumThread::approved()
-                ->with(['user', 'category'])
+                ->with(['user:id,name,foto_profil', 'category'])
                 ->withCount('replies')
                 ->where(function ($query) use ($keyword) {
                     $query->where('judul', 'like', "%{$keyword}%")

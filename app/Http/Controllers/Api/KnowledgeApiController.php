@@ -85,10 +85,11 @@ class KnowledgeApiController extends Controller
         ],
         responses: [
             new OA\Response(response: 200, description: 'Data pengetahuan ditemukan'),
+            new OA\Response(response: 403, description: 'Akses ditolak (belum disetujui)'),
             new OA\Response(response: 404, description: 'Pengetahuan tidak ditemukan')
         ]
     )]
-    public function show(int $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
         $knowledge = Knowledge::with(['category', 'user', 'tags'])->find($id);
 
@@ -99,8 +100,24 @@ class KnowledgeApiController extends Controller
             ], 404);
         }
 
-        // Increment views count secara atomik
-        $knowledge->increment('views_count');
+        // Otorisasi status non-Disetujui:
+        // Materi yang belum disetujui (Draft, Diajukan, Ditolak) hanya boleh dilihat oleh pengunggah asli, Analis, atau Admin
+        if ($knowledge->status !== 'Disetujui') {
+            $user = $request->user('sanctum') ?? auth('sanctum')->user() ?? auth()->user();
+            $canView = $user && ($knowledge->user_id === $user->id || $user->isAdmin() || $user->isAnalyst());
+
+            if (!$canView) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Pengetahuan belum disetujui atau akses ditolak',
+                ], 403);
+            }
+        }
+
+        // Increment views count secara atomik hanya untuk konten yang disetujui
+        if ($knowledge->status === 'Disetujui') {
+            $knowledge->increment('views_count');
+        }
 
         return response()->json([
             'status' => 'success',
