@@ -21,8 +21,11 @@
     {{-- Top Action Bar --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Validasi &amp; Edit Pengetahuan</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Ubah data artikel dan tentukan keputusan persetujuan atau penolakan</p>
+            <div class="flex items-center gap-2.5 mb-1.5">
+                <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Validasi &amp; Edit Pengetahuan</h1>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Ubah data artikel dan tentukan keputusan persetujuan atau penolakan</p>
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('validasi.index') }}" class="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2 shadow-sm">
@@ -272,7 +275,7 @@
                             <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Kategori</h3>
                         </div>
                         <div class="px-5 py-4">
-                            <select name="category_id" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-red-600 focus:border-red-600 transition">
+                            <select name="category_id" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-primary-600 focus:border-primary-600 transition">
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}" {{ old('category_id', $knowledge->category_id) == $cat->id ? 'selected' : '' }}>
@@ -311,11 +314,11 @@
                             }
                         }">
                             <input type="hidden" name="tags" :value="hiddenValue">
-                            <div class="flex flex-wrap items-center gap-2 min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-red-600 focus-within:border-red-600 transition">
+                            <div class="flex flex-wrap items-center gap-2 min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-primary-600 focus-within:border-primary-600 transition">
                                 <template x-for="(tag, index) in tags" :key="index">
-                                    <span class="inline-flex items-center gap-1.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-semibold pl-3 pr-1.5 py-1.5 rounded-full">
+                                    <span class="inline-flex items-center gap-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-semibold pl-3 pr-1.5 py-1.5 rounded-full border border-primary-200 dark:border-primary-800/60">
                                         <span x-text="tag"></span>
-                                        <button type="button" @click="removeTag(index)" class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-red-200 dark:bg-red-800 hover:bg-red-400 dark:hover:bg-red-600 text-red-700 dark:text-red-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
+                                        <button type="button" @click="removeTag(index)" class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-primary-200 dark:bg-primary-800 hover:bg-primary-400 dark:hover:bg-primary-600 text-primary-700 dark:text-primary-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
                                             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </span>
@@ -337,7 +340,7 @@
                         </div>
                         <div class="px-5 py-4">
                             <input type="date" name="tanggal_terbit" value="{{ old('tanggal_terbit', $knowledge->tanggal_terbit ? \Carbon\Carbon::parse($knowledge->tanggal_terbit)->format('Y-m-d') : '') }}"
-                                   class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-red-600 focus:border-red-600 transition">
+                                   class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-primary-600 focus:border-primary-600 transition">
                         </div>
                     </div>
 
@@ -385,7 +388,7 @@
                 <div class="px-6 py-5 space-y-4">
                     <p class="text-sm text-slate-600 dark:text-slate-300">Tuliskan alasan penolakan atau instruksi perbaikan yang jelas untuk pengunggah:</p>
                     <textarea name="alasan_tolak" rows="4" placeholder="Tulis alasan penolakan dan instruksi revisi..." required maxlength="1000"
-                              class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-red-600 focus:border-red-600 text-sm text-slate-800 dark:text-slate-100 resize-none">{{ old('alasan_tolak', $knowledge->catatan_penolakan) }}</textarea>
+                              class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus:ring-primary-600 focus:border-primary-600 text-sm text-slate-800 dark:text-slate-100 resize-none">{{ old('alasan_tolak', $knowledge->catatan_penolakan) }}</textarea>
                 </div>
                 <div class="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
                     <button type="button" @click="showTolakModal = false"
@@ -393,7 +396,7 @@
                         Batal
                     </button>
                     <button type="submit"
-                            class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition shadow-sm">
+                            class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-lg transition shadow-sm">
                         Tolak Pengajuan
                     </button>
                 </div>

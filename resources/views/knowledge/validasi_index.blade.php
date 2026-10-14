@@ -5,7 +5,7 @@
     <li>
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
-    <li class="text-slate-800 dark:text-slate-200 font-semibold">Validasi</li>
+    <li class="text-slate-800 dark:text-slate-100 font-bold">Validasi</li>
 @endsection
 
 @section('content')
@@ -15,8 +15,11 @@
     {{-- Header Section --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Validasi Pengetahuan</h1>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Daftar pengajuan artikel pengetahuan yang memerlukan peninjauan, persetujuan, atau penolakan</p>
+            <div class="flex items-center gap-2.5 mb-1.5">
+                <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Validasi Pengetahuan</h1>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Daftar pengajuan artikel pengetahuan yang memerlukan peninjauan, persetujuan, atau penolakan</p>
         </div>
     </div>
 
@@ -35,7 +38,7 @@
                         <svg class="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Pencarian..."
-                           class="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-red-600 focus:border-red-600 transition">
+                           class="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-primary-600 focus:border-primary-600 transition shadow-2xs">
                     @if(request('status'))
                         <input type="hidden" name="status" value="{{ request('status') }}">
                     @endif
@@ -72,28 +75,28 @@
                              x-transition:leave-end="transform opacity-0 scale-95"
                              class="absolute right-0 z-30 mt-2 w-48 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 focus:outline-none">
                             <a href="{{ route('validasi.index', array_merge(request()->except('status'))) }}"
-                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ !request('status') ? 'text-red-600 dark:text-red-400 bg-slate-50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
+                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ !request('status') ? 'text-primary-600 dark:text-primary-400 bg-primary-50/50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
                                 <span>Semua Status</span>
                                 @if(!request('status'))
-                                <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                                 @endif
                             </a>
                             <a href="{{ route('validasi.index', array_merge(request()->query(), ['status' => 'Diajukan'])) }}"
-                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ request('status') === 'Diajukan' ? 'text-blue-600 dark:text-blue-400 bg-slate-50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
+                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ request('status') === 'Diajukan' ? 'text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
                                 <span>Diajukan</span>
                                 @if(request('status') === 'Diajukan')
                                 <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                                 @endif
                             </a>
                             <a href="{{ route('validasi.index', array_merge(request()->query(), ['status' => 'Disetujui'])) }}"
-                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ request('status') === 'Disetujui' ? 'text-emerald-600 dark:text-emerald-400 bg-slate-50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
+                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ request('status') === 'Disetujui' ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
                                 <span>Disetujui</span>
                                 @if(request('status') === 'Disetujui')
                                 <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                                 @endif
                             </a>
                             <a href="{{ route('validasi.index', array_merge(request()->query(), ['status' => 'Ditolak'])) }}"
-                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ request('status') === 'Ditolak' ? 'text-rose-600 dark:text-rose-400 bg-slate-50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
+                               class="flex items-center justify-between px-4 py-2 text-sm font-semibold {{ request('status') === 'Ditolak' ? 'text-rose-600 dark:text-rose-400 bg-rose-50/50 dark:bg-slate-700/50' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700' }} transition">
                                 <span>Ditolak</span>
                                 @if(request('status') === 'Ditolak')
                                 <svg class="w-4 h-4 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
@@ -102,7 +105,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition shadow-sm">
+                    <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white rounded-lg text-sm font-semibold transition shadow-sm">
                         Cari
                     </button>
                 </div>
@@ -144,7 +147,7 @@
 
                         {{-- Judul --}}
                         <td class="py-3 px-6">
-                            <a href="{{ route('validasi.show', $item->id) }}" class="text-sm font-medium text-slate-800 dark:text-slate-100 hover:text-red-600 dark:hover:text-red-400 transition">
+                            <a href="{{ route('validasi.show', $item->id) }}" class="text-sm font-medium text-slate-800 dark:text-slate-100 hover:text-primary-600 dark:hover:text-primary-400 transition">
                                 {{ $item->judul }}
                             </a>
                         </td>

@@ -5,16 +5,19 @@
     <li>
         <svg class="w-4 h-4 text-slate-400 dark:text-slate-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
     </li>
-    <li class="text-slate-800 dark:text-slate-200 font-semibold">Statistik</li>
+    <li class="text-slate-800 dark:text-slate-100 font-bold">Statistik</li>
 @endsection
 
 @section('content')
 <div class="space-y-6">
     {{-- Header Section --}}
     <div>
-        <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Dashboard - Statistik</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Selamat datang, <span class="font-semibold text-slate-700 dark:text-slate-300">{{ auth()->user()->name }}</span>. Menampilkan statistik terkini.
+        <div class="flex items-center gap-2.5 mb-1.5">
+            <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Dashboard - Statistik</h1>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+            Selamat datang, <span class="font-semibold text-slate-700 dark:text-slate-300">{{ auth()->user()->name }}</span>. Menampilkan ringkasan statistik konten pengetahuan.
         </p>
     </div>
 
@@ -22,7 +25,7 @@
     <div class="flex flex-col md:flex-row gap-4">
         {{-- Total --}}
         <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
             </div>
             <div>
@@ -33,11 +36,11 @@
 
         {{-- Teks --}}
         <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-lg bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             </div>
             <div>
-                <p class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Teks</p>
+                <p class="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wide">Teks</p>
                 <h3 class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 mt-0.5">{{ number_format($countTeks) }}</h3>
             </div>
         </div>
@@ -55,7 +58,7 @@
 
         {{-- Video --}}
         <div class="flex-1 bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-lg bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
             </div>
             <div>
@@ -117,7 +120,7 @@
                 <div class="mb-4">
                     <form method="GET" action="{{ route('admin.statistik') }}" id="instansiForm">
                         <div class="relative">
-                            <select name="instansi" onchange="document.getElementById('instansiForm').submit()" class="w-full px-4 py-2.5 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-medium focus:ring-red-600 focus:border-red-600 transition pr-10">
+                            <select name="instansi" onchange="document.getElementById('instansiForm').submit()" class="w-full px-4 py-2.5 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-medium focus:ring-primary-600 focus:border-primary-600 transition pr-10 shadow-2xs">
                                 <option value="">Semua Instansi</option>
                                 @foreach($instansiList as $inst)
                                     <option value="{{ $inst }}" {{ $selectedInstansi == $inst ? 'selected' : '' }}>
