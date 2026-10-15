@@ -79,11 +79,10 @@
         </div>
     </div>
 
-
     {{-- Main Charts Grid --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        {{-- Left: Grafik Melingkar (Pie / Donut Chart) --}}
+        {{-- Left: Grafik Melingkar (Pie Chart) --}}
         <div class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 flex flex-col justify-between">
             <div>
                 <h2 class="text-base font-bold text-slate-800 dark:text-slate-100 text-center mb-6">Jumlah Pengetahuan</h2>
@@ -116,17 +115,16 @@
         {{-- Right: Grafik Balok Horizontal (Horizontal Bar Chart) --}}
         <div class="lg:col-span-7 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 flex flex-col justify-between">
             <div>
-                {{-- Dropdown Select Filter Instansi --}}
+                {{-- Dropdown Select Filter Periode --}}
                 <div class="mb-4">
-                    <form method="GET" action="{{ route('admin.statistik') }}" id="instansiForm">
+                    <form method="GET" action="{{ route('admin.statistik') }}" id="periodeForm">
                         <div class="relative">
-                            <select name="instansi" onchange="document.getElementById('instansiForm').submit()" class="w-full px-4 py-2.5 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-medium focus:ring-primary-600 focus:border-primary-600 transition pr-10 shadow-2xs">
-                                <option value="">Semua Instansi</option>
-                                @foreach($instansiList as $inst)
-                                    <option value="{{ $inst }}" {{ $selectedInstansi == $inst ? 'selected' : '' }}>
-                                        {{ $inst }}
-                                    </option>
-                                @endforeach
+                            <select name="periode" onchange="document.getElementById('periodeForm').submit()" class="w-full px-4 py-2.5 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-medium focus:ring-primary-600 focus:border-primary-600 transition pr-10 shadow-2xs">
+                                <option value="semua" {{ $periode == 'semua' ? 'selected' : '' }}>Semua Waktu</option>
+                                <option value="harian" {{ $periode == 'harian' ? 'selected' : '' }}>Harian</option>
+                                <option value="mingguan" {{ $periode == 'mingguan' ? 'selected' : '' }}>Mingguan</option>
+                                <option value="bulanan" {{ $periode == 'bulanan' ? 'selected' : '' }}>Bulanan</option>
+                                <option value="tahunan" {{ $periode == 'tahunan' ? 'selected' : '' }}>Tahunan</option>
                             </select>
                             <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -137,7 +135,7 @@
 
                 {{-- Subtitle Chart --}}
                 <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 text-center mb-6">
-                    Statistik Pengetahuan per Instansi {{ $selectedInstansi ? ': ' . $selectedInstansi : '(Keseluruhan)' }}
+                    Statistik Pengetahuan per Periode: {{ $periodeLabel }}
                 </p>
 
                 {{-- Canvas Horizontal Bar Chart --}}
@@ -212,10 +210,10 @@
                 datasets: [{
                     label: 'Jumlah Konten',
                     data: [
-                        {{ $instansiTeks }},
-                        {{ $instansiGambar }},
-                        {{ $instansiVideo }},
-                        {{ $instansiAudio }}
+                        {{ $periodeTeks }},
+                        {{ $periodeGambar }},
+                        {{ $periodeVideo }},
+                        {{ $periodeAudio }}
                     ],
                     backgroundColor: [
                         '#60A5FA', // Teks (Blue)
@@ -228,7 +226,6 @@
                 }]
             },
             options: {
-
                 indexAxis: 'y', // Makes the bar chart horizontal
                 responsive: true,
                 maintainAspectRatio: false,
