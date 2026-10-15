@@ -169,6 +169,7 @@ class KnowledgeController extends Controller
         // Handle aksi "Batal Ajukan" — kembalikan status dari Diajukan ke Draft
         if ($request->has('batal_ajukan')) {
             $knowledge->update(['status' => 'Draft']);
+            $this->knowledgeService->invalidateStatsCache();
             return redirect()->route('knowledge.index')->with('success', 'Pengajuan berhasil dibatalkan. Status kembali ke Draft.');
         }
 

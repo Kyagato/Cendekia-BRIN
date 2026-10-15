@@ -14,14 +14,17 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $currentUser = $request->user() ?? $request->user('sanctum');
+        $canSeeSensitive = $currentUser && ($currentUser->isAdmin() || $currentUser->id === $this->id);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'email' => $this->email,
+            'email' => $this->when($canSeeSensitive, $this->email),
             'role' => $this->role,
             'instansi' => $this->instansi,
             'foto_profil' => $this->foto_profil,
-            'email_verified_at' => $this->email_verified_at,
+            'email_verified_at' => $this->when($canSeeSensitive, $this->email_verified_at),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

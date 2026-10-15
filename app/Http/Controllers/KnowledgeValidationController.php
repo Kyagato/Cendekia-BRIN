@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Knowledge;
 use App\Models\Tag;
 use App\Models\AuditLog;
+use App\Services\KnowledgeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,13 @@ use Illuminate\View\View;
 
 class KnowledgeValidationController extends Controller
 {
+    protected KnowledgeService $knowledgeService;
+
+    public function __construct(KnowledgeService $knowledgeService)
+    {
+        $this->knowledgeService = $knowledgeService;
+    }
+
     /**
      * Menampilkan daftar artikel pengetahuan yang perlu divalidasi.
      */
@@ -119,6 +127,8 @@ class KnowledgeValidationController extends Controller
             throw $e;
         }
 
+        $this->knowledgeService->invalidateStatsCache();
+
         return back()->with('success', 'Data pengetahuan berhasil diperbarui.');
     }
 
@@ -131,6 +141,8 @@ class KnowledgeValidationController extends Controller
             'status' => Knowledge::STATUS_DISETUJUI,
             'catatan_penolakan' => null,
         ]);
+
+        $this->knowledgeService->invalidateStatsCache();
 
         AuditLog::record(
             'KNOWLEDGE_APPROVE',
@@ -159,6 +171,8 @@ class KnowledgeValidationController extends Controller
             'status' => Knowledge::STATUS_DITOLAK,
             'catatan_penolakan' => $alasanTolak,
         ]);
+
+        $this->knowledgeService->invalidateStatsCache();
 
         AuditLog::record(
             'KNOWLEDGE_REJECT',
