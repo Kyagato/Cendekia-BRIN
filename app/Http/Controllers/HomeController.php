@@ -8,59 +8,62 @@ use App\Models\ForumThread;
 use App\Models\Knowledge;
 use App\Models\Tag;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $featuredKnowledges = Knowledge::with(['category', 'user', 'tags'])
-            ->where('status', 'Disetujui')
-            ->where('unggulan', true)
-            ->latest()
-            ->take(6)
-            ->get();
-
-        $mostViewed = Knowledge::with(['category', 'user', 'tags'])
-            ->where('status', 'Disetujui')
-            ->orderByDesc('views_count')
-            ->take(6)
-            ->get();
-
-        $latest = Knowledge::with(['category', 'user', 'tags'])
-            ->where('status', 'Disetujui')
-            ->latest()
-            ->take(8)
-            ->get();
-
-        $popularCategories = Category::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
-            ->orderByDesc('knowledge_count')
-            ->take(8)
-            ->get();
-
-        $popularTags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
-            ->has('knowledge')
-            ->where('nama_label', 'not like', '%{%')
-            ->where('nama_label', 'not like', '%[%')
-            ->orderByDesc('knowledge_count')
-            ->take(12)
-            ->get();
+        $homepageData = Cache::remember('homepage_data', 600, function () {
+            return [
+                'featuredKnowledges' => Knowledge::with(['category', 'user', 'tags'])
+                    ->where('status', 'Disetujui')
+                    ->where('unggulan', true)
+                    ->latest()
+                    ->take(6)
+                    ->get(),
+                'mostViewed' => Knowledge::with(['category', 'user', 'tags'])
+                    ->where('status', 'Disetujui')
+                    ->orderByDesc('views_count')
+                    ->take(6)
+                    ->get(),
+                'latest' => Knowledge::with(['category', 'user', 'tags'])
+                    ->where('status', 'Disetujui')
+                    ->latest()
+                    ->take(8)
+                    ->get(),
+                'popularCategories' => Category::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+                    ->orderByDesc('knowledge_count')
+                    ->take(8)
+                    ->get(),
+                'popularTags' => Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+                    ->has('knowledge')
+                    ->where('nama_label', 'not like', '%{%')
+                    ->where('nama_label', 'not like', '%[%')
+                    ->orderByDesc('knowledge_count')
+                    ->take(12)
+                    ->get(),
+            ];
+        });
 
         // Attach is_bookmarked info if user logged in
         $userId = auth()->id();
         $userBookmarkIds = $userId ? \App\Models\Bookmark::where('user_id', $userId)->pluck('knowledge_id')->flip()->toArray() : [];
 
-        $attachBookmark = function($collection) use ($userBookmarkIds) {
-            return $collection->map(function($item) use ($userBookmarkIds) {
+        $attachBookmark = function ($collection) use ($userBookmarkIds) {
+            return $collection->map(function ($originalItem) use ($userBookmarkIds) {
+                $item = clone $originalItem;
                 $item->is_bookmarked = isset($userBookmarkIds[$item->id]);
                 return $item;
             });
         };
 
-        $featuredKnowledges = $attachBookmark($featuredKnowledges);
-        $mostViewed = $attachBookmark($mostViewed);
-        $latest = $attachBookmark($latest);
+        $featuredKnowledges = $attachBookmark($homepageData['featuredKnowledges']);
+        $mostViewed = $attachBookmark($homepageData['mostViewed']);
+        $latest = $attachBookmark($homepageData['latest']);
+        $popularCategories = $homepageData['popularCategories'];
+        $popularTags = $homepageData['popularTags'];
 
         return Inertia::render('Home', compact('featuredKnowledges', 'mostViewed', 'latest', 'popularCategories', 'popularTags'));
     }
@@ -193,14 +196,12 @@ class HomeController extends Controller
             }
         }
 
-        $knowledge->increment('views_count');
+        // Debounce view count: hanya hitung 1 tayangan per pengunjung (User ID atau IP) per artikel dalam 2 jam (7200 detik)
+        $viewerKey = auth()->check() ? 'user_' . auth()->id() : 'ip_' . request()->ip();
+        $viewCacheKey = "knowledge_viewed_{$knowledge->id}_{$viewerKey}";
 
-        if (auth()->check()) {
-            \App\Models\AuditLog::record(
-                'KNOWLEDGE_VIEW',
-                "Membaca artikel pengetahuan: '{$knowledge->judul}' (ID: {$knowledge->id})",
-                ['knowledge_id' => $knowledge->id, 'judul' => $knowledge->judul]
-            );
+        if (Cache::add($viewCacheKey, true, 7200)) {
+            $knowledge->increment('views_count');
         }
 
         // Estimasi waktu baca (200 kata/menit)

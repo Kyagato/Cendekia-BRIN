@@ -234,9 +234,88 @@ it('invalidates stats cache when knowledge is approved, rejected, or submission 
     // 3. Cancel submission (batal_ajukan) invalidates stats cache
     $knowledge->update(['status' => 'Diajukan']);
     Cache::put('stats_global_aggregation', ['cached_data'], 300);
+    Cache::put('homepage_data', ['cached_homepage'], 600);
 
     $this->actingAs($author)->put(route('knowledge.update', $knowledge->id), [
         'batal_ajukan' => '1',
     ]);
     expect(Cache::has('stats_global_aggregation'))->toBeFalse();
+    expect(Cache::has('homepage_data'))->toBeFalse();
 });
+
+it('caches homepage_data on HomeController@index and invalidates it when knowledge is mutated', function () {
+    Cache::forget('homepage_data');
+
+    $user = User::factory()->create(['role' => 'Anggota']);
+    $category = Category::create(['nama_kategori' => 'Kategori Beranda Cache']);
+
+    Knowledge::create([
+        'user_id' => $user->id,
+        'category_id' => $category->id,
+        'judul' => 'Materi Beranda Cache',
+        'tipe' => 'Teks',
+        'status' => 'Disetujui',
+    ]);
+
+    expect(Cache::has('homepage_data'))->toBeFalse();
+
+    $response = $this->get('/');
+    $response->assertStatus(200);
+    expect(Cache::has('homepage_data'))->toBeTrue();
+
+    // Mutating knowledge via KnowledgeService invalidates homepage_data
+    $service = app(KnowledgeService::class);
+    $service->createKnowledge([
+        'judul' => 'Materi Baru Penghapus Cache',
+        'category_id' => $category->id,
+        'tipe' => 'Teks',
+        'deskripsi' => 'Deskripsi baru',
+        'status' => 'Draft',
+    ], $user);
+
+    expect(Cache::has('homepage_data'))->toBeFalse();
+});
+
+it('debounces views_count increments and does not record KNOWLEDGE_VIEW audit logs in HomeController@knowledgeShow', function () {
+    $user = User::factory()->create(['role' => 'Anggota']);
+    $otherUser = User::factory()->create(['role' => 'Anggota']);
+    $category = Category::create(['nama_kategori' => 'Kategori Debounce View']);
+
+    $knowledge = Knowledge::create([
+        'user_id' => $user->id,
+        'category_id' => $category->id,
+        'judul' => 'Materi Uji Debounce View',
+        'tipe' => 'Teks',
+        'status' => 'Disetujui',
+        'views_count' => 10,
+    ]);
+
+    // First visit by $user increments views_count to 11
+    $this->actingAs($user)
+        ->get("/knowledge/{$knowledge->id}")
+        ->assertStatus(200);
+
+    expect($knowledge->fresh()->views_count)->toBe(11);
+
+    // Repeated visits by the same $user within 2 hours do NOT increment views_count
+    $this->actingAs($user)
+        ->get("/knowledge/{$knowledge->id}")
+        ->assertStatus(200);
+    $this->actingAs($user)
+        ->get("/knowledge/{$knowledge->id}")
+        ->assertStatus(200);
+
+    expect($knowledge->fresh()->views_count)->toBe(11);
+
+    // Visit by a different user ($otherUser) increments views_count to 12
+    $this->actingAs($otherUser)
+        ->get("/knowledge/{$knowledge->id}")
+        ->assertStatus(200);
+
+    expect($knowledge->fresh()->views_count)->toBe(12);
+
+    // Ensure no KNOWLEDGE_VIEW audit log entries were created
+    $viewLogsCount = \App\Models\AuditLog::where('action', 'KNOWLEDGE_VIEW')->count();
+    expect($viewLogsCount)->toBe(0);
+});
+

@@ -20,6 +20,7 @@ class KnowledgeService
     {
         Cache::forget('stats_global_aggregation');
         Cache::forget('stats_instansi_list');
+        Cache::forget('homepage_data');
     }
 
     /**
