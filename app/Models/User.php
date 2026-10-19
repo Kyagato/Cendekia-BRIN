@@ -42,6 +42,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'keycloak_id',
     ];
 // Relasi One-to-Many ke Knowledge (Konten yang diunggah oleh user ini)
     public function knowledge()

@@ -169,8 +169,10 @@ class ProfileController extends Controller
             ->approved()
             ->count();
 
-        // Daftar Bookmark Pengetahuan (hanya diambil jika user melihat profil miliknya sendiri)
-        $isOwner = auth()->check() && auth()->id() === $user->id;
+        $currentUser = auth()->user();
+        $isOwner = $currentUser && $currentUser->id === $user->id;
+        $canSeePrivateData = $isOwner || ($currentUser && $currentUser->isAdmin());
+
         $bookmarkedList = null;
         $totalBookmarks = 0;
 
@@ -183,8 +185,25 @@ class ProfileController extends Controller
             $totalBookmarks = $user->bookmarkedKnowledge()->where('status', 'Disetujui')->count();
         }
 
+        // Batasi data pengguna yang dikirim ke halaman profil publik agar tidak membocorkan PII (email, no_telepon, keycloak_id)
+        $userData = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'role' => $user->role,
+            'instansi' => $user->instansi,
+            'pekerjaan' => $user->pekerjaan,
+            'alamat' => $user->alamat,
+            'foto_profil' => $user->foto_profil,
+            'created_at' => $user->created_at,
+        ];
+
+        if ($canSeePrivateData) {
+            $userData['email'] = $user->email;
+            $userData['no_telepon'] = $user->no_telepon;
+        }
+
         return \Inertia\Inertia::render('Profile/Show', [
-            'user' => $user,
+            'user' => $userData,
             'knowledgeList' => $knowledgeList,
             'totalKnowledge' => $totalKnowledge,
             'totalViews' => $totalViews,

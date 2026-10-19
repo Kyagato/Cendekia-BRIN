@@ -319,3 +319,65 @@ it('debounces views_count increments and does not record KNOWLEDGE_VIEW audit lo
     expect($viewLogsCount)->toBe(0);
 });
 
+it('hides keycloak_id in User model serialization by default', function () {
+    $user = User::factory()->create([
+        'keycloak_id' => 'kc-test-uuid-12345',
+    ]);
+
+    $array = $user->toArray();
+    expect($array)->not->toHaveKey('keycloak_id');
+    expect(json_encode($user))->not->toContain('kc-test-uuid-12345');
+    // Attribute still accessible via direct property
+    expect($user->keycloak_id)->toBe('kc-test-uuid-12345');
+});
+
+it('protects private user data (email, phone, keycloak_id) on public profile page', function () {
+    $targetUser = User::factory()->create([
+        'name' => 'Dr. Rina Wijaya',
+        'email' => 'rina.private@test.com',
+        'no_telepon' => '081999888777',
+        'keycloak_id' => 'kc-rina-secret-id',
+        'instansi' => 'Pusat Riset Informatika',
+        'pekerjaan' => 'Peneliti Ahli Madya',
+        'alamat' => 'Bandung, Jawa Barat',
+    ]);
+
+    $otherUser = User::factory()->create(['role' => 'Anggota']);
+    $admin = User::factory()->create(['role' => 'Super Admin']);
+
+    // 1. Guest request -> private data MUST NOT be exposed in user prop
+    $responseGuest = $this->get(route('users.show', $targetUser));
+    $responseGuest->assertStatus(200);
+    $guestProps = $responseGuest->original->getData()['page']['props'];
+    expect($guestProps['user'])->toHaveKey('name', 'Dr. Rina Wijaya');
+    expect($guestProps['user'])->toHaveKey('instansi', 'Pusat Riset Informatika');
+    expect($guestProps['user'])->not->toHaveKey('email');
+    expect($guestProps['user'])->not->toHaveKey('no_telepon');
+    expect($guestProps['user'])->not->toHaveKey('keycloak_id');
+
+    // 2. Other user request -> private data MUST NOT be exposed
+    $responseOther = $this->actingAs($otherUser)->get(route('users.show', $targetUser));
+    $responseOther->assertStatus(200);
+    $otherProps = $responseOther->original->getData()['page']['props'];
+    expect($otherProps['user'])->not->toHaveKey('email');
+    expect($otherProps['user'])->not->toHaveKey('no_telepon');
+    expect($otherProps['user'])->not->toHaveKey('keycloak_id');
+
+    // 3. Self request (owner) -> email and phone ARE visible, keycloak_id is still protected
+    $responseSelf = $this->actingAs($targetUser)->get(route('users.show', $targetUser));
+    $responseSelf->assertStatus(200);
+    $selfProps = $responseSelf->original->getData()['page']['props'];
+    expect($selfProps['user'])->toHaveKey('email', 'rina.private@test.com');
+    expect($selfProps['user'])->toHaveKey('no_telepon', '081999888777');
+    expect($selfProps['user'])->not->toHaveKey('keycloak_id');
+
+    // 4. Admin request -> email and phone ARE visible, keycloak_id is still protected
+    $responseAdmin = $this->actingAs($admin)->get(route('users.show', $targetUser));
+    $responseAdmin->assertStatus(200);
+    $adminProps = $responseAdmin->original->getData()['page']['props'];
+    expect($adminProps['user'])->toHaveKey('email', 'rina.private@test.com');
+    expect($adminProps['user'])->toHaveKey('no_telepon', '081999888777');
+    expect($adminProps['user'])->not->toHaveKey('keycloak_id');
+});
+
+
