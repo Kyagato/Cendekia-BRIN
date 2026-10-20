@@ -120,11 +120,11 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category, KnowledgeService $knowledgeService): RedirectResponse
     {
-        $knowledgeCount = $category->knowledge()->count();
+        $knowledgeCount = $category->knowledge()->withTrashed()->count();
 
         if ($knowledgeCount > 0) {
             return redirect()->route('admin.categories.index')
-                ->with('error', "Kategori '{$category->nama_kategori}' tidak dapat dihapus karena masih memuat {$knowledgeCount} dokumen pengetahuan. Silakan pindahkan atau hapus dokumen terkait terlebih dahulu.");
+                ->with('error', "Kategori '{$category->nama_kategori}' tidak dapat dihapus karena masih memuat {$knowledgeCount} dokumen pengetahuan (termasuk di tong sampah). Silakan pindahkan atau bersihkan dokumen terkait terlebih dahulu.");
         }
 
         $deletedName = $category->nama_kategori;

@@ -129,6 +129,36 @@ it('prevents deleting a category if it still has associated knowledge articles',
     expect(Category::where('id', $category->id)->exists())->toBeTrue();
 });
 
+it('prevents deleting a category if its knowledge articles are in trash (soft-deleted)', function () {
+    $category = Category::create(['nama_kategori' => 'Kategori Dengan Trash']);
+    $knowledge = Knowledge::create([
+        'user_id'     => $this->superAdmin->id,
+        'category_id' => $category->id,
+        'judul'       => 'Artikel Masuk Tong Sampah',
+        'tipe'        => 'Teks',
+        'status'      => 'Disetujui',
+    ]);
+
+    // Soft delete the knowledge
+    $knowledge->delete();
+    expect($knowledge->trashed())->toBeTrue();
+
+    // Web request -> deletion must be rejected
+    $response = $this->actingAs($this->superAdmin)->delete(route('admin.categories.destroy', $category->id));
+    $response->assertRedirect(route('admin.categories.index'))
+        ->assertSessionHas('error');
+
+    expect(Category::where('id', $category->id)->exists())->toBeTrue();
+
+    // API request -> deletion must also be rejected with 400
+    Laravel\Sanctum\Sanctum::actingAs($this->superAdmin);
+    $apiResponse = $this->deleteJson("/api/admin/categories/{$category->id}");
+    $apiResponse->assertStatus(400)
+        ->assertJsonPath('status', 'error');
+
+    expect(Category::where('id', $category->id)->exists())->toBeTrue();
+});
+
 it('allows deleting an empty category and records audit log', function () {
     $category = Category::create(['nama_kategori' => 'Kategori Kosong']);
 

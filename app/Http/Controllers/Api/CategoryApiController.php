@@ -176,7 +176,7 @@ class CategoryApiController extends Controller
     )]
     public function destroy(int $id): JsonResponse
     {
-        $category = Category::withCount('knowledge')->find($id);
+        $category = Category::withCount(['knowledge' => fn ($q) => $q->withTrashed()])->find($id);
         if (!$category) {
             return response()->json([
                 'status' => 'error',
@@ -187,7 +187,7 @@ class CategoryApiController extends Controller
         if ($category->knowledge_count > 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Kategori tidak dapat dihapus karena masih memuat ' . $category->knowledge_count . ' dokumen pengetahuan.',
+                'message' => 'Kategori tidak dapat dihapus karena masih memuat ' . $category->knowledge_count . ' dokumen pengetahuan (termasuk di tong sampah).',
             ], 400);
         }
 
