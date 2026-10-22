@@ -154,27 +154,6 @@ class HomeController extends Controller
         return Inertia::render('Forum/Index', compact('threads', 'sort'));
     }
 
-    public function search(Request $request)
-    {
-        $query = Knowledge::where('status', 'Disetujui');
-
-        if ($request->filled('q')) {
-            $query->where('judul', 'like', '%' . $request->q . '%');
-        }
-
-        if ($request->filled('tipe')) {
-            $query->where('tipe', $request->tipe);
-        }
-
-        if ($request->filled('kategori')) {
-            $query->where('category_id', $request->kategori);
-        }
-
-        $results = $query->take(10)->get();
-
-        return response()->json($results);
-    }
-
     /**
      * Tampilan publik detail pengetahuan (layout public, bukan dashboard).
      * Dipanggil dari beranda, kategori, dan halaman pencarian.
