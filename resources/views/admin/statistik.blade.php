@@ -118,18 +118,70 @@
                 {{-- Dropdown Select Filter Periode --}}
                 <div class="mb-4">
                     <form method="GET" action="{{ route('admin.statistik') }}" id="periodeForm">
-                        <div class="relative">
-                            <select name="periode" onchange="document.getElementById('periodeForm').submit()" class="w-full px-4 py-2.5 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-medium focus:ring-primary-600 focus:border-primary-600 transition pr-10 shadow-2xs">
-                                <option value="semua" {{ $periode == 'semua' ? 'selected' : '' }}>Semua Waktu</option>
-                                <option value="harian" {{ $periode == 'harian' ? 'selected' : '' }}>Harian</option>
-                                <option value="mingguan" {{ $periode == 'mingguan' ? 'selected' : '' }}>Mingguan</option>
-                                <option value="bulanan" {{ $periode == 'bulanan' ? 'selected' : '' }}>Bulanan</option>
-                                <option value="tahunan" {{ $periode == 'tahunan' ? 'selected' : '' }}>Tahunan</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-400">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <input type="hidden" name="periode" id="periodeInput" value="{{ $periode }}">
+                        <div class="relative" x-data="{ open: false }">
+                            {{-- Dropdown Trigger Button --}}
+                            <button type="button"
+                                    @click="open = !open"
+                                    @click.outside="open = false"
+                                    @keydown.escape.window="open = false"
+                                    class="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-medium transition duration-200 flex items-center justify-between shadow-2xs cursor-pointer focus:outline-none"
+                                    :class="open ? 'border-blue-500 ring-2 ring-blue-500 dark:border-blue-500 dark:ring-blue-500' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'">
+                                <span>{{ $periodeLabel }}</span>
+                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ease-in-out transform shrink-0"
+                                     :class="{ 'rotate-180 text-blue-500 dark:text-blue-400': open }"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            {{-- Dropdown Menu Options --}}
+                            <div x-show="open"
+                                 x-cloak
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 -translate-y-1 scale-[0.99]"
+                                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                 x-transition:leave-end="opacity-0 -translate-y-1 scale-[0.99]"
+                                 class="absolute left-0 right-0 z-30 mt-1.5 w-full bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xl py-1 overflow-hidden"
+                                 style="display: none;">
+                                @php
+                                    $periodeOptions = [
+                                        'semua' => 'Semua Waktu',
+                                        'harian' => 'Harian',
+                                        'mingguan' => 'Mingguan',
+                                        'bulanan' => 'Bulanan',
+                                        'tahunan' => 'Tahunan',
+                                    ];
+                                @endphp
+                                @foreach ($periodeOptions as $key => $label)
+                                    <button type="button"
+                                            @click="document.getElementById('periodeInput').value = '{{ $key }}'; document.getElementById('periodeForm').submit()"
+                                            class="w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center justify-between {{ $periode === $key ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-slate-800/80 font-semibold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60' }}">
+                                        <span>{{ $label }}</span>
+                                        @if($periode === $key)
+                                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                        @endif
+                                    </button>
+                                @endforeach
                             </div>
                         </div>
+
+                        {{-- Fallback no-JS --}}
+                        <noscript>
+                            <div class="relative mt-2">
+                                <select name="periode" onchange="document.getElementById('periodeForm').submit()" class="w-full px-4 py-2.5 appearance-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm font-medium pr-10">
+                                    <option value="semua" {{ $periode == 'semua' ? 'selected' : '' }}>Semua Waktu</option>
+                                    <option value="harian" {{ $periode == 'harian' ? 'selected' : '' }}>Harian</option>
+                                    <option value="mingguan" {{ $periode == 'mingguan' ? 'selected' : '' }}>Mingguan</option>
+                                    <option value="bulanan" {{ $periode == 'bulanan' ? 'selected' : '' }}>Bulanan</option>
+                                    <option value="tahunan" {{ $periode == 'tahunan' ? 'selected' : '' }}>Tahunan</option>
+                                </select>
+                            </div>
+                        </noscript>
                     </form>
                 </div>
 
