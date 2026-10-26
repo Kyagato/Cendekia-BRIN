@@ -50,40 +50,96 @@
 
             <!-- Filter Tipe -->
             <div x-data="{ open: false }" class="relative inline-block text-left">
-                <button @click="open = !open" @click.away="open = false" type="button"
-                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <button @click="open = !open"
+                        @click.outside="open = false"
+                        @keydown.escape.window="open = false"
+                        type="button"
+                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition duration-150 cursor-pointer shadow-2xs focus:outline-none"
+                        :class="open ? 'border-blue-500 ring-2 ring-blue-500 dark:border-blue-500 dark:ring-blue-500' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'">
                     <span>Tipe {{ request('tipe') ? ': ' . request('tipe') : '' }}</span>
-                    <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ease-in-out transform shrink-0"
+                         :class="{ 'rotate-180 text-blue-500 dark:text-blue-400': open }"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <div x-show="open" x-transition class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 border border-slate-200 dark:border-slate-700 focus:outline-none" style="display: none;">
-                    <div class="py-1">
-                        <a href="{{ route('knowledge.index', array_merge(request()->except('tipe', 'page_knowledges'))) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('tipe') == '' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Semua Tipe</a>
-                        <a href="{{ route('knowledge.index', array_merge(request()->all(), ['tipe' => 'Teks'])) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('tipe') == 'Teks' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Teks</a>
-                        <a href="{{ route('knowledge.index', array_merge(request()->all(), ['tipe' => 'Video'])) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('tipe') == 'Video' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Video</a>
-                        <a href="{{ route('knowledge.index', array_merge(request()->all(), ['tipe' => 'Gambar'])) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('tipe') == 'Gambar' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Gambar</a>
-                        <a href="{{ route('knowledge.index', array_merge(request()->all(), ['tipe' => 'Audio'])) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('tipe') == 'Audio' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Audio</a>
-                    </div>
+                <div x-show="open"
+                     x-cloak
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-[0.99]"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-[0.99]"
+                     class="absolute left-0 z-20 mt-1.5 w-44 origin-top-left rounded-lg bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1 overflow-hidden focus:outline-none"
+                     style="display: none;">
+                    @php
+                        $tipeOptions = [
+                            '' => 'Semua Tipe',
+                            'Teks' => 'Teks',
+                            'Video' => 'Video',
+                            'Gambar' => 'Gambar',
+                            'Audio' => 'Audio',
+                        ];
+                    @endphp
+                    @foreach($tipeOptions as $key => $label)
+                        <a href="{{ $key === '' ? route('knowledge.index', array_merge(request()->except('tipe', 'page_knowledges'))) : route('knowledge.index', array_merge(request()->all(), ['tipe' => $key])) }}"
+                           class="flex items-center justify-between px-4 py-2 text-sm transition-colors {{ (request('tipe') == $key) || ($key === '' && !request('tipe')) ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-slate-700/80 font-semibold' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
+                            <span>{{ $label }}</span>
+                            @if((request('tipe') == $key) || ($key === '' && !request('tipe')))
+                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            @endif
+                        </a>
+                    @endforeach
                 </div>
             </div>
 
             <!-- Filter Status -->
             <div x-data="{ open: false }" class="relative inline-block text-left">
-                <button @click="open = !open" @click.away="open = false" type="button"
-                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <button @click="open = !open"
+                        @click.outside="open = false"
+                        @keydown.escape.window="open = false"
+                        type="button"
+                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition duration-150 cursor-pointer shadow-2xs focus:outline-none"
+                        :class="open ? 'border-blue-500 ring-2 ring-blue-500 dark:border-blue-500 dark:ring-blue-500' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'">
                     <span>Status {{ request('status') ? ': ' . (request('status') == 'diterima' ? 'Diterima' : ucfirst(request('status'))) : '' }}</span>
-                    <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ease-in-out transform shrink-0"
+                         :class="{ 'rotate-180 text-blue-500 dark:text-blue-400': open }"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <div x-show="open" x-transition class="absolute left-0 z-10 mt-2 w-40 origin-top-left rounded-md bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 border border-slate-200 dark:border-slate-700 focus:outline-none" style="display: none;">
-                    <div class="py-1">
-                        <a href="{{ route('knowledge.index', array_merge(request()->except('status', 'page_knowledges'))) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('status') == '' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Semua Status</a>
-                        <a href="{{ route('knowledge.index', array_merge(request()->all(), ['status' => 'diajukan'])) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('status') == 'diajukan' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Diajukan</a>
-                        <a href="{{ route('knowledge.index', array_merge(request()->all(), ['status' => 'diterima'])) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('status') == 'diterima' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Diterima</a>
-                        <a href="{{ route('knowledge.index', array_merge(request()->all(), ['status' => 'ditolak'])) }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 {{ request('status') == 'ditolak' ? 'bg-slate-50 dark:bg-slate-700 font-bold' : '' }}">Ditolak</a>
-                    </div>
+                <div x-show="open"
+                     x-cloak
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1 scale-[0.99]"
+                     x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave="transition ease-in duration-100"
+                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                     x-transition:leave-end="opacity-0 -translate-y-1 scale-[0.99]"
+                     class="absolute left-0 z-20 mt-1.5 w-44 origin-top-left rounded-lg bg-white dark:bg-slate-800 shadow-xl border border-slate-200 dark:border-slate-700 py-1 overflow-hidden focus:outline-none"
+                     style="display: none;">
+                    @php
+                        $statusOptions = [
+                            '' => 'Semua Status',
+                            'diajukan' => 'Diajukan',
+                            'diterima' => 'Diterima',
+                            'ditolak' => 'Ditolak',
+                        ];
+                    @endphp
+                    @foreach($statusOptions as $key => $label)
+                        <a href="{{ $key === '' ? route('knowledge.index', array_merge(request()->except('status', 'page_knowledges'))) : route('knowledge.index', array_merge(request()->all(), ['status' => $key])) }}"
+                           class="flex items-center justify-between px-4 py-2 text-sm transition-colors {{ (request('status') == $key) || ($key === '' && !request('status')) ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-slate-700/80 font-semibold' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
+                            <span>{{ $label }}</span>
+                            @if((request('status') == $key) || ($key === '' && !request('status')))
+                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            @endif
+                        </a>
+                    @endforeach
                 </div>
             </div>
         </div>

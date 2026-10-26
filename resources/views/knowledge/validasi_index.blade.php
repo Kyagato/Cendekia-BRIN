@@ -47,8 +47,12 @@
                 {{-- Status Filter Dropdown --}}
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                     <div class="relative inline-block text-left w-full sm:w-auto" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false" type="button"
-                                class="w-full sm:w-auto px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center justify-between gap-2 shadow-sm">
+                        <button @click="open = !open"
+                                @click.outside="open = false"
+                                @keydown.escape.window="open = false"
+                                type="button"
+                                class="w-full sm:w-auto px-4 py-2 bg-white dark:bg-slate-900 border rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 transition duration-150 flex items-center justify-between gap-2 shadow-sm cursor-pointer focus:outline-none"
+                                :class="open ? 'border-blue-500 ring-2 ring-blue-500 dark:border-blue-500 dark:ring-blue-500' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'">
                             <span>
                                 @if(request('status') === 'Diajukan')
                                     Status: Diajukan
@@ -60,7 +64,9 @@
                                     Status
                                 @endif
                             </span>
-                            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ease-in-out transform shrink-0"
+                                 :class="{ 'rotate-180 text-blue-500 dark:text-blue-400': open }"
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
