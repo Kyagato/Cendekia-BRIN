@@ -138,23 +138,59 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                 ->orWhere('email', $keycloakUser->getEmail())
                 ->first();
 
-            // Ekstrak role dari Keycloak (realm_access.roles atau roles)
+            // Ekstrak role dari Keycloak (realm_access.roles, roles, resource_access.*.roles)
             $rawUser = $keycloakUser->getRaw();
-            $kcRoles = $rawUser['realm_access']['roles'] ?? ($rawUser['roles'] ?? []);
+            $kcRoles = array_merge(
+                $rawUser['realm_access']['roles'] ?? [],
+                $rawUser['roles'] ?? []
+            );
+
+            // Ekstrak client roles jika role dipasang pada level client di Keycloak
+            if (!empty($rawUser['resource_access']) && is_array($rawUser['resource_access'])) {
+                foreach ($rawUser['resource_access'] as $clientAccess) {
+                    if (!empty($clientAccess['roles']) && is_array($clientAccess['roles'])) {
+                        $kcRoles = array_merge($kcRoles, $clientAccess['roles']);
+                    }
+                }
+            }
+
+            // Normalisasi daftar role untuk pencocokan case-insensitive
+            $normalizedRoles = array_map(function ($role) {
+                return strtolower(trim(str_replace(['_', '-'], ' ', $role)));
+            }, $kcRoles);
 
             $assignedRole = null;
-            if (in_array('Super Admin', $kcRoles) || in_array('super_admin', $kcRoles)) {
+            if (
+                in_array('super admin', $normalizedRoles, true) ||
+                in_array('superadmin', $normalizedRoles, true) ||
+                strtolower($keycloakUser->getEmail()) === 'superadmin@brin.go.id' ||
+                ($user && strtolower($user->email) === 'superadmin@brin.go.id')
+            ) {
                 $assignedRole = User::ROLE_SUPER_ADMIN;
-            } elseif (in_array('Admin Pusat', $kcRoles) || in_array('admin_pusat', $kcRoles)) {
+            } elseif (in_array('admin pusat', $normalizedRoles, true)) {
                 $assignedRole = User::ROLE_ADMIN_PUSAT;
-            } elseif (in_array('Admin', $kcRoles) || in_array('admin', $kcRoles) || in_array('Admin IPPD', $kcRoles) || in_array('admin_ippd', $kcRoles)) {
+            } elseif (
+                in_array('admin', $normalizedRoles, true) ||
+                in_array('admin ippd', $normalizedRoles, true)
+            ) {
                 $assignedRole = User::ROLE_ADMIN;
-            } elseif (in_array('Moderator', $kcRoles) || in_array('moderator', $kcRoles)) {
+            } elseif (in_array('moderator', $normalizedRoles, true)) {
                 $assignedRole = User::ROLE_MODERATOR;
-            } elseif (in_array('Analisis Pengetahuan', $kcRoles) || in_array('analisis_pengetahuan', $kcRoles) || in_array('analis_pengetahuan', $kcRoles)) {
+            } elseif (
+                in_array('analisis pengetahuan', $normalizedRoles, true) ||
+                in_array('analis pengetahuan', $normalizedRoles, true)
+            ) {
                 $assignedRole = User::ROLE_ANALIS;
-            } elseif (in_array('Anggota', $kcRoles) || in_array('anggota', $kcRoles) || in_array('kreator_pengetahuan', $kcRoles)) {
+            } elseif (
+                in_array('anggota', $normalizedRoles, true) ||
+                in_array('kreator pengetahuan', $normalizedRoles, true)
+            ) {
                 $assignedRole = User::ROLE_ANGGOTA;
+            }
+
+            // Proteksi Super Admin: Jika user di DB sudah Super Admin, cegah demosi ke Anggota karena default roles Keycloak
+            if ($user && $user->isSuperAdmin() && ($assignedRole === null || $assignedRole === User::ROLE_ANGGOTA)) {
+                $assignedRole = User::ROLE_SUPER_ADMIN;
             }
 
             if ($user) {

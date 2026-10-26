@@ -743,6 +743,9 @@
                     "200": {
                         "description": "Data pengetahuan ditemukan"
                     },
+                    "403": {
+                        "description": "Akses ditolak (belum disetujui)"
+                    },
                     "404": {
                         "description": "Pengetahuan tidak ditemukan"
                     }
