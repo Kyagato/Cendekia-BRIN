@@ -52,9 +52,10 @@
             <div x-data="{ open: false }" class="relative inline-block text-left">
                 <button @click="open = !open"
                         @click.outside="open = false"
+                        @click.away="open = false"
                         @keydown.escape.window="open = false"
                         type="button"
-                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition duration-150 cursor-pointer shadow-2xs focus:outline-none"
+                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition duration-150 cursor-pointer shadow-2xs focus:outline-none active:border-blue-500 active:ring-2 active:ring-blue-500"
                         :class="open ? 'border-blue-500 ring-2 ring-blue-500 dark:border-blue-500 dark:ring-blue-500' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'">
                     <span>Tipe {{ request('tipe') ? ': ' . request('tipe') : '' }}</span>
                     <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ease-in-out transform shrink-0"
@@ -100,9 +101,10 @@
             <div x-data="{ open: false }" class="relative inline-block text-left">
                 <button @click="open = !open"
                         @click.outside="open = false"
+                        @click.away="open = false"
                         @keydown.escape.window="open = false"
                         type="button"
-                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition duration-150 cursor-pointer shadow-2xs focus:outline-none"
+                        class="inline-flex items-center justify-between gap-2 px-3 py-2 border rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 transition duration-150 cursor-pointer shadow-2xs focus:outline-none active:border-blue-500 active:ring-2 active:ring-blue-500"
                         :class="open ? 'border-blue-500 ring-2 ring-blue-500 dark:border-blue-500 dark:ring-blue-500' : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500'">
                     <span>Status {{ request('status') ? ': ' . (request('status') == 'diterima' ? 'Diterima' : ucfirst(request('status'))) : '' }}</span>
                     <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ease-in-out transform shrink-0"
