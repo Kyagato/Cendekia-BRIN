@@ -232,7 +232,7 @@
     </header>
 
     <!-- Main Body with Smooth Page Transition (Slide & Float) -->
-    <main class="flex-1 overflow-x-hidden">
+    <main class="flex-1">
       <Transition name="page-slide" mode="out-in">
         <div :key="page.url" class="w-full">
           <slot />
