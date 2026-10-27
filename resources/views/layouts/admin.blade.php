@@ -14,6 +14,11 @@
     <title>@yield('title', 'Admin - MojoPedia')</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-mojopedia.png') }}">
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -26,9 +31,18 @@
         <div class="max-w-7xl mx-auto w-full flex items-center justify-between">
             <div class="flex items-center gap-8">
                 <!-- Logo -->
-                <a href="{{ url('/') }}" class="flex items-center gap-2 group shrink-0">
-                    <img src="{{ asset('images/logo-mojopedia.png') }}" alt="MojoPedia" class="w-8 h-8 object-contain" />
-                    <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">MojoPedia</span>
+                <a href="{{ url('/') }}" class="flex items-center gap-3 group shrink-0">
+                    <div class="w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <img src="{{ asset('images/logo-mojopedia.png') }}" alt="Logo MojoPedia" class="w-full h-full object-contain drop-shadow-sm" />
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-extrabold tracking-tight text-[#0f172a] dark:text-white leading-tight">
+                            Mojo<span class="text-[#2563eb]">Pedia</span>
+                        </span>
+                        <span class="text-[10px] font-semibold tracking-wider text-[#475569] dark:text-slate-400 uppercase">
+                            Digital Mojokerto System
+                        </span>
+                    </div>
                 </a>
 
                 <!-- Navigation Menu (Desktop) -->

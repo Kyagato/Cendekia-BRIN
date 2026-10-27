@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Verifikasi Kode Autentikasi — {{ config('app.name', 'MojoPedia') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-mojopedia.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-slate-50 relative">
@@ -22,8 +26,18 @@
 
                     {{-- Logo --}}
                     <div class="relative z-10">
-                        <a href="/" class="inline-flex items-center gap-2 group">
-                            <span class="text-2xl font-bold text-red-600 tracking-tight">MojoPedia</span>
+                        <a href="/" class="inline-flex items-center gap-3 group">
+                            <div class="w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                <img src="{{ asset('images/logo-mojopedia.png') }}" alt="Logo MojoPedia" class="w-full h-full object-contain drop-shadow-sm" />
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xl font-extrabold tracking-tight text-[#0f172a] leading-tight">
+                                    Mojo<span class="text-[#2563eb]">Pedia</span>
+                                </span>
+                                <span class="text-[10px] font-semibold tracking-wider text-[#475569] uppercase">
+                                    Digital Mojokerto System
+                                </span>
+                            </div>
                         </a>
                     </div>
 

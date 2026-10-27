@@ -8,10 +8,10 @@
                         <img src="{{ asset('images/logo-mojopedia.png') }}" alt="Logo MojoPedia" class="w-full h-full object-contain drop-shadow-sm" />
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-                            Mojo<span class="text-primary-600">Pedia</span>
+                        <span class="text-xl font-extrabold tracking-tight text-[#0f172a] dark:text-white leading-tight">
+                            Mojo<span class="text-[#2563eb]">Pedia</span>
                         </span>
-                        <span class="text-[10px] font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">
+                        <span class="text-[10px] font-semibold tracking-wider text-[#475569] dark:text-slate-400 uppercase">
                             Digital Mojokerto System
                         </span>
                     </div>
