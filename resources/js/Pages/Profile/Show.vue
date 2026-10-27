@@ -489,7 +489,7 @@
               <button
                 type="button"
                 @click="copyToken"
-                class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white rounded-lg shadow-sm transition"
+                class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white rounded-lg shadow-sm hover:shadow-md transform transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 cursor-pointer"
                 :class="tokenCopied ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-[#2563eb] hover:bg-[#1d4ed8]'"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -516,7 +516,8 @@
               type="button"
               @click="generateToken"
               :disabled="tokenForm.processing"
-              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg shadow-sm transition disabled:opacity-50"
+              :title="apiTokenInfo ? 'Klik untuk generate ulang token baru' : 'Klik untuk membuat API token Swagger'"
+              class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg shadow-sm hover:shadow-lg hover:shadow-slate-900/25 dark:hover:shadow-black/50 transform transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 disabled:hover:translate-y-0 disabled:hover:scale-100 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               {{ tokenForm.processing ? 'Memproses...' : (apiTokenInfo ? 'Generate Ulang Token' : 'Generate Token') }}
             </button>
@@ -525,7 +526,8 @@
               type="button"
               @click="revokeToken"
               :disabled="tokenForm.processing"
-              class="px-4 py-2 text-sm font-semibold text-red-600 border border-red-300 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition disabled:opacity-50"
+              title="Cabut token aktif saat ini"
+              class="px-4 py-2 text-sm font-semibold text-red-600 border border-red-300 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg shadow-sm hover:shadow-md hover:shadow-red-500/10 transform transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 disabled:hover:translate-y-0 disabled:hover:scale-100 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
             >
               Cabut Token
             </button>
