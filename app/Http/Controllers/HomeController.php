@@ -16,19 +16,38 @@ class HomeController extends Controller
     public function index()
     {
         $homepageData = Cache::remember('homepage_data', 600, function () {
+            $cardColumns = [
+                'id',
+                'user_id',
+                'category_id',
+                'judul',
+                'penulis',
+                'deskripsi',
+                'tipe',
+                'file_path',
+                'status',
+                'views_count',
+                'created_at',
+                'updated_at',
+                'unggulan',
+            ];
+
             return [
-                'featuredKnowledges' => Knowledge::with(['category', 'user', 'tags'])
+                'featuredKnowledges' => Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+                    ->select($cardColumns)
                     ->where('status', 'Disetujui')
                     ->where('unggulan', true)
                     ->latest()
                     ->take(6)
                     ->get(),
-                'mostViewed' => Knowledge::with(['category', 'user', 'tags'])
+                'mostViewed' => Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+                    ->select($cardColumns)
                     ->where('status', 'Disetujui')
                     ->orderByDesc('views_count')
                     ->take(6)
                     ->get(),
-                'latest' => Knowledge::with(['category', 'user', 'tags'])
+                'latest' => Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+                    ->select($cardColumns)
                     ->where('status', 'Disetujui')
                     ->latest()
                     ->take(8)
@@ -129,8 +148,8 @@ class HomeController extends Controller
 
         switch ($sort) {
             case 'populer_umum':
-                // Populer Umum: berdasarkan gabungan views_count + replies_count
-                $query->orderByRaw('(views_count + (SELECT COUNT(*) FROM forum_replies WHERE forum_replies.thread_id = forum_threads.id)) DESC');
+                // Populer Umum: berdasarkan gabungan views_count + replies_count (menggunakan replies_count dari withCount)
+                $query->orderByRaw('(views_count + replies_count) DESC');
                 break;
 
             case 'populer_tayangan':
@@ -160,7 +179,9 @@ class HomeController extends Controller
      */
     public function knowledgeShow($id)
     {
-        $knowledge = Knowledge::with(['category', 'user', 'tags', 'threads.user'])->findOrFail($id);
+        $knowledge = Knowledge::with(['category', 'user', 'tags', 'threads.user'])
+            ->withCount(['bookmarks', 'likes', 'allComments'])
+            ->findOrFail($id);
 
         // Hanya pengetahuan yang sudah Disetujui yang boleh dilihat publik
         if ($knowledge->status !== 'Disetujui') {
@@ -188,16 +209,16 @@ class HomeController extends Controller
         $wordCount = str_word_count(strip_tags($fullText));
         $readingTime = max(1, (int) ceil($wordCount / 200));
 
-        // Bookmark status & count
+        // Bookmark status & count (memanfaatkan bookmarks_count dari withCount)
         $currentUser = auth()->user();
         $isBookmarked = $currentUser ? $knowledge->isBookmarkedBy($currentUser) : false;
-        $bookmarksCount = $knowledge->bookmarks()->count();
+        $bookmarksCount = $knowledge->bookmarks_count;
 
-        // Likes & Comments
+        // Likes & Comments (memanfaatkan likes_count & all_comments_count dari withCount)
         $isLiked = $currentUser ? $knowledge->isLikedBy($currentUser) : false;
-        $likesCount = $knowledge->likes()->count();
+        $likesCount = $knowledge->likes_count;
         $comments = $knowledge->comments()->get();
-        $commentsCount = $knowledge->allComments()->count();
+        $commentsCount = $knowledge->all_comments_count;
 
         return view('pages.knowledge-show', compact(
             'knowledge',

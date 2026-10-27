@@ -41,7 +41,8 @@ class SearchController extends Controller
      */
     public function apiSearch(Request $request)
     {
-        $results = Knowledge::with(['category', 'user:id,name,foto_profil', 'tags'])
+        $results = Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+            ->select('id', 'judul', 'tipe', 'category_id', 'user_id', 'created_at', 'views_count', 'file_path')
             ->where('status', 'Disetujui')
             ->filter($request->all())
             ->take(10)
@@ -56,7 +57,24 @@ class SearchController extends Controller
      */
     public function index(Request $request)
     {
-        $results = Knowledge::with(['category', 'user:id,name,foto_profil', 'tags'])
+        $cardColumns = [
+            'id',
+            'user_id',
+            'category_id',
+            'judul',
+            'penulis',
+            'deskripsi',
+            'tipe',
+            'file_path',
+            'status',
+            'views_count',
+            'created_at',
+            'updated_at',
+            'unggulan',
+        ];
+
+        $results = Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+            ->select($cardColumns)
             ->where('status', 'Disetujui')
             ->filter($request->all())
             ->paginate(12)

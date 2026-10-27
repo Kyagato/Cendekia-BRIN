@@ -7,6 +7,7 @@ use App\Models\ForumReply;
 use App\Models\ForumThread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -184,9 +185,14 @@ class ForumController extends Controller
             $thread = ForumThread::approved()->findOrFail($id);
         }
 
-        // Increment view count hanya jika tidak di tong sampah
+        // Increment view count hanya jika tidak di tong sampah dengan debounce cache 1 jam per viewer (user/IP)
         if (!$thread->trashed()) {
-            $thread->increment('views_count');
+            $viewerKey = auth()->check() ? 'user_' . auth()->id() : 'ip_' . request()->ip();
+            $viewCacheKey = "forum_thread_viewed_{$thread->id}_{$viewerKey}";
+
+            if (Cache::add($viewCacheKey, true, 3600)) {
+                $thread->increment('views_count');
+            }
         }
 
         $thread->load(['user', 'category', 'knowledge.category']);
