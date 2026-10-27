@@ -33,20 +33,20 @@ class HomeController extends Controller
             ];
 
             return [
-                'featuredKnowledges' => Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+                'featuredKnowledges' => Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
                     ->select($cardColumns)
                     ->where('status', 'Disetujui')
                     ->where('unggulan', true)
                     ->latest()
                     ->take(6)
                     ->get(),
-                'mostViewed' => Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+                'mostViewed' => Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
                     ->select($cardColumns)
                     ->where('status', 'Disetujui')
                     ->orderByDesc('views_count')
                     ->take(6)
                     ->get(),
-                'latest' => Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+                'latest' => Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
                     ->select($cardColumns)
                     ->where('status', 'Disetujui')
                     ->latest()

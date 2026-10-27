@@ -73,7 +73,7 @@ class SearchController extends Controller
             'unggulan',
         ];
 
-        $results = Knowledge::with(['category:id,nama_kategori,slug', 'user:id,name,foto_profil', 'tags:id,nama_label'])
+        $results = Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
             ->select($cardColumns)
             ->where('status', 'Disetujui')
             ->filter($request->all())
