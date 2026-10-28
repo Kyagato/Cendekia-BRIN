@@ -124,6 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/forum/{thread}/reply', [App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
     Route::put('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'updateReply'])->name('forum.reply.update');
     Route::delete('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
+    Route::patch('/forum/reply/{reply}/pin', [App\Http\Controllers\ForumController::class, 'pinReply'])->name('forum.reply.pin');
 
     // Dashboard Forum Manajemen & Soft Deletes Milik Sendiri
     Route::prefix('dashboard/forum')->name('dashboard.forum.')->group(function () {

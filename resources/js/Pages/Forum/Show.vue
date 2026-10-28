@@ -139,7 +139,14 @@
 
       <!-- Replies List -->
       <div v-if="replies?.data?.length > 0" class="space-y-4">
-        <div v-for="reply in replies.data" :key="reply.id" class="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-[#e2e8f0] dark:border-slate-800 p-5">
+        <div 
+          v-for="reply in replies.data" 
+          :key="reply.id" 
+          class="rounded-lg shadow-sm p-5 transition-all duration-200"
+          :class="reply.is_pinned 
+            ? 'border-2 border-amber-300 dark:border-amber-600/70 bg-gradient-to-r from-amber-50/50 via-white to-amber-50/30 dark:from-amber-950/25 dark:via-slate-900 dark:to-amber-950/15' 
+            : 'bg-white dark:bg-slate-900 border border-[#e2e8f0] dark:border-slate-800'"
+        >
           <div class="flex items-start gap-3">
             <UserPreviewPopover :user="reply.user">
               <template #default="{ user }">
@@ -155,16 +162,91 @@
             </UserPreviewPopover>
 
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-2">
-                <UserPreviewPopover :user="reply.user">
-                  <template #default="{ user }">
-                    <a :href="`/users/${user.id}`" class="font-semibold text-sm text-[#0f172a] dark:text-slate-100 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition">
-                      {{ user.name }}
-                    </a>
-                  </template>
-                </UserPreviewPopover>
-                <span class="text-xs text-[#94a3b8]">{{ formatDate(reply.created_at) }}</span>
-                <span v-if="isEdited(reply)" class="text-[11px] text-slate-400 dark:text-slate-500 italic">(diedit)</span>
+              <!-- Top-level Reply Header: Author, Date, Badges & 3-Dots Action (Paling Kanan) -->
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-2 flex-wrap min-w-0">
+                  <!-- Pinned Badge -->
+                  <span 
+                    v-if="reply.is_pinned" 
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60 shadow-xs"
+                  >
+                    <svg class="w-3 h-3 text-amber-600 dark:text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M16 3a1 1 0 0 1 .117 1.993L16 5v4.586l1.707 1.707a1 1 0 0 1 .293.707v3a1 1 0 0 1-1 1h-4v6a1 1 0 0 1-1.993.117L10 22v-6H6a1 1 0 0 1-1-1v-3a1 1 0 0 1 .293-.707L7 9.586V5a1 1 0 0 1-.117-1.993L7 3h9z"/>
+                    </svg>
+                    <span>Disematkan</span>
+                  </span>
+
+                  <UserPreviewPopover :user="reply.user">
+                    <template #default="{ user }">
+                      <a :href="`/users/${user.id}`" class="font-semibold text-sm text-[#0f172a] dark:text-slate-100 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition truncate">
+                        {{ user.name }}
+                      </a>
+                    </template>
+                  </UserPreviewPopover>
+                  <span class="text-xs text-[#94a3b8] shrink-0">{{ formatDate(reply.created_at) }}</span>
+                  <span v-if="isEdited(reply)" class="text-[11px] text-slate-400 dark:text-slate-500 italic shrink-0">(diedit)</span>
+                </div>
+
+                <!-- 3-Dots Menu Button (Posisi Paling Kanan) -->
+                <div v-if="hasReplyMenu(reply)" class="relative shrink-0" :ref="el => setMenuRef(el, reply.id)">
+                  <button
+                    type="button"
+                    @click.stop="toggleReplyMenu(reply.id)"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                    :class="{ 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200': openMenuReplyId === reply.id }"
+                    title="Opsi balasan"
+                    aria-label="Opsi balasan"
+                  >
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                  </button>
+
+                  <!-- Dropdown Menu -->
+                  <div
+                    v-if="openMenuReplyId === reply.id"
+                    class="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-[#e2e8f0] dark:border-slate-700 py-1.5 z-50 text-left"
+                  >
+                    <!-- Opsi Pin / Lepas Pin -->
+                    <button
+                      v-if="canPinReply(reply)"
+                      type="button"
+                      @click.stop="togglePinReply(reply)"
+                      class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5 text-amber-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M16 3a1 1 0 0 1 .117 1.993L16 5v4.586l1.707 1.707a1 1 0 0 1 .293.707v3a1 1 0 0 1-1 1h-4v6a1 1 0 0 1-1.993.117L10 22v-6H6a1 1 0 0 1-1-1v-3a1 1 0 0 1 .293-.707L7 9.586V5a1 1 0 0 1-.117-1.993L7 3h9z"/>
+                      </svg>
+                      <span>{{ reply.is_pinned ? 'Lepas Sematan' : 'Sematkan Komentar' }}</span>
+                    </button>
+
+                    <!-- Opsi Edit -->
+                    <button
+                      v-if="canEditReply(reply) && !thread.is_locked"
+                      type="button"
+                      @click.stop="startEditReply(reply)"
+                      class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      <span>Edit</span>
+                    </button>
+
+                    <!-- Opsi Hapus -->
+                    <button
+                      v-if="canDeleteReply(reply)"
+                      type="button"
+                      @click.stop="deleteReply(reply)"
+                      class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                    >
+                      <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      <span>Hapus</span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <!-- Top-level Reply: Inline Edit Mode vs View Mode -->
@@ -203,10 +285,9 @@
               <div v-else>
                 <div class="text-sm text-[#475569] dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ reply.konten }}</div>
 
-                <!-- Actions: Balas, Edit, Hapus -->
-                <div class="flex items-center gap-3 mt-3 pt-0.5">
+                <!-- Action Balas -->
+                <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-3 pt-0.5">
                   <button 
-                    v-if="!thread.is_locked && thread.status === 'approved' && user" 
                     @click="handleReply(reply)" 
                     class="inline-flex items-center gap-1 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
                   >
@@ -215,36 +296,16 @@
                     </svg>
                     <span>Balas</span>
                   </button>
-
-                  <button 
-                    v-if="canEditReply(reply) && !thread.is_locked" 
-                    @click="startEditReply(reply)" 
-                    class="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 font-semibold cursor-pointer transition"
-                    title="Edit balasan Anda"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <span>Edit</span>
-                  </button>
-
-                  <button 
-                    v-if="canDeleteReply(reply)" 
-                    @click="deleteReply(reply)" 
-                    class="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 font-semibold cursor-pointer transition"
-                    :title="reply.user_id === user?.id ? 'Hapus balasan Anda' : 'Hapus balasan ini (Moderasi)'"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    <span>Hapus</span>
-                  </button>
                 </div>
               </div>
 
               <!-- Nested Replies -->
               <div v-if="reply.replies?.length > 0" class="mt-4 space-y-3 pl-4 border-l-2 border-[#e2e8f0] dark:border-slate-700">
-                <div v-for="nested in reply.replies" :key="nested.id" class="flex items-start gap-2">
+                <div 
+                  v-for="nested in reply.replies" 
+                  :key="nested.id" 
+                  class="flex items-start gap-2.5 p-2 rounded-lg transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
+                >
                   <UserPreviewPopover :user="nested.user">
                     <template #default="{ user }">
                       <a :href="`/users/${user.id}`" class="block">
@@ -259,16 +320,67 @@
                   </UserPreviewPopover>
 
                   <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-1">
-                      <UserPreviewPopover :user="nested.user">
-                        <template #default="{ user }">
-                          <a :href="`/users/${user.id}`" class="font-semibold text-xs text-[#0f172a] dark:text-slate-200 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition">
-                            {{ user.name }}
-                          </a>
-                        </template>
-                      </UserPreviewPopover>
-                      <span class="text-xs text-[#94a3b8]">{{ formatDate(nested.created_at) }}</span>
-                      <span v-if="isEdited(nested)" class="text-[10px] text-slate-400 dark:text-slate-500 italic">(diedit)</span>
+                    <!-- Nested Reply Header: Author, Date & 3-Dots Action (Paling Kanan) -->
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                      <div class="flex items-center gap-2 flex-wrap min-w-0">
+                        <UserPreviewPopover :user="nested.user">
+                          <template #default="{ user }">
+                            <a :href="`/users/${user.id}`" class="font-semibold text-xs text-[#0f172a] dark:text-slate-200 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition truncate">
+                              {{ user.name }}
+                            </a>
+                          </template>
+                        </UserPreviewPopover>
+                        <span class="text-xs text-[#94a3b8] shrink-0">{{ formatDate(nested.created_at) }}</span>
+                        <span v-if="isEdited(nested)" class="text-[10px] text-slate-400 dark:text-slate-500 italic shrink-0">(diedit)</span>
+                      </div>
+
+                      <!-- 3-Dots Menu Button for Nested Reply (Hanya Edit & Hapus, Balasan Tidak Bisa Di-pin) -->
+                      <div v-if="hasReplyMenu(nested)" class="relative shrink-0" :ref="el => setMenuRef(el, nested.id)">
+                        <button
+                          type="button"
+                          @click.stop="toggleReplyMenu(nested.id)"
+                          class="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                          :class="{ 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200': openMenuReplyId === nested.id }"
+                          title="Opsi balasan"
+                          aria-label="Opsi balasan"
+                        >
+                          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                          </svg>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div
+                          v-if="openMenuReplyId === nested.id"
+                          class="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-[#e2e8f0] dark:border-slate-700 py-1 z-50 text-left"
+                        >
+                          <!-- Opsi Edit -->
+                          <button
+                            v-if="canEditReply(nested) && !thread.is_locked"
+                            type="button"
+                            @click.stop="startEditReply(nested)"
+                            class="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition cursor-pointer"
+                          >
+                            <svg class="w-3.5 h-3.5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <span>Edit</span>
+                          </button>
+
+                          <!-- Opsi Hapus -->
+                          <button
+                            v-if="canDeleteReply(nested)"
+                            type="button"
+                            @click.stop="deleteReply(nested)"
+                            class="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                          >
+                            <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span>Hapus</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
                     <!-- Nested Reply: Inline Edit Mode vs View Mode -->
@@ -305,30 +417,166 @@
                       </div>
                     </div>
                     <div v-else>
-                      <div class="text-xs text-[#475569] dark:text-slate-300 whitespace-pre-line">{{ nested.konten }}</div>
-                      <div class="flex items-center gap-2.5 mt-1.5">
+                      <div class="text-xs text-[#475569] dark:text-slate-300 whitespace-pre-line leading-relaxed">
+                        <span v-if="nested.mention_user" class="font-semibold text-blue-600 dark:text-blue-400 mr-1">
+                          @{{ nested.mention_user }}
+                        </span>
+                        {{ nested.konten }}
+                      </div>
+
+                      <!-- Action Balas pada nested reply (Level 1) -->
+                      <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-2 pt-0.5">
                         <button 
-                          v-if="canEditReply(nested) && !thread.is_locked" 
-                          @click="startEditReply(nested)" 
-                          class="inline-flex items-center gap-0.5 text-[11px] text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 font-semibold cursor-pointer transition"
-                          title="Edit balasan Anda"
+                          @click="handleReply(nested)" 
+                          class="inline-flex items-center gap-1 text-[11px] text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
                         >
                           <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                           </svg>
-                          <span>Edit</span>
+                          <span>Balas</span>
                         </button>
-                        <button 
-                          v-if="canDeleteReply(nested)" 
-                          @click="deleteReply(nested)" 
-                          class="inline-flex items-center gap-0.5 text-[11px] text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 font-semibold cursor-pointer transition"
-                          :title="nested.user_id === user?.id ? 'Hapus balasan Anda' : 'Hapus balasan ini (Moderasi)'"
-                        >
-                          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          <span>Hapus</span>
-                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Level 2 Sub-Replies: tepat berada di bawah balasan yang dibalas (posisi agak menjorok masuk) -->
+                    <div v-if="nested.replies?.length > 0" class="mt-3 space-y-2.5 pl-3.5 border-l-2 border-[#cbd5e1] dark:border-slate-700">
+                      <div 
+                        v-for="subNested in nested.replies" 
+                        :key="subNested.id" 
+                        class="flex items-start gap-2.5 p-2 rounded-lg transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
+                      >
+                        <UserPreviewPopover :user="subNested.user">
+                          <template #default="{ user }">
+                            <a :href="`/users/${user.id}`" class="block">
+                              <div v-if="user.foto_profil" class="w-6 h-6 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+                                <img :src="`/storage/${user.foto_profil}`" class="w-full h-full object-cover" :alt="user.name" />
+                              </div>
+                              <div v-else class="w-6 h-6 rounded-full bg-[#f1f5f9] dark:bg-slate-700 text-[#475569] dark:text-slate-300 flex items-center justify-center font-bold text-[10px] shrink-0">
+                                {{ user.name ? user.name.charAt(0).toUpperCase() : 'U' }}
+                              </div>
+                            </a>
+                          </template>
+                        </UserPreviewPopover>
+
+                        <div class="flex-1 min-w-0">
+                          <!-- Sub-Nested Header: Author, Date & 3-Dots Action (Paling Kanan) -->
+                          <div class="flex items-center justify-between gap-2 mb-1">
+                            <div class="flex items-center gap-2 flex-wrap min-w-0">
+                              <UserPreviewPopover :user="subNested.user">
+                                <template #default="{ user }">
+                                  <a :href="`/users/${user.id}`" class="font-semibold text-xs text-[#0f172a] dark:text-slate-200 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition truncate">
+                                    {{ user.name }}
+                                  </a>
+                                </template>
+                              </UserPreviewPopover>
+                              <span class="text-xs text-[#94a3b8] shrink-0">{{ formatDate(subNested.created_at) }}</span>
+                              <span v-if="isEdited(subNested)" class="text-[10px] text-slate-400 dark:text-slate-500 italic shrink-0">(diedit)</span>
+                            </div>
+
+                            <!-- 3-Dots Menu Button for Sub-Nested Reply -->
+                            <div v-if="hasReplyMenu(subNested)" class="relative shrink-0" :ref="el => setMenuRef(el, subNested.id)">
+                              <button
+                                type="button"
+                                @click.stop="toggleReplyMenu(subNested.id)"
+                                class="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                                :class="{ 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200': openMenuReplyId === subNested.id }"
+                                title="Opsi balasan"
+                                aria-label="Opsi balasan"
+                              >
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                                </svg>
+                              </button>
+
+                              <!-- Dropdown Menu -->
+                              <div
+                                v-if="openMenuReplyId === subNested.id"
+                                class="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-[#e2e8f0] dark:border-slate-700 py-1 z-50 text-left"
+                              >
+                                <!-- Opsi Edit -->
+                                <button
+                                  v-if="canEditReply(subNested) && !thread.is_locked"
+                                  type="button"
+                                  @click.stop="startEditReply(subNested)"
+                                  class="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition cursor-pointer"
+                                >
+                                  <svg class="w-3.5 h-3.5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                  <span>Edit</span>
+                                </button>
+
+                                <!-- Opsi Hapus -->
+                                <button
+                                  v-if="canDeleteReply(subNested)"
+                                  type="button"
+                                  @click.stop="deleteReply(subNested)"
+                                  class="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+                                >
+                                  <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                  <span>Hapus</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Sub-Nested Reply: Inline Edit Mode vs View Mode -->
+                          <div v-if="editingReplyId === subNested.id" class="mt-2 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-blue-200 dark:border-blue-900/50">
+                            <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-200 mb-1 flex items-center gap-1">
+                              <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                              <span>Edit Balasan Anda</span>
+                            </div>
+                            <textarea
+                              v-model="editReplyForm.konten"
+                              rows="2"
+                              required
+                              placeholder="Tuliskan perubahan balasan..."
+                              class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition resize-none shadow-xs"
+                            ></textarea>
+                            <div class="flex items-center justify-end gap-1.5 mt-1.5">
+                              <button
+                                type="button"
+                                @click="cancelEditReply"
+                                class="px-2.5 py-1 rounded-md text-[11px] font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700 transition cursor-pointer"
+                              >
+                                Batal
+                              </button>
+                              <button
+                                type="button"
+                                :disabled="editReplyForm.processing || !editReplyForm.konten.trim()"
+                                @click="submitEditReply(subNested)"
+                                class="px-3 py-1 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-[11px] font-bold transition shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
+                              >
+                                {{ editReplyForm.processing ? 'Menyimpan...' : 'Simpan' }}
+                              </button>
+                            </div>
+                          </div>
+                          <div v-else>
+                            <div class="text-xs text-[#475569] dark:text-slate-300 whitespace-pre-line leading-relaxed">
+                              <span v-if="subNested.mention_user" class="font-semibold text-blue-600 dark:text-blue-400 mr-1">
+                                @{{ subNested.mention_user }}
+                              </span>
+                              {{ subNested.konten }}
+                            </div>
+
+                            <!-- Action Balas pada subNested (jika dibalas lagi, tetap di Level 2 di bawah nested ini, tidak menjorok lagi!) -->
+                            <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-2 pt-0.5">
+                              <button 
+                                @click="handleReply(subNested, nested)" 
+                                class="inline-flex items-center gap-1 text-[11px] text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
+                              >
+                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                </svg>
+                                <span>Balas</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -351,7 +599,7 @@
               <span>{{ replyTo ? `Membalas: ${replyTo.user?.name}` : 'Tulis Balasan Anda' }}</span>
               <button 
                 v-if="replyTo" 
-                @click="replyTo = null" 
+                @click="cancelReply" 
                 type="button"
                 class="ml-2 text-xs text-rose-500 hover:text-rose-600 font-medium transition cursor-pointer"
               >
@@ -423,7 +671,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 import UserPreviewPopover from '../../Components/UserPreviewPopover.vue';
@@ -499,6 +747,59 @@ const canDeleteReply = (reply) => {
   return reply.user_id === user.value.id || canManageForum.value;
 };
 
+// Pin balasan: Hanya untuk komentar utama (bukan nested reply / balasan)
+// Hak akses: 3 role admin + moderator, atau pembuat forum (thread owner)
+const canPinReply = (reply) => {
+  if (!user.value) return false;
+  // Balasan bertingkat tidak bisa di-pin
+  if (reply.parent_id !== null && reply.parent_id !== undefined) return false;
+  if (canManageForum.value) return true;
+  return props.thread?.user_id === user.value.id;
+};
+
+const hasReplyMenu = (reply) => {
+  return canPinReply(reply) || canEditReply(reply) || canDeleteReply(reply);
+};
+
+// 3-Dots Dropdown State & Click-outside handling
+const openMenuReplyId = ref(null);
+const menuRefs = new Map();
+
+const setMenuRef = (el, id) => {
+  if (el) {
+    menuRefs.set(id, el);
+  } else {
+    menuRefs.delete(id);
+  }
+};
+
+const toggleReplyMenu = (id) => {
+  openMenuReplyId.value = openMenuReplyId.value === id ? null : id;
+};
+
+const handleDocumentClick = (event) => {
+  if (!openMenuReplyId.value) return;
+  const currentEl = menuRefs.get(openMenuReplyId.value);
+  if (currentEl && !currentEl.contains(event.target)) {
+    openMenuReplyId.value = null;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleDocumentClick);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleDocumentClick);
+});
+
+const togglePinReply = (reply) => {
+  openMenuReplyId.value = null;
+  router.patch(`/forum/reply/${reply.id}/pin`, {}, {
+    preserveScroll: true,
+  });
+};
+
 // Inline Edit Reply State & Actions
 const editingReplyId = ref(null);
 const editReplyForm = useForm({
@@ -506,6 +807,7 @@ const editReplyForm = useForm({
 });
 
 const startEditReply = (reply) => {
+  openMenuReplyId.value = null;
   editingReplyId.value = reply.id;
   editReplyForm.konten = reply.konten;
 };
@@ -525,6 +827,7 @@ const submitEditReply = (reply) => {
 };
 
 const deleteReply = (reply) => {
+  openMenuReplyId.value = null;
   const isOwn = reply.user_id === user.value?.id;
   const message = isOwn
     ? 'Apakah Anda yakin ingin menghapus balasan Anda?'
@@ -546,21 +849,46 @@ const replyTo = ref(null);
 const replyTextarea = ref(null);
 const isCollapsed = ref(false);
 
-const handleReply = (reply) => {
-  replyTo.value = reply;
+const handleReply = (targetReply, parentReply = null) => {
+  replyTo.value = targetReply;
   isCollapsed.value = false;
+
+  // Aturan hirarki:
+  // 1. Jika membalas balasan Level 2 (yang memiliki parentReply Level 1):
+  //    Komentar baru tetap di Level 2 (parent_id = parentReply.id), TIDAK menjorok lagi!
+  // 2. Jika membalas balasan Level 1:
+  //    parent_id = targetReply.id -> Komentar baru masuk ke Level 2 tepat di bawah balasan ini (agak menjorok masuk).
+  // 3. Jika membalas komentar utama:
+  //    parent_id = targetReply.id -> Komentar baru masuk ke Level 1.
+  if (parentReply) {
+    replyForm.parent_id = parentReply.id;
+    replyForm.mention_user = targetReply.user?.name || null;
+  } else if (targetReply.parent_id) {
+    replyForm.parent_id = targetReply.id;
+    replyForm.mention_user = targetReply.user?.name || null;
+  } else {
+    replyForm.parent_id = targetReply.id;
+    replyForm.mention_user = null;
+  }
+
   setTimeout(() => {
     replyTextarea.value?.focus();
   }, 100);
 };
 
+const cancelReply = () => {
+  replyTo.value = null;
+  replyForm.parent_id = null;
+  replyForm.mention_user = null;
+};
+
 const replyForm = useForm({
   konten: '',
   parent_id: null,
+  mention_user: null,
 });
 
 const submitReply = () => {
-  replyForm.parent_id = replyTo.value?.id ?? null;
   replyForm.post(`/forum/${props.thread.id}/reply`, {
     onSuccess: () => {
       replyForm.reset();

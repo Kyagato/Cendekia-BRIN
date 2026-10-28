@@ -286,3 +286,145 @@ it('allows 3 admin roles and moderator to delete any reply', function () {
     $this->actingAs($superAdmin)->delete(route('forum.reply.destroy', $reply4->id))->assertSessionHas('success');
     expect(ForumReply::find($reply4->id))->toBeNull();
 });
+
+it('allows forum thread creator to pin and unpin any reply in their thread', function () {
+    $threadOwner = User::factory()->create(['role' => 'Anggota']);
+    $otherMember = User::factory()->create(['role' => 'Anggota']);
+
+    $thread = ForumThread::create([
+        'user_id' => $threadOwner->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Pin Komentar Thread Owner',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    $reply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $otherMember->id,
+        'konten' => 'Komentar penting dari member lain',
+        'is_pinned' => false,
+    ]);
+
+    // Pembuat forum bisa pin
+    $response = $this->actingAs($threadOwner)->patch(route('forum.reply.pin', $reply->id));
+    $response->assertSessionHas('success');
+    expect($reply->fresh()->is_pinned)->toBeTrue();
+
+    // Pembuat forum bisa unpin
+    $response2 = $this->actingAs($threadOwner)->patch(route('forum.reply.pin', $reply->id));
+    $response2->assertSessionHas('success');
+    expect($reply->fresh()->is_pinned)->toBeFalse();
+});
+
+it('forbids other regular users from pinning replies if they are not the thread creator', function () {
+    $threadOwner = User::factory()->create(['role' => 'Anggota']);
+    $otherMember1 = User::factory()->create(['role' => 'Anggota']);
+    $otherMember2 = User::factory()->create(['role' => 'Anggota']);
+
+    $thread = ForumThread::create([
+        'user_id' => $threadOwner->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Forbidden Pin Komentar',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    // Komentar milik otherMember1
+    $reply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $otherMember1->id,
+        'konten' => 'Komentar saya sendiri tapi saya bukan pembuat thread',
+        'is_pinned' => false,
+    ]);
+
+    // otherMember1 (pemilik komentar) TIDAK BISA pin karena bukan pembuat thread
+    $this->actingAs($otherMember1)->patch(route('forum.reply.pin', $reply->id))->assertStatus(403);
+    expect($reply->fresh()->is_pinned)->toBeFalse();
+
+    // otherMember2 juga TIDAK BISA pin
+    $this->actingAs($otherMember2)->patch(route('forum.reply.pin', $reply->id))->assertStatus(403);
+    expect($reply->fresh()->is_pinned)->toBeFalse();
+});
+
+it('allows 3 admin roles and moderator to pin and unpin any reply in any thread', function () {
+    $threadOwner = User::factory()->create(['role' => 'Anggota']);
+    $superAdmin = User::factory()->create(['role' => 'Super Admin']);
+    $adminPusat = User::factory()->create(['role' => 'Admin Pusat']);
+    $adminRegular = User::factory()->create(['role' => 'Admin']);
+    $moderator = User::factory()->create(['role' => 'Moderator']);
+    $analyst = User::factory()->create(['role' => 'Analis Pengetahuan']);
+
+    $thread = ForumThread::create([
+        'user_id' => $threadOwner->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Moderasi Pin Reply',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    $reply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $threadOwner->id,
+        'konten' => 'Komentar yang akan dipin staf moderasi',
+        'is_pinned' => false,
+    ]);
+
+    // Analyst cannot pin
+    $this->actingAs($analyst)->patch(route('forum.reply.pin', $reply->id))->assertStatus(403);
+    expect($reply->fresh()->is_pinned)->toBeFalse();
+
+    // Moderator can pin
+    $this->actingAs($moderator)->patch(route('forum.reply.pin', $reply->id))->assertSessionHas('success');
+    expect($reply->fresh()->is_pinned)->toBeTrue();
+
+    // Admin Regular can unpin
+    $this->actingAs($adminRegular)->patch(route('forum.reply.pin', $reply->id))->assertSessionHas('success');
+    expect($reply->fresh()->is_pinned)->toBeFalse();
+
+    // Admin Pusat can pin
+    $this->actingAs($adminPusat)->patch(route('forum.reply.pin', $reply->id))->assertSessionHas('success');
+    expect($reply->fresh()->is_pinned)->toBeTrue();
+
+    // Super Admin can unpin
+    $this->actingAs($superAdmin)->patch(route('forum.reply.pin', $reply->id))->assertSessionHas('success');
+    expect($reply->fresh()->is_pinned)->toBeFalse();
+});
+
+it('rejects pinning nested replies and only allows top-level replies to be pinned', function () {
+    $threadOwner = User::factory()->create(['role' => 'Anggota']);
+
+    $thread = ForumThread::create([
+        'user_id' => $threadOwner->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Pin Nested Reply Reject',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    $mainReply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $threadOwner->id,
+        'konten' => 'Komentar Utama',
+        'parent_id' => null,
+        'is_pinned' => false,
+    ]);
+
+    $nestedReply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $threadOwner->id,
+        'konten' => 'Balasan di komentar utama',
+        'parent_id' => $mainReply->id,
+        'is_pinned' => false,
+    ]);
+
+    // Coba pin nested reply -> ditolak
+    $response = $this->actingAs($threadOwner)->patch(route('forum.reply.pin', $nestedReply->id));
+    $response->assertSessionHas('error', 'Hanya komentar utama yang dapat disematkan.');
+    expect($nestedReply->fresh()->is_pinned)->toBeFalse();
+
+    // Pin komentar utama -> sukses
+    $response2 = $this->actingAs($threadOwner)->patch(route('forum.reply.pin', $mainReply->id));
+    $response2->assertSessionHas('success');
+    expect($mainReply->fresh()->is_pinned)->toBeTrue();
+});

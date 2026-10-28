@@ -12,6 +12,11 @@ class ForumReply extends Model
     protected $table = 'forum_replies';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'is_pinned' => 'boolean',
+        'is_best_answer' => 'boolean',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -25,7 +30,10 @@ class ForumReply extends Model
     // Self-referencing: a reply can have nested child replies
     public function replies()
     {
-        return $this->hasMany(ForumReply::class, 'parent_id')->with('user', 'replies');
+        return $this->hasMany(ForumReply::class, 'parent_id')
+            ->with('user', 'replies')
+            ->orderByDesc('is_pinned')
+            ->oldest();
     }
 
     // Parent reply (if this is a nested reply)

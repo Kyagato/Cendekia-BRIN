@@ -201,6 +201,7 @@ class ForumController extends Controller
         $replies = $thread->replies()
             ->whereNull('parent_id')
             ->with(['user', 'replies.user', 'replies.replies.user'])
+            ->orderByDesc('is_pinned')
             ->latest()
             ->paginate(15);
 
@@ -322,6 +323,36 @@ class ForumController extends Controller
         );
 
         return back()->with('success', 'Balasan berhasil dihapus.');
+    }
+
+    public function pinReply(ForumReply $reply)
+    {
+        // Hanya komentar utama (bukan nested reply / balasan) yang dapat disematkan
+        if ($reply->parent_id !== null) {
+            return back()->with('error', 'Hanya komentar utama yang dapat disematkan.');
+        }
+
+        $user = Auth::user();
+        $thread = $reply->thread;
+
+        // 3 role admin, moderator, atau pemilik thread forum tersebut
+        $isThreadOwner = $thread && $thread->user_id === $user->id;
+        $canPin = $user->isAdmin() || $user->isModerator() || $isThreadOwner;
+
+        if (!$canPin) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menyematkan balasan ini.');
+        }
+
+        $reply->update(['is_pinned' => !$reply->is_pinned]);
+        $status = $reply->is_pinned ? 'disematkan' : 'dilepas sematannya';
+
+        \App\Models\AuditLog::record(
+            'FORUM_REPLY_PIN',
+            "Mengubah status sematan balasan forum (ID: {$reply->id}) menjadi {$status}",
+            ['reply_id' => $reply->id, 'thread_id' => $reply->thread_id, 'is_pinned' => $reply->is_pinned]
+        );
+
+        return back()->with('success', "Komentar berhasil {$status}.");
     }
 
     public function pin(ForumThread $thread)
