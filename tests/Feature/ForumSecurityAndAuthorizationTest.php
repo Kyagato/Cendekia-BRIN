@@ -134,3 +134,155 @@ it('sanitizes malicious html and scripts from thread and reply content', functio
     expect($reply->konten)->not->toContain('<script>');
     expect($reply->konten)->toBe('alert("reply-xss")Balasan teks biasa');
 });
+
+it('allows author to edit their own reply and sanitizes content', function () {
+    $author = User::factory()->create(['role' => 'Anggota']);
+
+    $thread = ForumThread::create([
+        'user_id' => $author->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Edit Reply',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    $reply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan awal',
+    ]);
+
+    $response = $this->actingAs($author)->put(route('forum.reply.update', $reply->id), [
+        'konten' => 'Balasan yang diperbarui<script>alert("hack")</script>',
+    ]);
+
+    $response->assertSessionHas('success');
+    expect($reply->fresh()->konten)->toBe('Balasan yang diperbaruialert("hack")');
+});
+
+it('forbids other users from editing someone else\'s reply', function () {
+    $author = User::factory()->create(['role' => 'Anggota']);
+    $otherUser = User::factory()->create(['role' => 'Anggota']);
+
+    $thread = ForumThread::create([
+        'user_id' => $author->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Forbidden Edit Reply',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    $reply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan orisinal',
+    ]);
+
+    $response = $this->actingAs($otherUser)->put(route('forum.reply.update', $reply->id), [
+        'konten' => 'Mencoba mengedit balasan orang lain',
+    ]);
+
+    $response->assertStatus(403);
+    expect($reply->fresh()->konten)->toBe('Balasan orisinal');
+});
+
+it('allows author to delete their own reply', function () {
+    $author = User::factory()->create(['role' => 'Anggota']);
+
+    $thread = ForumThread::create([
+        'user_id' => $author->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Hapus Reply Sendiri',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    $reply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan akan dihapus',
+    ]);
+
+    $response = $this->actingAs($author)->delete(route('forum.reply.destroy', $reply->id));
+    $response->assertSessionHas('success');
+    expect(ForumReply::find($reply->id))->toBeNull();
+});
+
+it('forbids other regular users from deleting someone else\'s reply', function () {
+    $author = User::factory()->create(['role' => 'Anggota']);
+    $otherUser = User::factory()->create(['role' => 'Anggota']);
+
+    $thread = ForumThread::create([
+        'user_id' => $author->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Forbidden Delete Reply',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    $reply = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan jangan dihapus',
+    ]);
+
+    $response = $this->actingAs($otherUser)->delete(route('forum.reply.destroy', $reply->id));
+    $response->assertStatus(403);
+    expect(ForumReply::find($reply->id))->not->toBeNull();
+});
+
+it('allows 3 admin roles and moderator to delete any reply', function () {
+    $author = User::factory()->create(['role' => 'Anggota']);
+    $superAdmin = User::factory()->create(['role' => 'Super Admin']);
+    $adminPusat = User::factory()->create(['role' => 'Admin Pusat']);
+    $adminRegular = User::factory()->create(['role' => 'Admin']);
+    $moderator = User::factory()->create(['role' => 'Moderator']);
+    $analyst = User::factory()->create(['role' => 'Analis Pengetahuan']);
+
+    $thread = ForumThread::create([
+        'user_id' => $author->id,
+        'category_id' => $this->category->id,
+        'judul' => 'Diskusi Moderasi Hapus Reply',
+        'konten' => 'Konten topik.',
+        'status' => 'approved',
+    ]);
+
+    // Analyst cannot delete
+    $reply1 = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan 1',
+    ]);
+    $this->actingAs($analyst)->delete(route('forum.reply.destroy', $reply1->id))->assertStatus(403);
+
+    // Moderator CAN delete
+    $this->actingAs($moderator)->delete(route('forum.reply.destroy', $reply1->id))->assertSessionHas('success');
+    expect(ForumReply::find($reply1->id))->toBeNull();
+
+    // Admin Regular CAN delete
+    $reply2 = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan 2',
+    ]);
+    $this->actingAs($adminRegular)->delete(route('forum.reply.destroy', $reply2->id))->assertSessionHas('success');
+    expect(ForumReply::find($reply2->id))->toBeNull();
+
+    // Admin Pusat CAN delete
+    $reply3 = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan 3',
+    ]);
+    $this->actingAs($adminPusat)->delete(route('forum.reply.destroy', $reply3->id))->assertSessionHas('success');
+    expect(ForumReply::find($reply3->id))->toBeNull();
+
+    // Super Admin CAN delete
+    $reply4 = ForumReply::create([
+        'thread_id' => $thread->id,
+        'user_id' => $author->id,
+        'konten' => 'Balasan 4',
+    ]);
+    $this->actingAs($superAdmin)->delete(route('forum.reply.destroy', $reply4->id))->assertSessionHas('success');
+    expect(ForumReply::find($reply4->id))->toBeNull();
+});

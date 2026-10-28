@@ -272,16 +272,53 @@ class ForumController extends Controller
         return redirect()->route('forum.index')->with('success', 'Topik berhasil dipindahkan ke tong sampah.');
     }
 
+    public function updateReply(Request $request, ForumReply $reply)
+    {
+        $user = Auth::user();
+
+        // Hanya pemilik balasan yang dapat mengedit balasannya sendiri
+        if ($reply->user_id !== $user->id) {
+            abort(403, 'Anda hanya dapat mengubah balasan milik Anda sendiri.');
+        }
+
+        if ($reply->thread && $reply->thread->is_locked) {
+            return back()->with('error', 'Topik diskusi ini telah dikunci, balasan tidak dapat diedit.');
+        }
+
+        $request->validate([
+            'konten' => 'required|string',
+        ]);
+
+        $reply->update([
+            'konten' => strip_tags($request->konten),
+        ]);
+
+        \App\Models\AuditLog::record(
+            'FORUM_REPLY_UPDATE',
+            "Memperbarui balasan forum (ID: {$reply->id})",
+            ['reply_id' => $reply->id, 'thread_id' => $reply->thread_id]
+        );
+
+        return back()->with('success', 'Balasan berhasil diperbarui.');
+    }
+
     public function destroyReply(ForumReply $reply)
     {
-        Gate::authorize('manage-forum');
+        $user = Auth::user();
+
+        // 3 role admin dan Moderator berhak menghapus semua balasan; Anggota biasa hanya berhak menghapus balasannya sendiri
+        if (!$user->isAdmin() && !$user->isModerator() && $reply->user_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menghapus balasan ini.');
+        }
+
         $replyId = $reply->id;
+        $threadId = $reply->thread_id;
         $reply->delete();
 
         \App\Models\AuditLog::record(
             'FORUM_REPLY_DELETE',
             "Menghapus balasan forum (ID: {$replyId})",
-            ['reply_id' => $replyId]
+            ['reply_id' => $replyId, 'thread_id' => $threadId]
         );
 
         return back()->with('success', 'Balasan berhasil dihapus.');

@@ -164,8 +164,83 @@
                   </template>
                 </UserPreviewPopover>
                 <span class="text-xs text-[#94a3b8]">{{ formatDate(reply.created_at) }}</span>
+                <span v-if="isEdited(reply)" class="text-[11px] text-slate-400 dark:text-slate-500 italic">(diedit)</span>
               </div>
-              <div class="text-sm text-[#475569] dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ reply.konten }}</div>
+
+              <!-- Top-level Reply: Inline Edit Mode vs View Mode -->
+              <div v-if="editingReplyId === reply.id" class="mt-2.5 bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/50">
+                <div class="text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5 flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span>Edit Balasan Anda</span>
+                </div>
+                <textarea
+                  v-model="editReplyForm.konten"
+                  rows="3"
+                  required
+                  placeholder="Tuliskan perubahan balasan..."
+                  class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition resize-none shadow-xs"
+                ></textarea>
+                <div class="flex items-center justify-end gap-2 mt-2">
+                  <button
+                    type="button"
+                    @click="cancelEditReply"
+                    class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700 transition cursor-pointer"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    :disabled="editReplyForm.processing || !editReplyForm.konten.trim()"
+                    @click="submitEditReply(reply)"
+                    class="px-4 py-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold transition shadow-sm hover:shadow-md hover:shadow-blue-500/25 active:scale-95 disabled:opacity-50 cursor-pointer"
+                  >
+                    {{ editReplyForm.processing ? 'Menyimpan...' : 'Simpan Perubahan' }}
+                  </button>
+                </div>
+              </div>
+              <div v-else>
+                <div class="text-sm text-[#475569] dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ reply.konten }}</div>
+
+                <!-- Actions: Balas, Edit, Hapus -->
+                <div class="flex items-center gap-3 mt-3 pt-0.5">
+                  <button 
+                    v-if="!thread.is_locked && thread.status === 'approved' && user" 
+                    @click="handleReply(reply)" 
+                    class="inline-flex items-center gap-1 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                    </svg>
+                    <span>Balas</span>
+                  </button>
+
+                  <button 
+                    v-if="canEditReply(reply) && !thread.is_locked" 
+                    @click="startEditReply(reply)" 
+                    class="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 font-semibold cursor-pointer transition"
+                    title="Edit balasan Anda"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span>Edit</span>
+                  </button>
+
+                  <button 
+                    v-if="canDeleteReply(reply)" 
+                    @click="deleteReply(reply)" 
+                    class="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 font-semibold cursor-pointer transition"
+                    :title="reply.user_id === user?.id ? 'Hapus balasan Anda' : 'Hapus balasan ini (Moderasi)'"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <span>Hapus</span>
+                  </button>
+                </div>
+              </div>
 
               <!-- Nested Replies -->
               <div v-if="reply.replies?.length > 0" class="mt-4 space-y-3 pl-4 border-l-2 border-[#e2e8f0] dark:border-slate-700">
@@ -183,7 +258,7 @@
                     </template>
                   </UserPreviewPopover>
 
-                  <div>
+                  <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                       <UserPreviewPopover :user="nested.user">
                         <template #default="{ user }">
@@ -193,16 +268,72 @@
                         </template>
                       </UserPreviewPopover>
                       <span class="text-xs text-[#94a3b8]">{{ formatDate(nested.created_at) }}</span>
+                      <span v-if="isEdited(nested)" class="text-[10px] text-slate-400 dark:text-slate-500 italic">(diedit)</span>
                     </div>
-                    <div class="text-xs text-[#475569] dark:text-slate-300 whitespace-pre-line">{{ nested.konten }}</div>
+
+                    <!-- Nested Reply: Inline Edit Mode vs View Mode -->
+                    <div v-if="editingReplyId === nested.id" class="mt-2 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-blue-200 dark:border-blue-900/50">
+                      <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-200 mb-1 flex items-center gap-1">
+                        <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span>Edit Balasan Anda</span>
+                      </div>
+                      <textarea
+                        v-model="editReplyForm.konten"
+                        rows="2"
+                        required
+                        placeholder="Tuliskan perubahan balasan..."
+                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition resize-none shadow-xs"
+                      ></textarea>
+                      <div class="flex items-center justify-end gap-1.5 mt-1.5">
+                        <button
+                          type="button"
+                          @click="cancelEditReply"
+                          class="px-2.5 py-1 rounded-md text-[11px] font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-700 transition cursor-pointer"
+                        >
+                          Batal
+                        </button>
+                        <button
+                          type="button"
+                          :disabled="editReplyForm.processing || !editReplyForm.konten.trim()"
+                          @click="submitEditReply(nested)"
+                          class="px-3 py-1 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-md text-[11px] font-bold transition shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
+                        >
+                          {{ editReplyForm.processing ? 'Menyimpan...' : 'Simpan' }}
+                        </button>
+                      </div>
+                    </div>
+                    <div v-else>
+                      <div class="text-xs text-[#475569] dark:text-slate-300 whitespace-pre-line">{{ nested.konten }}</div>
+                      <div class="flex items-center gap-2.5 mt-1.5">
+                        <button 
+                          v-if="canEditReply(nested) && !thread.is_locked" 
+                          @click="startEditReply(nested)" 
+                          class="inline-flex items-center gap-0.5 text-[11px] text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 font-semibold cursor-pointer transition"
+                          title="Edit balasan Anda"
+                        >
+                          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          <span>Edit</span>
+                        </button>
+                        <button 
+                          v-if="canDeleteReply(nested)" 
+                          @click="deleteReply(nested)" 
+                          class="inline-flex items-center gap-0.5 text-[11px] text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 font-semibold cursor-pointer transition"
+                          :title="nested.user_id === user?.id ? 'Hapus balasan Anda' : 'Hapus balasan ini (Moderasi)'"
+                        >
+                          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span>Hapus</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <!-- Reply Button -->
-              <button v-if="!thread.is_locked && thread.status === 'approved' && user" @click="handleReply(reply)" class="mt-3 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer">
-                Balas
-              </button>
             </div>
           </div>
         </div>
@@ -356,6 +487,60 @@ const canEditThread = computed(() => {
   if (!user.value || props.thread.deleted_at) return false;
   return user.value.id === props.thread.user_id || canManageForum.value;
 });
+
+// Reply Authorization
+const canEditReply = (reply) => {
+  if (!user.value) return false;
+  return reply.user_id === user.value.id;
+};
+
+const canDeleteReply = (reply) => {
+  if (!user.value) return false;
+  return reply.user_id === user.value.id || canManageForum.value;
+};
+
+// Inline Edit Reply State & Actions
+const editingReplyId = ref(null);
+const editReplyForm = useForm({
+  konten: '',
+});
+
+const startEditReply = (reply) => {
+  editingReplyId.value = reply.id;
+  editReplyForm.konten = reply.konten;
+};
+
+const cancelEditReply = () => {
+  editingReplyId.value = null;
+  editReplyForm.reset();
+};
+
+const submitEditReply = (reply) => {
+  editReplyForm.put(`/forum/reply/${reply.id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      cancelEditReply();
+    },
+  });
+};
+
+const deleteReply = (reply) => {
+  const isOwn = reply.user_id === user.value?.id;
+  const message = isOwn
+    ? 'Apakah Anda yakin ingin menghapus balasan Anda?'
+    : `Apakah Anda yakin ingin menghapus balasan dari "${reply.user?.name || 'Pengguna'}"?`;
+
+  if (confirm(message)) {
+    router.delete(`/forum/reply/${reply.id}`, {
+      preserveScroll: true,
+    });
+  }
+};
+
+const isEdited = (item) => {
+  if (!item?.created_at || !item?.updated_at) return false;
+  return new Date(item.updated_at).getTime() - new Date(item.created_at).getTime() > 1000;
+};
 
 const replyTo = ref(null);
 const replyTextarea = ref(null);

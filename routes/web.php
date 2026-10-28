@@ -122,6 +122,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'update'])->name('forum.update')->whereNumber('thread');
     Route::delete('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
     Route::post('/forum/{thread}/reply', [App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::put('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'updateReply'])->name('forum.reply.update');
+    Route::delete('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
 
     // Dashboard Forum Manajemen & Soft Deletes Milik Sendiri
     Route::prefix('dashboard/forum')->name('dashboard.forum.')->group(function () {
@@ -140,7 +142,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return redirect()->route('moderator.forum.approval');
         })->name('forum.manage');
 
-        Route::delete('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
         Route::patch('/forum/{thread}/pin', [App\Http\Controllers\ForumController::class, 'pin'])->name('forum.pin');
         Route::patch('/forum/{thread}/lock', [App\Http\Controllers\ForumController::class, 'lock'])->name('forum.lock');
 
