@@ -111,7 +111,7 @@
               <button 
                 type="submit" 
                 :disabled="form.processing"
-                class="w-full py-2.5 mt-4 bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] text-white font-semibold rounded-lg shadow-sm transition text-sm flex items-center justify-center gap-2"
+                class="group w-full py-2.5 mt-4 bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold rounded-lg shadow-sm hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 text-sm flex items-center justify-center gap-2 cursor-pointer"
               >
                 <svg v-if="form.processing" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
