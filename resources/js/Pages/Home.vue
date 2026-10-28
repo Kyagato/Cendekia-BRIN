@@ -95,19 +95,19 @@
         <!-- Quick Filter Pills -->
         <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-blue-100">
           <span class="text-blue-200 font-medium">Format:</span>
-          <a href="/kategori?tipe=Teks" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Teks" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
             <span class="w-1.5 h-1.5 rounded-full bg-blue-300"></span> Teks
           </a>
-          <a href="/kategori?tipe=Video" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Video" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
             <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> Video
           </a>
-          <a href="/kategori?tipe=Audio" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Audio" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
             <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Audio
           </a>
-          <a href="/kategori?tipe=Gambar" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white transition flex items-center gap-1.5">
+          <a href="/kategori?tipe=Gambar" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center gap-1.5 cursor-pointer">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Gambar
           </a>
-          <a href="/kategori" class="px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 text-white font-semibold transition">
+          <a href="/kategori" class="px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-white font-semibold hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer">
             Lihat Semua Direktori
           </a>
         </div>
@@ -182,8 +182,8 @@
               v-for="tab in ['Semua', 'Teks', 'Video', 'Gambar', 'Audio']" 
               :key="tab"
               @click="activeTab = tab"
-              :class="activeTab === tab ? 'bg-[#2563eb] text-white shadow-sm' : 'text-[#475569] dark:text-slate-300 hover:text-[#0f172a] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700'"
-              class="px-3.5 py-1.5 rounded-md text-xs font-semibold transition"
+              :class="activeTab === tab ? 'bg-[#2563eb] text-white shadow-sm font-bold scale-[1.02]' : 'text-[#475569] dark:text-slate-300 hover:text-[#0f172a] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/70 hover:-translate-y-0.5'"
+              class="px-3.5 py-1.5 rounded-md text-xs font-semibold active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               {{ tab }}
             </button>

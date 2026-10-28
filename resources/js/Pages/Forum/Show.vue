@@ -258,10 +258,13 @@
             <button 
               type="submit" 
               :disabled="replyForm.processing" 
-              class="ml-auto px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
+              class="group ml-auto px-5 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold shadow-sm hover:shadow-md hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
             >
               <svg v-if="replyForm.processing" class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-              Kirim Balasan
+              <svg v-else class="w-3.5 h-3.5 transition-transform duration-300 transform group-hover:translate-x-1 group-hover:-translate-y-0.5 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+              </svg>
+              <span>Kirim Balasan</span>
             </button>
           </div>
         </form>
@@ -269,7 +272,7 @@
 
       <div v-else-if="!user" class="text-center py-8 bg-white dark:bg-slate-900 rounded-lg border border-[#e2e8f0] dark:border-slate-800 shadow-sm">
         <p class="text-sm text-[#475569] dark:text-slate-400 mb-3">Silakan masuk untuk memberikan balasan.</p>
-        <Link href="/login" class="px-4 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold transition shadow-sm">
+        <Link href="/login" class="inline-flex items-center px-4 py-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-lg text-xs font-bold hover:shadow-md hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 shadow-sm cursor-pointer">
           Masuk Sekarang
         </Link>
       </div>
