@@ -158,10 +158,10 @@
 
           <!-- Guest Action Buttons (Shown when not logged in) -->
           <div v-else class="flex items-center space-x-2">
-            <a href="/login" class="text-xs font-semibold px-3 py-2 rounded-lg text-[#475569] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <a href="/login" class="text-xs font-semibold px-3 py-2 rounded-lg text-[#475569] dark:text-slate-300 hover:text-[#2563eb] dark:hover:text-blue-400 hover:bg-blue-50/60 dark:hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer">
               Masuk
             </a>
-            <a href="/register" class="inline-flex items-center justify-center px-4 py-2 rounded-lg shadow-sm text-xs font-semibold text-white bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af] transition">
+            <a href="/register" class="inline-flex items-center justify-center px-4 py-2 rounded-lg shadow-sm hover:shadow-md hover:shadow-blue-500/25 text-xs font-semibold text-white bg-[#2563eb] hover:bg-[#1d4ed8] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer">
               Daftar
             </a>
           </div>

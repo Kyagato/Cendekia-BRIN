@@ -604,11 +604,11 @@
                                 <button 
                                     type="submit" 
                                     :disabled="isSubmitting"
-                                    class="ml-auto px-5 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer"
+                                    class="group ml-auto px-5 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm hover:shadow-md hover:shadow-primary-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 flex items-center gap-2 cursor-pointer"
                                 >
                                     <template x-if="!isSubmitting">
                                         <div class="flex items-center gap-2">
-                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg class="w-3.5 h-3.5 transition-transform duration-300 transform group-hover:translate-x-1 group-hover:-translate-y-0.5 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                                             </svg>
                                             <span>Kirim Komentar</span>
@@ -630,7 +630,7 @@
                     @else
                     <div class="text-center py-6 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-4">
                         <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Silakan masuk ke akun Anda untuk memberikan rating dan komentar.</p>
-                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-5 py-2 bg-primary-600 hover:bg-primary-700 hover:shadow-md hover:shadow-primary-500/25 text-white rounded-xl text-xs font-bold hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 shadow-sm cursor-pointer">
                             Masuk / Login
                         </a>
                     </div>

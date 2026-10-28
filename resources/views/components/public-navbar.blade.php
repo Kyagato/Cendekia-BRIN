@@ -108,8 +108,8 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition">Masuk</a>
-                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition">Daftar</a>
+                    <a href="{{ route('login') }}" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-800 px-3 py-2 rounded-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer">Masuk</a>
+                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm hover:shadow-md hover:shadow-primary-500/25 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer">Daftar</a>
                 @endauth
             </div>
 
@@ -157,8 +157,8 @@
                 </div>
             @else
                 <div class="flex px-4 space-x-2">
-                    <a href="{{ route('login') }}" class="block text-center flex-1 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Masuk</a>
-                    <a href="{{ route('register') }}" class="block text-center flex-1 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 transition">Daftar</a>
+                    <a href="{{ route('login') }}" class="block text-center flex-1 py-2 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all duration-200">Masuk</a>
+                    <a href="{{ route('register') }}" class="block text-center flex-1 py-2 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 active:scale-95 transition-all duration-200">Daftar</a>
                 </div>
             @endauth
         </div>
