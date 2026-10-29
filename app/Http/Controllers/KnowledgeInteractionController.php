@@ -84,11 +84,12 @@ class KnowledgeInteractionController extends Controller
         }
 
         $validated = $request->validate([
-            'konten'    => 'required|string|max:3000',
-            'parent_id' => [
+            'konten'       => 'required|string|max:3000',
+            'parent_id'    => [
                 'nullable',
                 Rule::exists('knowledge_comments', 'id')->where(fn ($query) => $query->where('knowledge_id', $knowledge->id)),
             ],
+            'mention_user' => 'nullable|string|max:255',
         ], [
             'konten.required'  => 'Komentar tidak boleh kosong.',
             'konten.max'       => 'Komentar maksimal 3000 karakter.',
@@ -99,6 +100,7 @@ class KnowledgeInteractionController extends Controller
             'knowledge_id' => $knowledge->id,
             'user_id'      => $user->id,
             'parent_id'    => $validated['parent_id'] ?? null,
+            'mention_user' => !empty($validated['mention_user']) ? strip_tags(trim($validated['mention_user'])) : null,
             'konten'       => strip_tags(trim($validated['konten'])),
         ]);
 
@@ -115,9 +117,23 @@ class KnowledgeInteractionController extends Controller
         );
 
         if ($request->wantsJson() || $request->ajax()) {
-            $html = !empty($comment->parent_id)
-                ? view('partials.knowledge-comment-reply-item', ['reply' => $comment])->render()
-                : view('partials.knowledge-comment-item', ['comment' => $comment])->render();
+            $html = '';
+            if (!empty($comment->parent_id)) {
+                $parentComment = KnowledgeComment::find($comment->parent_id);
+                if ($parentComment && !empty($parentComment->parent_id)) {
+                    $html = view('partials.knowledge-comment-subreply-item', [
+                        'subReply' => $comment,
+                        'parent'   => $parentComment
+                    ])->render();
+                } else {
+                    $html = view('partials.knowledge-comment-reply-item', [
+                        'reply'  => $comment,
+                        'parent' => $parentComment
+                    ])->render();
+                }
+            } else {
+                $html = view('partials.knowledge-comment-item', ['comment' => $comment])->render();
+            }
 
             return response()->json([
                 'status'  => 'success',
@@ -132,13 +148,55 @@ class KnowledgeInteractionController extends Controller
     }
 
     /**
-     * Menghapus komentar pengetahuan (oleh pembuat komentar atau admin).
+     * Memperbarui komentar pengetahuan (hanya oleh pembuat komentar).
+     */
+    public function updateComment(Request $request, KnowledgeComment $comment): RedirectResponse|JsonResponse
+    {
+        $user = Auth::user();
+
+        if (!$user || $user->id !== $comment->user_id) {
+            abort(403, 'Anda tidak memiliki hak untuk mengedit komentar ini.');
+        }
+
+        $validated = $request->validate([
+            'konten' => 'required|string|max:3000',
+        ], [
+            'konten.required' => 'Komentar tidak boleh kosong.',
+            'konten.max'      => 'Komentar maksimal 3000 karakter.',
+        ]);
+
+        $cleanContent = strip_tags(trim($validated['konten']));
+        $comment->update(['konten' => $cleanContent]);
+
+        AuditLog::record(
+            'KNOWLEDGE_COMMENT_UPDATE',
+            "Memperbarui komentar pada artikel pengetahuan ID: {$comment->knowledge_id}",
+            ['knowledge_id' => $comment->knowledge_id, 'comment_id' => $comment->id],
+            $user
+        );
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status'   => 'success',
+                'message'  => 'Komentar berhasil diperbarui.',
+                'konten'   => $cleanContent,
+                'comment'  => $comment->load('user'),
+                'isEdited' => $comment->updated_at->gt($comment->created_at),
+            ]);
+        }
+
+        $redirectUrl = strtok(url()->previous(), '#') . '#komentar';
+        return redirect()->to($redirectUrl)->with('success', 'Komentar berhasil diperbarui.');
+    }
+
+    /**
+     * Menghapus komentar pengetahuan (oleh pembuat komentar, 3 role admin, atau moderator).
      */
     public function destroyComment(Request $request, KnowledgeComment $comment): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
 
-        if (!$user || ($user->id !== $comment->user_id && !$user->isAdmin())) {
+        if (!$user || (!$user->isAdmin() && !$user->isModerator() && $user->id !== $comment->user_id)) {
             abort(403, 'Anda tidak memiliki hak untuk menghapus komentar ini.');
         }
 

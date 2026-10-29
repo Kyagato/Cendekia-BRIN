@@ -15,6 +15,7 @@ class KnowledgeComment extends Model
         'knowledge_id',
         'user_id',
         'parent_id',
+        'mention_user',
         'konten',
     ];
 
@@ -35,6 +36,8 @@ class KnowledgeComment extends Model
 
     public function replies(): HasMany
     {
-        return $this->hasMany(KnowledgeComment::class, 'parent_id')->with('user')->latest();
+        return $this->hasMany(KnowledgeComment::class, 'parent_id')
+            ->with(['user', 'replies.user'])
+            ->oldest();
     }
 }

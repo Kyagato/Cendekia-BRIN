@@ -588,13 +588,14 @@
                               method="POST">
                             @csrf
                             <input type="hidden" name="parent_id" :value="replyToId">
+                            <input type="hidden" name="mention_user" :value="mentionUser">
                             <textarea 
                                 id="comment-textarea"
                                 name="konten" 
                                 x-model="commentText"
                                 rows="3" 
                                 required 
-                                placeholder="Tuliskan komentar atau pertanyaan Anda di sini..." 
+                                :placeholder="replyToId ? ('Balas ' + (mentionUser ? '@' + mentionUser : replyToName) + '...') : 'Tuliskan komentar atau pertanyaan Anda di sini...'" 
                                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-none transition resize-none shadow-xs"
                             ></textarea>
                             <div class="flex items-center justify-between mt-2.5">
@@ -862,6 +863,8 @@ function commentSystem() {
         isCollapsed: false,
         replyToId: null,
         replyToName: '',
+        mentionUser: '',
+        targetContainerId: null,
         isSubmitting: false,
         commentText: '',
         commentsCount: {{ $commentsCount }},
@@ -878,18 +881,94 @@ function commentSystem() {
                 this.toast.show = false;
             }, 5000);
         },
-        setReply(id, name) {
+        setReply(id, name, containerId = null, isMention = false) {
             this.replyToId = id;
             this.replyToName = name;
+            this.mentionUser = isMention ? name : '';
+            this.targetContainerId = containerId || ('replies-container-' + id);
             this.isCollapsed = false;
             this.$nextTick(() => {
                 const el = document.getElementById('comment-textarea');
-                if (el) el.focus();
+                if (el) {
+                    el.focus();
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             });
         },
         cancelReply() {
             this.replyToId = null;
             this.replyToName = '';
+            this.mentionUser = '';
+            this.targetContainerId = null;
+        },
+        startEditComment(id) {
+            const editBox = document.getElementById('comment-edit-box-' + id);
+            const bodyBox = document.getElementById('comment-body-' + id);
+            const input = document.getElementById('comment-edit-input-' + id);
+            if (editBox && bodyBox) {
+                bodyBox.classList.add('hidden');
+                editBox.classList.remove('hidden');
+                if (input) {
+                    input.focus();
+                    const val = input.value;
+                    input.value = '';
+                    input.value = val;
+                }
+            }
+        },
+        cancelEditComment(id) {
+            const editBox = document.getElementById('comment-edit-box-' + id);
+            const bodyBox = document.getElementById('comment-body-' + id);
+            if (editBox && bodyBox) {
+                editBox.classList.add('hidden');
+                bodyBox.classList.remove('hidden');
+            }
+        },
+        async submitEditComment(id) {
+            const input = document.getElementById('comment-edit-input-' + id);
+            if (!input || !input.value.trim()) {
+                alert('Konten komentar tidak boleh kosong.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/knowledge/comment/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        _method: 'PUT',
+                        konten: input.value.trim()
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    // Update teks komentar
+                    const textSpan = document.querySelector(`#comment-${id} .comment-text-span`);
+                    if (textSpan) {
+                        textSpan.textContent = data.konten;
+                    }
+
+                    // Tampilkan label (diedit)
+                    const editedBadge = document.querySelector(`#comment-${id} .comment-edited-label`);
+                    if (editedBadge) {
+                        editedBadge.classList.remove('hidden');
+                    }
+
+                    this.cancelEditComment(id);
+                    this.showToast(data.message || 'Komentar berhasil diperbarui.');
+                } else {
+                    alert(data.message || 'Gagal memperbarui komentar.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat memperbarui komentar.');
+            }
         },
         async submitComment(e) {
             if (!this.commentText || !this.commentText.trim()) return;
@@ -915,11 +994,14 @@ function commentSystem() {
                     const emptyState = document.getElementById('empty-comments');
                     if (emptyState) emptyState.classList.add('hidden');
 
-                    if (this.replyToId) {
-                        const repliesContainer = document.getElementById('replies-container-' + this.replyToId);
+                    if (this.targetContainerId) {
+                        const repliesContainer = document.getElementById(this.targetContainerId);
                         if (repliesContainer) {
                             repliesContainer.classList.remove('hidden');
                             repliesContainer.insertAdjacentHTML('beforeend', data.html);
+                        } else {
+                            const list = document.getElementById('comments-list');
+                            if (list) list.insertAdjacentHTML('beforeend', data.html);
                         }
                     } else {
                         const list = document.getElementById('comments-list');

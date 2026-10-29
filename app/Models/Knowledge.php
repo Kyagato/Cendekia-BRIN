@@ -124,7 +124,7 @@ class Knowledge extends Model
     {
         return $this->hasMany(KnowledgeComment::class)
             ->whereNull('parent_id')
-            ->with(['user', 'replies.user'])
+            ->with(['user', 'replies.user', 'replies.replies.user'])
             ->latest();
     }
 
