@@ -9,13 +9,10 @@
                 @endif
             </div>
             <div>
-                <div class="flex items-center gap-1.5 flex-wrap">
+                <div>
                     <span class="font-bold text-xs text-slate-900 dark:text-white">
                         {{ $subReply->user?->name ?? 'Anonim' }}
                     </span>
-                    @if($subReply->user && in_array($subReply->user->role, ['Super Admin', 'Admin Pusat', 'Admin']))
-                        <span class="text-[9px] px-1 py-0.2 rounded bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300 font-semibold">Admin</span>
-                    @endif
                 </div>
                 <div class="flex items-center gap-1.5">
                     <span class="text-[11px] text-slate-400 dark:text-slate-500">
