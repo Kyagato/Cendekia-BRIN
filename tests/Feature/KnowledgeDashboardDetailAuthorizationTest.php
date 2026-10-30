@@ -142,3 +142,31 @@ it('allows any member to view approved knowledge but hides edit and delete actio
         ->assertSee(route('knowledge.edit', $approved->id))
         ->assertSee('Pindahkan ke Tong Sampah');
 });
+
+it('provides correct back flow to dashboard when opened from dashboard and to home when opened from main homepage', function () {
+    $author = User::factory()->create(['role' => 'Anggota']);
+    $category = Category::create(['nama_kategori' => 'Kategori Navigasi']);
+
+    $knowledge = Knowledge::create([
+        'user_id' => $author->id,
+        'category_id' => $category->id,
+        'judul' => 'Uji Coba Alur Navigasi Kembali',
+        'tipe' => 'Teks',
+        'status' => 'Disetujui',
+    ]);
+
+    // 1. Dibuka dari Dashboard via route admin.knowledge.show: navbar dashboard aktif
+    $dashboardResponse = $this->actingAs($author)->get(route('admin.knowledge.show', $knowledge->id));
+    $dashboardResponse->assertStatus(200)
+        ->assertSee('Kembali ke Pengetahuan')
+        ->assertSee(route('knowledge.index'))
+        ->assertSee('Forum Saya')
+        ->assertDontSee('/tentang');
+
+    // 2. Dibuka dari Beranda Utama via route knowledge.show: navbar publik aktif
+    $homeResponse = $this->actingAs($author)->get(route('knowledge.show', $knowledge->id));
+    $homeResponse->assertStatus(200)
+        ->assertSee('Kembali')
+        ->assertDontSee('Kembali ke Pengetahuan')
+        ->assertSee('/tentang');
+});

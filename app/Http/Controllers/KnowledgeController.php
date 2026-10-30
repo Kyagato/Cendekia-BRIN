@@ -110,13 +110,17 @@ class KnowledgeController extends Controller
 
     /**
      * Menampilkan detail pengetahuan untuk pratinjau dashboard admin.
+     * Menggunakan tampilan yang sama persis dengan tampilan di beranda utama (pages.knowledge-show)
+     * namun dengan alur kembali yang tetap mengarah ke dashboard pengetahuan.
      */
     public function show(int $id): View
     {
         $user = Auth::user();
 
         // Cari pengetahuan termasuk yang ada di tong sampah jika milik user sendiri atau user adalah admin
-        $knowledgeQuery = Knowledge::withTrashed()->with(['category', 'user', 'tags', 'threads.user']);
+        $knowledgeQuery = Knowledge::withTrashed()
+            ->with(['category', 'user', 'tags', 'threads.user'])
+            ->withCount(['bookmarks', 'likes', 'allComments']);
 
         if (!$user->isAdmin()) {
             $knowledge = $knowledgeQuery->where(function ($q) use ($user) {
@@ -145,7 +149,32 @@ class KnowledgeController extends Controller
             $knowledge->increment('views_count');
         }
 
-        return view('knowledge.show', compact('knowledge'));
+        // Estimasi waktu baca (200 kata/menit)
+        $fullText = ($knowledge->deskripsi ?? '') . ' ' . ($knowledge->detail ?? '');
+        $wordCount = str_word_count(strip_tags($fullText));
+        $readingTime = max(1, (int) ceil($wordCount / 200));
+
+        // Bookmark & Like status
+        $isBookmarked = $user ? $knowledge->isBookmarkedBy($user) : false;
+        $bookmarksCount = $knowledge->bookmarks_count ?? 0;
+        $isLiked = $user ? $knowledge->isLikedBy($user) : false;
+        $likesCount = $knowledge->likes_count ?? 0;
+        $comments = $knowledge->comments()->get();
+        $commentsCount = $knowledge->all_comments_count ?? 0;
+
+        $layout = 'layouts.admin';
+
+        return view('pages.knowledge-show', compact(
+            'knowledge',
+            'readingTime',
+            'isBookmarked',
+            'bookmarksCount',
+            'isLiked',
+            'likesCount',
+            'comments',
+            'commentsCount',
+            'layout'
+        ));
     }
 
     /**

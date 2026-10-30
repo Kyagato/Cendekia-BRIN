@@ -1,24 +1,96 @@
-@extends('layouts.public')
+@extends((($layout ?? '') === 'layouts.admin' || request()->routeIs('admin.knowledge.show') || request()->query('from') === 'dashboard') ? 'layouts.admin' : 'layouts.public')
 @section('title', $knowledge->judul)
 
-@section('content')
-<div class="bg-white dark:bg-slate-900 min-h-screen pb-16 transition-colors duration-200" style="padding-top: 85px;">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+@if((($layout ?? '') === 'layouts.admin' || request()->routeIs('admin.knowledge.show') || request()->query('from') === 'dashboard'))
+@section('hide_admin_breadcrumbs', 'true')
+@endif
 
-        {{-- Breadcrumbs Dynamic (Di atas Judul) --}}
+@section('content')
+@php
+    $isDashboardLayout = (($layout ?? '') === 'layouts.admin' || request()->routeIs('admin.knowledge.show') || request()->query('from') === 'dashboard');
+@endphp
+<div class="{{ $isDashboardLayout ? 'bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm' : 'bg-white dark:bg-slate-900 min-h-screen pb-16 transition-colors duration-200' }}" style="{{ $isDashboardLayout ? '' : 'padding-top: 85px;' }}">
+    <div class="{{ $isDashboardLayout ? 'w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' }}">
+
+        {{-- Breadcrumbs Dynamic & Tombol Kembali --}}
         @php
-            $referer = request()->headers->get('referer') ?? url()->previous();
-            $fromCategory = request()->query('from') === 'kategori' || ($referer && str_contains(strtolower($referer), 'kategori'));
+            $referer = request()->headers->get('referer');
+            $isFromDashboard = request()->routeIs('admin.knowledge.show')
+                || request()->query('from') === 'dashboard'
+                || ($referer && (str_contains(strtolower($referer), '/dashboard') || str_contains(strtolower($referer), '/knowledge/trash')));
+            $fromCategory = request()->query('from') === 'kategori'
+                || ($referer && str_contains(strtolower($referer), '/kategori'));
+
+            if ($isFromDashboard) {
+                $backUrl = (method_exists($knowledge, 'trashed') && $knowledge->trashed()) ? route('knowledge.trash') : route('knowledge.index');
+                $backLabel = (method_exists($knowledge, 'trashed') && $knowledge->trashed()) ? 'Tong Sampah' : 'Pengetahuan';
+            } elseif ($fromCategory) {
+                $backUrl = url('/kategori');
+                $backLabel = 'Kategori';
+            } else {
+                $backUrl = url('/');
+                $backLabel = 'Beranda';
+            }
         @endphp
-        <nav class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-4 flex-wrap" aria-label="Breadcrumb">
-            @if($fromCategory)
-                <a href="{{ url('/kategori') }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition font-medium">Kategori</a>
-            @else
-                <a href="{{ url('/') }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition font-medium">Beranda</a>
-            @endif
-            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" width="14" height="14" style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-            <span class="text-slate-800 dark:text-slate-200 font-semibold line-clamp-1">{{ Str::limit($knowledge->judul, 80) }}</span>
-        </nav>
+
+        <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
+            <nav class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 flex-wrap" aria-label="Breadcrumb">
+                <a href="{{ $backUrl }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition font-medium">
+                    {{ $backLabel }}
+                </a>
+                <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" width="14" height="14" style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                <span class="text-slate-800 dark:text-slate-200 font-semibold line-clamp-1">{{ Str::limit($knowledge->judul, 80) }}</span>
+            </nav>
+
+            <a href="{{ $backUrl }}" 
+               class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 transition shadow-xs cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Kembali{{ $isFromDashboard ? ' ke ' . $backLabel : '' }}</span>
+            </a>
+        </div>
+
+        {{-- Banner Artikel di Tong Sampah --}}
+        @if(method_exists($knowledge, 'trashed') && $knowledge->trashed())
+        <div class="mb-6 p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-2xl flex items-center justify-between text-sm shadow-xs flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <span>Artikel ini berada di <strong>Tong Sampah</strong>{{ $knowledge->deleted_at ? ' (dihapus pada ' . $knowledge->deleted_at->translatedFormat('d F Y, H:i') . ')' : '' }}.</span>
+            </div>
+            <form action="{{ route('knowledge.restore', $knowledge->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    Pulihkan Sekarang
+                </button>
+            </form>
+        </div>
+        @endif
+
+        {{-- Banner Catatan Penolakan dari Validator --}}
+        @if($knowledge->status == 'Ditolak' && !empty($knowledge->catatan_penolakan))
+        <div class="mb-6 p-5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-2xl shadow-xs">
+            <div class="flex items-start gap-3.5">
+                <div class="p-2 bg-red-100 dark:bg-red-900/60 rounded-xl text-red-600 dark:text-red-400 shrink-0 mt-0.5">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-bold text-red-900 dark:text-red-200">Catatan Penolakan dari Validator</h3>
+                    <p class="text-sm text-red-700 dark:text-red-300 mt-1.5 leading-relaxed whitespace-pre-line">{{ $knowledge->catatan_penolakan }}</p>
+                    @can('edit-knowledge', $knowledge)
+                    <div class="mt-3">
+                        <a href="{{ route('knowledge.edit', $knowledge->id) }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition shadow-xs">
+                            Perbaiki & Ajukan Ulang
+                        </a>
+                    </div>
+                    @endcan
+                </div>
+            </div>
+        </div>
+        @endif
 
         <hr class="border-slate-200 dark:border-slate-700 mb-6">
 
@@ -60,8 +132,57 @@
                 <span>Diperbarui: {{ $knowledge->updated_at ? $knowledge->updated_at->format('d-m-Y') : ($knowledge->created_at ? $knowledge->created_at->format('d-m-Y') : '-') }}</span>
             </div>
 
-            {{-- Tombol Aksi: Bookmark --}}
-            <div class="ml-auto shrink-0 flex items-center gap-2">
+            {{-- Tombol Aksi: Status Badge, Edit, Pindahkan ke Tong Sampah, Validasi, Bookmark --}}
+            <div class="ml-auto shrink-0 flex items-center gap-2 flex-wrap">
+                {{-- Status Badge (tampil jika belum disetujui atau jika diakses dari Dashboard) --}}
+                @if($knowledge->status !== 'Disetujui' || $isFromDashboard)
+                    @if($knowledge->status === 'Disetujui')
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">Disetujui</span>
+                    @elseif($knowledge->status === 'Diajukan')
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">Diajukan</span>
+                    @elseif($knowledge->status === 'Ditolak')
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800">Ditolak</span>
+                    @else
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Draft</span>
+                    @endif
+                @endif
+
+                {{-- Tombol Edit jika memiliki hak akses edit --}}
+                @can('edit-knowledge', $knowledge)
+                <a href="{{ route('knowledge.edit', $knowledge->id) }}" 
+                   class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary-50 text-primary-700 hover:bg-primary-100 dark:bg-primary-950/50 dark:text-primary-300 dark:hover:bg-primary-900/50 border border-primary-200 dark:border-primary-800 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span>Edit</span>
+                </a>
+                @endcan
+
+                {{-- Tombol Pindahkan ke Tong Sampah (Penulis Asli atau Admin) --}}
+                @if((!method_exists($knowledge, 'trashed') || !$knowledge->trashed()) && auth()->check() && (auth()->id() === $knowledge->user_id || auth()->user()->isAdmin()))
+                <form action="{{ route('knowledge.destroy', $knowledge->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memindahkan materi ini ke tong sampah?')" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" 
+                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800 transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Pindahkan ke Tong Sampah</span>
+                    </button>
+                </form>
+                @endif
+
+                {{-- Tombol Validasi Materi (Admin / Analis pada materi Diajukan) --}}
+                @if($knowledge->status === 'Diajukan' && auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAnalyst()))
+                <a href="{{ route('validasi.show', $knowledge->id) }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white transition shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Validasi Materi</span>
+                </a>
+                @endif
+
                 {{-- Tombol Bookmark / Simpan --}}
                 <button
                     id="btn-bookmark"

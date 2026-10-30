@@ -220,6 +220,8 @@ class HomeController extends Controller
         $comments = $knowledge->comments()->get();
         $commentsCount = $knowledge->all_comments_count;
 
+        $layout = 'layouts.public';
+
         return view('pages.knowledge-show', compact(
             'knowledge',
             'readingTime',
@@ -228,7 +230,8 @@ class HomeController extends Controller
             'isLiked',
             'likesCount',
             'comments',
-            'commentsCount'
+            'commentsCount',
+            'layout'
         ));
     }
 

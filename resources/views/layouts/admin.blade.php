@@ -68,7 +68,7 @@
                 @if(auth()->check())
                     <a href="{{ route('knowledge.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
-                              {{ (request()->routeIs('knowledge.*') || request()->routeIs('admin.categories.*'))
+                              {{ (request()->routeIs('knowledge.*') || request()->routeIs('admin.knowledge.*') || request()->routeIs('admin.categories.*'))
                                   ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
                                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
                         Pengetahuan
@@ -235,7 +235,7 @@
         @if(auth()->check())
         <a href="{{ route('knowledge.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ (request()->routeIs('knowledge.*') || request()->routeIs('admin.categories.*')) ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
+                  {{ (request()->routeIs('knowledge.*') || request()->routeIs('admin.knowledge.*') || request()->routeIs('admin.categories.*')) ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Pengetahuan</a>
         <a href="{{ route('dashboard.forum.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('dashboard.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Forum Saya</a>
@@ -279,6 +279,7 @@
             <div class="max-w-7xl mx-auto w-full">
 
                 <!-- Breadcrumbs -->
+                @if(!View::hasSection('hide_admin_breadcrumbs'))
                 <nav class="flex text-sm text-slate-500 dark:text-slate-400 font-medium mb-6">
                     <ol class="flex items-center space-x-2">
                         <li>
@@ -297,6 +298,7 @@
                         @endif
                     </ol>
                 </nav>
+                @endif
 
                 @if(session('success'))
                 <div x-data="{ show: true }"
