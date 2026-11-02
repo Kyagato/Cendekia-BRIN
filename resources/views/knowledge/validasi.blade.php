@@ -130,16 +130,16 @@
 
                     {{-- Ringkasan / Deskripsi --}}
                     <div>
-                        <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Ringkasan</label>
-                        <textarea name="deskripsi" rows="3" placeholder="Tuliskan ringkasan singkat..."
-                                  class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm leading-relaxed focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition resize-y">{{ old('deskripsi', $knowledge->deskripsi) }}</textarea>
+                        <label for="deskripsi" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Ringkasan</label>
+                        <x-rich-editor name="deskripsi" id="deskripsi" :value="old('deskripsi', $knowledge->deskripsi)" placeholder="Tuliskan ringkasan singkat..." :rows="4" />
+                        @error('deskripsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Detail --}}
                     <div>
-                        <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Detail Konten</label>
-                        <textarea name="detail" rows="6" placeholder="Tuliskan detail konten secara lengkap..."
-                                  class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm leading-relaxed focus:ring-2 focus:ring-primary-600 focus:border-primary-600 transition resize-y">{{ old('detail', $knowledge->detail) }}</textarea>
+                        <label for="detail" class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Detail Konten</label>
+                        <x-rich-editor name="detail" id="detail" :value="old('detail', $knowledge->detail)" placeholder="Tuliskan detail konten secara lengkap..." :rows="6" />
+                        @error('detail') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Upload Thumbnail / File Lampiran --}}

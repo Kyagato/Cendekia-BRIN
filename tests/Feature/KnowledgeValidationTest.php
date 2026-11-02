@@ -175,5 +175,29 @@ it('allows author to save knowledge as draft from edit page', function () {
     expect($knowledge->judul)->toBe('Materi Diperbarui Masih Draft');
 });
 
+it('renders rich editor for deskripsi and detail in validation view without raw textarea', function () {
+    $admin = User::factory()->create(['role' => 'Super Admin']);
+    $category = Category::create(['nama_kategori' => 'Teknologi Informasi']);
+
+    $knowledge = Knowledge::create([
+        'user_id' => $admin->id,
+        'category_id' => $category->id,
+        'judul' => 'Panduan Setup Sistem',
+        'tipe' => 'Teks',
+        'deskripsi' => '<ul><li><strong>Input Manual via Panel Admin</strong>:</li></ul>',
+        'detail' => '<p>Detail lengkap konten...</p>',
+        'status' => 'Diajukan',
+    ]);
+
+    $response = $this->actingAs($admin)->get(route('validasi.show', $knowledge->id));
+    $response->assertStatus(200);
+
+    // Memastikan rich editor digunakan, bukan textarea biasa untuk deskripsi
+    $response->assertSee('rich-editor-content', false);
+    $response->assertDontSee('<textarea name="deskripsi" rows="3"', false);
+    $response->assertDontSee('<textarea name="detail" rows="6"', false);
+});
+
+
 
 
