@@ -35,30 +35,7 @@ class KnowledgeController extends Controller
         // Filter: Hanya tampilkan riwayat unggahan milik user yang sedang login (semua role termasuk admin hanya melihat miliknya sendiri)
         $query->where('user_id', $user->id);
 
-        $query->latest();
-
-        if ($request->filled('tipe')) {
-            $query->where('tipe', $request->tipe);
-        }
-
-        if ($request->filled('status')) {
-            $statusMap = [
-                'diajukan' => 'Diajukan',
-                'diterima' => 'Disetujui',
-                'ditolak'  => 'Ditolak'
-            ];
-            if (isset($statusMap[strtolower($request->status)])) {
-                $query->where('status', $statusMap[strtolower($request->status)]);
-            }
-        }
-
-        if ($request->filled('q')) {
-            $search = $request->q;
-            $query->where(function ($q) use ($search) {
-                $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%");
-            });
-        }
+        $query->filter($request->all());
 
         $knowledges = $query->paginate(10, ['*'], 'page_knowledges')->appends($request->all());
 
@@ -137,22 +114,15 @@ class KnowledgeController extends Controller
         }
 
         // Otorisasi status non-Disetujui:
-        // Materi yang belum disetujui (Draft, Diajukan, Ditolak) hanya boleh dilihat oleh pengunggah asli, Analisis Pengetahuan, atau Admin
-        if ($knowledge->status !== 'Disetujui') {
-            $canView = ($knowledge->user_id === $user->id) || $user->isAdmin() || $user->isAnalyst();
-            if (!$canView) {
-                abort(403, 'Anda tidak memiliki hak akses untuk melihat materi ini.');
-            }
+        if (!$knowledge->canBeViewedBy($user)) {
+            abort(403, 'Anda tidak memiliki hak akses untuk melihat materi ini.');
         }
 
-        if (!$knowledge->trashed()) {
-            $knowledge->increment('views_count');
-        }
+        // Catat tayangan dengan proteksi debounce cache
+        $knowledge->recordView($user);
 
-        // Estimasi waktu baca (200 kata/menit)
-        $fullText = ($knowledge->deskripsi ?? '') . ' ' . ($knowledge->detail ?? '');
-        $wordCount = str_word_count(strip_tags($fullText));
-        $readingTime = max(1, (int) ceil($wordCount / 200));
+        // Estimasi waktu baca dari model accessor
+        $readingTime = $knowledge->reading_time;
 
         // Bookmark & Like status
         $isBookmarked = $user ? $knowledge->isBookmarkedBy($user) : false;

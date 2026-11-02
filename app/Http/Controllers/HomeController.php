@@ -183,31 +183,16 @@ class HomeController extends Controller
             ->withCount(['bookmarks', 'likes', 'allComments'])
             ->findOrFail($id);
 
-        // Hanya pengetahuan yang sudah Disetujui yang boleh dilihat publik
-        if ($knowledge->status !== 'Disetujui') {
-            $user = auth()->user();
-            $canView = $user && (
-                $user->id === $knowledge->user_id ||
-                $user->isAdmin() ||
-                $user->isAnalyst()
-            );
-            if (!$canView) {
-                abort(404);
-            }
+        // Hanya pengetahuan yang berhak diakses (atau sudah Disetujui) yang boleh dilihat
+        if (!$knowledge->canBeViewedBy(auth()->user())) {
+            abort(404);
         }
 
-        // Debounce view count: hanya hitung 1 tayangan per pengunjung (User ID atau IP) per artikel dalam 2 jam (7200 detik)
-        $viewerKey = auth()->check() ? 'user_' . auth()->id() : 'ip_' . request()->ip();
-        $viewCacheKey = "knowledge_viewed_{$knowledge->id}_{$viewerKey}";
+        // Catat tayangan dengan mekanisme debounce cache per pengunjung
+        $knowledge->recordView();
 
-        if (Cache::add($viewCacheKey, true, 7200)) {
-            $knowledge->increment('views_count');
-        }
-
-        // Estimasi waktu baca (200 kata/menit)
-        $fullText = ($knowledge->deskripsi ?? '') . ' ' . ($knowledge->detail ?? '');
-        $wordCount = str_word_count(strip_tags($fullText));
-        $readingTime = max(1, (int) ceil($wordCount / 200));
+        // Estimasi waktu baca dari model accessor
+        $readingTime = $knowledge->reading_time;
 
         // Bookmark status & count (memanfaatkan bookmarks_count dari withCount)
         $currentUser = auth()->user();

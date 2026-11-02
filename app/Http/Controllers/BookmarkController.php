@@ -66,20 +66,8 @@ class BookmarkController extends Controller
 
         $query = $user->bookmarkedKnowledge()
             ->with(['category', 'tags', 'user'])
-            ->where('knowledge.status', 'Disetujui');
-
-        if ($request->filled('q')) {
-            $search = $request->q;
-            $query->where(function ($q) use ($search) {
-                $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%")
-                  ->orWhere('penulis', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('tipe')) {
-            $query->where('tipe', $request->tipe);
-        }
+            ->where('knowledge.status', 'Disetujui')
+            ->filter(array_merge($request->all(), ['sort' => false]));
 
         $knowledges = $query->latest('bookmarks.created_at')
             ->paginate(12)

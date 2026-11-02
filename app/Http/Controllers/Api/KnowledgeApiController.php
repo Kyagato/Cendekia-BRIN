@@ -102,21 +102,17 @@ class KnowledgeApiController extends Controller
 
         // Otorisasi status non-Disetujui:
         // Materi yang belum disetujui (Draft, Diajukan, Ditolak) hanya boleh dilihat oleh pengunggah asli, Analis, atau Admin
-        if ($knowledge->status !== 'Disetujui') {
-            $user = $request->user('sanctum') ?? auth('sanctum')->user() ?? auth()->user();
-            $canView = $user && ($knowledge->user_id === $user->id || $user->isAdmin() || $user->isAnalyst());
-
-            if (!$canView) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Pengetahuan belum disetujui atau akses ditolak',
-                ], 403);
-            }
+        $user = $request->user('sanctum') ?? auth('sanctum')->user() ?? auth()->user();
+        if (!$knowledge->canBeViewedBy($user)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pengetahuan belum disetujui atau akses ditolak',
+            ], 403);
         }
 
-        // Increment views count secara atomik hanya untuk konten yang disetujui
+        // Catat penambahan views_count secara atomik dengan proteksi debounce hanya untuk konten yang disetujui
         if ($knowledge->status === 'Disetujui') {
-            $knowledge->increment('views_count');
+            $knowledge->recordView($user, $request->ip());
         }
 
         return response()->json([

@@ -62,6 +62,59 @@ class Knowledge extends Model
         return $this->status === self::STATUS_DITOLAK;
     }
 
+    /**
+     * Estimasi waktu membaca materi dalam satuan menit (standar 200 kata/menit).
+     */
+    public function getReadingTimeAttribute(): int
+    {
+        $fullText = ($this->deskripsi ?? '') . ' ' . ($this->detail ?? '');
+        $wordCount = str_word_count(strip_tags($fullText));
+        return max(1, (int) ceil($wordCount / 200));
+    }
+
+    /**
+     * Memeriksa apakah materi dapat dilihat oleh pengguna tertentu.
+     * Materi 'Disetujui' dapat dilihat publik/siapa saja.
+     * Materi non-disetujui (Draft, Diajukan, Ditolak) hanya boleh dilihat oleh pengunggah asli, Admin, atau Analis.
+     */
+    public function canBeViewedBy(?User $user): bool
+    {
+        if ($this->status === self::STATUS_DISETUJUI) {
+            return true;
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        return ($this->user_id === $user->id) || $user->isAdmin() || $user->isAnalyst();
+    }
+
+    /**
+     * Mencatat penambahan tayangan (views_count) secara atomik dengan proteksi debounce cache
+     * per pengunjung (User ID atau IP) agar tidak terdistorsi spam refresh.
+     * Default debounce adalah 2 jam (7200 detik).
+     */
+    public function recordView(?User $user = null, ?string $ip = null, int $debounceSeconds = 7200): bool
+    {
+        if ($this->trashed()) {
+            return false;
+        }
+
+        $user = $user ?? auth()->user();
+        $ip = $ip ?? request()->ip();
+
+        $viewerKey = $user ? 'user_' . $user->id : 'ip_' . ($ip ?? 'unknown');
+        $viewCacheKey = "knowledge_viewed_{$this->id}_{$viewerKey}";
+
+        if (\Illuminate\Support\Facades\Cache::add($viewCacheKey, true, $debounceSeconds)) {
+            $this->increment('views_count');
+            return true;
+        }
+
+        return false;
+    }
+
     // Relasi ke Tag/Label
     public function tags()
     {
@@ -174,14 +227,29 @@ class Knowledge extends Model
             $query->whereHas('user', fn ($q) => $q->where('instansi', $filters['instansi']));
         }
 
-        // 6. Sorting / Pengurutan
+        // 6. Filter Status (Draft, Diajukan, Disetujui, Ditolak)
+        if (!empty($filters['status'])) {
+            $statusMap = [
+                'diajukan'  => self::STATUS_DIAJUKAN,
+                'diterima'  => self::STATUS_DISETUJUI,
+                'disetujui' => self::STATUS_DISETUJUI,
+                'ditolak'   => self::STATUS_DITOLAK,
+                'draft'     => self::STATUS_DRAFT,
+            ];
+            $statusKey = strtolower($filters['status']);
+            $query->where('status', $statusMap[$statusKey] ?? $filters['status']);
+        }
+
+        // 7. Sorting / Pengurutan
         $sort = $filters['sort'] ?? 'terbaru';
-        match ($sort) {
-            'terpopuler' => $query->orderByDesc('views_count'),
-            'az'         => $query->orderBy('judul', 'asc'),
-            'za'         => $query->orderByDesc('judul'),
-            default      => $query->latest(),
-        };
+        if ($sort !== false && $sort !== 'none') {
+            match ($sort) {
+                'terpopuler' => $query->orderByDesc('views_count'),
+                'az'         => $query->orderBy('judul', 'asc'),
+                'za'         => $query->orderByDesc('judul'),
+                default      => $query->latest(),
+            };
+        }
 
         return $query;
     }
