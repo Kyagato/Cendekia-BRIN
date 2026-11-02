@@ -93,67 +93,79 @@
               </svg>
             </button>
 
-            <!-- Dropdown Menu -->
-            <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-[#e2e8f0] dark:border-slate-700 py-1.5 z-50 text-left">
-              <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700">
-                <p class="text-xs font-bold text-[#0f172a] dark:text-white truncate">{{ user.name }}</p>
-                <p class="text-[11px] text-[#475569] dark:text-slate-400 truncate">{{ user.email }}</p>
-                <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#eff6ff] text-[#2563eb] dark:bg-blue-950 dark:text-blue-300 capitalize">{{ user.role || 'Pengguna' }}</span>
+            <!-- Dropdown Menu dengan Animasi Fade In dan Fade Out -->
+            <transition
+              enter-active-class="transition ease-out duration-200"
+              enter-from-class="opacity-0 -translate-y-2 scale-95"
+              enter-to-class="opacity-100 translate-y-0 scale-100"
+              leave-active-class="transition ease-in duration-150"
+              leave-from-class="opacity-100 translate-y-0 scale-100"
+              leave-to-class="opacity-0 -translate-y-2 scale-95"
+            >
+              <div 
+                v-if="userMenuOpen" 
+                class="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-[#e2e8f0] dark:border-slate-700 py-1.5 z-50 text-left origin-top-right transform"
+              >
+                <div class="px-4 py-2.5 border-b border-slate-100 dark:border-slate-700">
+                  <p class="text-xs font-bold text-[#0f172a] dark:text-white truncate">{{ user.name }}</p>
+                  <p class="text-[11px] text-[#475569] dark:text-slate-400 truncate">{{ user.email }}</p>
+                  <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-[#eff6ff] text-[#2563eb] dark:bg-blue-950 dark:text-blue-300 capitalize">{{ user.role || 'Pengguna' }}</span>
+                </div>
+
+                <!-- Tombol Beranda Utama (jika di profil) / Profil Saya (jika di luar profil) -->
+                <Link 
+                  v-if="isProfilePage" 
+                  href="/" 
+                  @click="userMenuOpen = false"
+                  class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
+                >
+                  <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  Beranda Utama
+                </Link>
+                <Link 
+                  v-else 
+                  :href="`/users/${user.id}`" 
+                  @click="userMenuOpen = false"
+                  class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
+                >
+                  <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Profil Saya
+                </Link>
+
+                <a 
+                  href="/dashboard" 
+                  @click="userMenuOpen = false"
+                  class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
+                >
+                  <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  Dashboard
+                </a>
+
+                <Link 
+                  href="/bookmarks" 
+                  @click="userMenuOpen = false"
+                  class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
+                >
+                  <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                  Bookmark
+                </Link>
+
+                <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+
+                <button @click="logout" class="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left cursor-pointer">
+                  <svg class="w-4 h-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                  Keluar
+                </button>
               </div>
-
-              <!-- Tombol Beranda Utama (jika di profil) / Profil Saya (jika di luar profil) -->
-              <Link 
-                v-if="isProfilePage" 
-                href="/" 
-                @click="userMenuOpen = false"
-                class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
-              >
-                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                Beranda Utama
-              </Link>
-              <Link 
-                v-else 
-                :href="`/users/${user.id}`" 
-                @click="userMenuOpen = false"
-                class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
-              >
-                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                Profil Saya
-              </Link>
-
-              <a 
-                href="/dashboard" 
-                @click="userMenuOpen = false"
-                class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
-              >
-                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-                Dashboard
-              </a>
-
-              <Link 
-                href="/bookmarks" 
-                @click="userMenuOpen = false"
-                class="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-[#eff6ff] hover:text-[#2563eb] dark:hover:bg-slate-700 transition"
-              >
-                <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                </svg>
-                Bookmark
-              </Link>
-
-              <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
-
-              <button @click="logout" class="w-full flex items-center gap-2 px-4 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left cursor-pointer">
-                <svg class="w-4 h-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                Keluar
-              </button>
-            </div>
+            </transition>
           </div>
 
           <!-- Guest Action Buttons (Shown when not logged in) -->
