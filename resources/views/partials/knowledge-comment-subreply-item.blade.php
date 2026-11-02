@@ -106,7 +106,7 @@
     </div>
 
     <div id="comment-body-{{ $subReply->id }}">
-        <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pl-1 sm:pl-2 comment-content">
+        <div class="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed pl-1 sm:pl-2 comment-content">
             @if(!empty($subReply->mention_user))
                 <span class="font-semibold text-primary-600 dark:text-primary-400 mr-1">
                     {{ '@' . $subReply->mention_user }}

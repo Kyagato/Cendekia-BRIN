@@ -1,4 +1,4 @@
-<div id="comment-{{ $reply->id }}" class="bg-slate-50 dark:bg-slate-750/50 rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-700 space-y-2">
+<div id="comment-{{ $reply->id }}" class="bg-slate-50 dark:bg-slate-900/60 rounded-xl p-3.5 border border-slate-200/80 dark:border-slate-700 space-y-2">
     <div class="flex items-start justify-between gap-2">
         <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-700 dark:text-slate-200">
@@ -106,7 +106,7 @@
     </div>
 
     <div id="comment-body-{{ $reply->id }}">
-        <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pl-1 sm:pl-2 comment-content">
+        <div class="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed pl-1 sm:pl-2 comment-content">
             @if(!empty($reply->mention_user))
                 <span class="font-semibold text-primary-600 dark:text-primary-400 mr-1">
                     {{ '@' . $reply->mention_user }}
