@@ -156,10 +156,33 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                 }
             }
 
+            // Ekstrak role dari decoded JWT Access Token ($keycloakUser->token) sebagai fallback terkuat
+            if (!empty($keycloakUser->token) && str_contains($keycloakUser->token, '.')) {
+                $jwtParts = explode('.', $keycloakUser->token);
+                if (isset($jwtParts[1])) {
+                    $jwtPayload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $jwtParts[1])), true);
+                    if (is_array($jwtPayload)) {
+                        if (!empty($jwtPayload['realm_access']['roles']) && is_array($jwtPayload['realm_access']['roles'])) {
+                            $kcRoles = array_merge($kcRoles, $jwtPayload['realm_access']['roles']);
+                        }
+                        if (!empty($jwtPayload['roles']) && is_array($jwtPayload['roles'])) {
+                            $kcRoles = array_merge($kcRoles, $jwtPayload['roles']);
+                        }
+                        if (!empty($jwtPayload['resource_access']) && is_array($jwtPayload['resource_access'])) {
+                            foreach ($jwtPayload['resource_access'] as $clientAccess) {
+                                if (!empty($clientAccess['roles']) && is_array($clientAccess['roles'])) {
+                                    $kcRoles = array_merge($kcRoles, $clientAccess['roles']);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Normalisasi daftar role untuk pencocokan case-insensitive
-            $normalizedRoles = array_map(function ($role) {
+            $normalizedRoles = array_unique(array_map(function ($role) {
                 return strtolower(trim(str_replace(['_', '-'], ' ', $role)));
-            }, $kcRoles);
+            }, $kcRoles));
 
             $assignedRole = null;
             if (
@@ -180,12 +203,16 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                 $assignedRole = User::ROLE_MODERATOR;
             } elseif (
                 in_array('analisis pengetahuan', $normalizedRoles, true) ||
-                in_array('analis pengetahuan', $normalizedRoles, true)
+                in_array('analis pengetahuan', $normalizedRoles, true) ||
+                in_array('analis', $normalizedRoles, true) ||
+                in_array('analyst', $normalizedRoles, true) ||
+                in_array('analisis', $normalizedRoles, true)
             ) {
                 $assignedRole = User::ROLE_ANALIS;
             } elseif (
                 in_array('anggota', $normalizedRoles, true) ||
-                in_array('kreator pengetahuan', $normalizedRoles, true)
+                in_array('kreator pengetahuan', $normalizedRoles, true) ||
+                in_array('member', $normalizedRoles, true)
             ) {
                 $assignedRole = User::ROLE_ANGGOTA;
             }

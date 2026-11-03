@@ -67,4 +67,38 @@ test('keycloak callback creates new user with password without class not found e
     expect($user->password)->not->toBeNull();
 });
 
+test('keycloak callback maps analis role correctly to Analisis Pengetahuan', function () {
+    $abstractUser = Mockery::mock(\Laravel\Socialite\Two\User::class);
+    $abstractUser->shouldReceive('getId')->andReturn('kc-uuid-analis');
+    $abstractUser->shouldReceive('getName')->andReturn('Analyst User');
+    $abstractUser->shouldReceive('getNickname')->andReturn('analis');
+    $abstractUser->shouldReceive('getEmail')->andReturn('analis@simpan.brin');
+    $abstractUser->shouldReceive('getRaw')->andReturn([
+        'sub' => 'kc-uuid-analis',
+        'email' => 'analis@simpan.brin',
+        'realm_access' => ['roles' => ['Analis Pengetahuan', 'default-roles-mojopedia']],
+    ]);
+    $abstractUser->user = [
+        'sub' => 'kc-uuid-analis',
+        'email' => 'analis@simpan.brin',
+    ];
+    $abstractUser->token = 'header.' . base64_encode(json_encode([
+        'realm_access' => ['roles' => ['Analis Pengetahuan']],
+    ])) . '.sig';
+
+    $provider = Mockery::mock(\Laravel\Socialite\Two\AbstractProvider::class);
+    $provider->shouldReceive('stateless')->andReturnSelf();
+    $provider->shouldReceive('user')->andReturn($abstractUser);
+
+    \Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('keycloak')->andReturn($provider);
+
+    $response = $this->get('/auth/keycloak/callback?code=mock_code');
+
+    $response->assertRedirect('/');
+    $user = User::where('email', 'analis@simpan.brin')->first();
+    expect($user)->not->toBeNull();
+    expect($user->role)->toBe(User::ROLE_ANALIS);
+});
+
+
 
