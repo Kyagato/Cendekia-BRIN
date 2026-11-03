@@ -22,7 +22,7 @@
                     "Authentication"
                 ],
                 "summary": "Login API & Dapatkan Sanctum Token",
-                "description": "Autentikasi dengan email dan password untuk mendapatkan token Bearer Sanctum. Token ini dapat ditempelkan di tombol \"Authorize\" pada Swagger UI.",
+                "description": "Autentikasi dengan email dan password untuk mendapatkan token Bearer Sanctum. Untuk Super Admin, gunakan email: superadmin@brin.go.id dan password: admin123. Token yang didapat ditempelkan di tombol \"Authorize\" pada Swagger UI (cukup tempel tokennya saja tanpa mengetik \"Bearer \").",
                 "operationId": "apiLogin",
                 "requestBody": {
                     "description": "Kredensial login",
@@ -1219,7 +1219,7 @@
         "securitySchemes": {
             "sanctum": {
                 "type": "http",
-                "description": "Masukkan token Sanctum Anda. Dapatkan token melalui endpoint login.",
+                "description": "Masukkan token Sanctum Anda (cukup tempel tokennya saja tanpa kata \"Bearer \"). Dapatkan token melalui endpoint POST /api/login (email: superadmin@brin.go.id, password: admin123) atau dari menu Profil > API Token di website.",
                 "bearerFormat": "Token",
                 "scheme": "bearer"
             }

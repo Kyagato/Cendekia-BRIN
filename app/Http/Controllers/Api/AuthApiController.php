@@ -18,7 +18,7 @@ class AuthApiController extends Controller
         path: '/login',
         operationId: 'apiLogin',
         summary: 'Login API & Dapatkan Sanctum Token',
-        description: 'Autentikasi dengan email dan password untuk mendapatkan token Bearer Sanctum. Token ini dapat ditempelkan di tombol "Authorize" pada Swagger UI.',
+        description: 'Autentikasi dengan email dan password untuk mendapatkan token Bearer Sanctum. Untuk Super Admin, gunakan email: superadmin@brin.go.id dan password: admin123. Token yang didapat ditempelkan di tombol "Authorize" pada Swagger UI (cukup tempel tokennya saja tanpa mengetik "Bearer ").',
         tags: ['Authentication'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -76,7 +76,27 @@ class AuthApiController extends Controller
 
         $user = User::where('email', $validated['email'])->first();
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        // Fallback untuk Super Admin jika password di database masih null (karena akun dibuat via Keycloak SSO)
+        if ($user && empty($user->password) && $user->email === 'superadmin@brin.go.id' && $validated['password'] === 'admin123') {
+            $user->password = Hash::make('admin123');
+            $user->save();
+        }
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Email atau password salah.',
+            ], 401);
+        }
+
+        if (empty($user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Akun terdaftar melalui Keycloak SSO dan belum memiliki password lokal. Untuk Super Admin, gunakan password default "admin123" atau buat API Token melalui halaman Profil (menu Profil > API Token).',
+            ], 401);
+        }
+
+        if (!Hash::check($validated['password'], $user->password)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Email atau password salah.',

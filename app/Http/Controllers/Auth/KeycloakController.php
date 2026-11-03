@@ -204,6 +204,10 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                 if ($assignedRole) {
                     $updateData['role'] = $assignedRole;
                 }
+                // Jika user Super Admin belum punya password lokal (untuk Swagger/API), set password default 'admin123'
+                if (empty($user->password) && $user->email === 'superadmin@brin.go.id') {
+                    $updateData['password'] = Hash::make('admin123');
+                }
                 $user->forceFill($updateData)->save();
             } else {
                 $user = new User([
@@ -211,6 +215,9 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                     'email' => $keycloakUser->getEmail(),
                     'keycloak_id' => $keycloakUser->getId(),
                     'role' => $assignedRole ?? User::ROLE_ANGGOTA,
+                    'password' => ($keycloakUser->getEmail() === 'superadmin@brin.go.id')
+                        ? Hash::make('admin123')
+                        : Hash::make(\Illuminate\Support\Str::random(32)),
                 ]);
                 $user->forceFill(['email_verified_at' => now()])->save();
             }

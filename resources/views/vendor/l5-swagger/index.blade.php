@@ -141,6 +141,10 @@
 
             requestInterceptor: function(request) {
                 request.headers['X-CSRF-TOKEN'] = '{{ csrf_token() }}';
+                if (request.headers['Authorization']) {
+                    // Mencegah error 401 jika pengguna memasukkan "Bearer Bearer <token>"
+                    request.headers['Authorization'] = request.headers['Authorization'].replace(/^Bearer\s+Bearer\s+/i, 'Bearer ');
+                }
                 return request;
             },
 
