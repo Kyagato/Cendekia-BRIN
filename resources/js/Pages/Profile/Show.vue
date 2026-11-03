@@ -15,196 +15,242 @@
         <span class="text-slate-800 dark:text-slate-200 font-semibold line-clamp-1">{{ user.name }}</span>
       </nav>
 
-      <!-- Main Profile Card Header -->
-      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-8">
+      <!-- Grid Container: Kolom Kiri (Profil) & Kolom Kanan (Konten Tab) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 
-        <!-- Banner Cover -->
-        <div class="h-36 sm:h-48 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 relative overflow-hidden">
-          <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        </div>
+        <!-- Kolom Kiri: Kartu Profil & Statistik Ringkas (lg:col-span-4 xl:col-span-4) -->
+        <div class="lg:col-span-4 xl:col-span-4 lg:sticky lg:top-24 space-y-6">
+          <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
 
-        <!-- User Info Section -->
-        <div class="px-6 sm:px-8 pb-8 pt-0 relative">
-          <!-- Top Row: Avatar (overlapping banner) & Action Buttons (mepet di bawah banner) -->
-          <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 mb-4">
-            <!-- Avatar (overlaps banner) -->
-            <div class="relative shrink-0 -mt-16 sm:-mt-20">
-              <img
-                v-if="user.foto_profil"
-                :src="`/storage/${user.foto_profil}`"
-                :alt="user.name"
-                class="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-xl bg-slate-100 dark:bg-slate-800"
-              />
-              <div
-                v-else
-                class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-slate-900 shadow-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-4xl"
-              >
-                {{ userInitials }}
+            <!-- Banner Cover -->
+            <div class="h-32 sm:h-36 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 relative overflow-hidden">
+              <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            </div>
+
+            <!-- User Info Section -->
+            <div class="px-5 sm:px-6 pb-6 pt-0 relative">
+              <!-- Avatar (centered overlapping banner) -->
+              <div class="flex flex-col items-center text-center -mt-14 sm:-mt-16">
+                <div class="relative shrink-0">
+                  <img
+                    v-if="user.foto_profil"
+                    :src="`/storage/${user.foto_profil}`"
+                    :alt="user.name"
+                    class="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-xl bg-slate-100 dark:bg-slate-800"
+                  />
+                  <div
+                    v-else
+                    class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white dark:border-slate-900 shadow-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-3xl sm:text-4xl"
+                  >
+                    {{ userInitials }}
+                  </div>
+                </div>
+
+                <!-- Identitas Pengguna -->
+                <div class="mt-3.5 space-y-1">
+                  <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white leading-snug">
+                    {{ user.name }}
+                  </h1>
+                  <div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                      {{ user.role || 'Anggota' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Pekerjaan & Instansi -->
+                <p v-if="user.pekerjaan || user.instansi" class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 mt-2">
+                  {{ user.pekerjaan || 'Anggota' }} &bull; {{ user.instansi || 'Badan Riset dan Inovasi Nasional (BRIN)' }}
+                </p>
+
+                <!-- Alamat & Tanggal Bergabung -->
+                <div class="flex flex-col items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-2.5">
+                  <span v-if="user.alamat" class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>{{ user.alamat }}</span>
+                  </span>
+
+                  <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Bergabung {{ formattedJoinDate }}</span>
+                  </span>
+                </div>
+
+                <!-- Tombol Aksi Profil -->
+                <div class="mt-5 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
+                  <!-- Tombol Pengaturan Profil (Hanya tampil jika user login melihat profil miliknya sendiri) -->
+                  <Link
+                    v-if="isOwner"
+                    href="/profile"
+                    class="w-full px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-600 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 group cursor-pointer"
+                  >
+                    <svg class="w-4 h-4 text-slate-500 group-hover:text-[#2563eb] dark:group-hover:text-blue-400 transition-all duration-500 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>Pengaturan Profil</span>
+                  </Link>
+
+                  <!-- Tombol Bagikan Profil -->
+                  <button
+                    type="button"
+                    @click="shareProfile"
+                    class="group w-full px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 text-white cursor-pointer"
+                    :class="isCopied ? 'bg-emerald-600 hover:bg-emerald-700 hover:shadow-emerald-500/25' : 'bg-[#2563eb] hover:bg-[#1d4ed8] hover:shadow-blue-500/25 active:bg-[#1e40af]'"
+                  >
+                    <template v-if="!isCopied">
+                      <svg class="w-4 h-4 transition-transform duration-300 transform group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                      </svg>
+                      <span>Bagikan Profil</span>
+                    </template>
+                    <template v-else>
+                      <svg class="w-4 h-4 transition-transform duration-300 transform scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                      </svg>
+                      <span>Tautan Berhasil Disalin!</span>
+                    </template>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- Tombol Aksi Profil (Mepet dengan banner namun di luar/bawah banner) -->
-            <div class="mt-2 sm:mt-3 shrink-0 w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-2.5">
-              <!-- Tombol Pengaturan Profil (Hanya tampil jika user login melihat profil miliknya sendiri) -->
-              <Link
-                v-if="isOwner"
-                href="/profile"
-                class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-600 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 group cursor-pointer"
-              >
-                <svg class="w-4 h-4 text-slate-500 group-hover:text-[#2563eb] dark:group-hover:text-blue-400 transition-all duration-500 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span>Pengaturan Profil</span>
-              </Link>
+              <!-- Statistik Ringkas Pengguna -->
+              <div class="grid grid-cols-3 gap-2 p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 mt-4">
+                <div class="text-center">
+                  <div class="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white">{{ totalKnowledge }}</div>
+                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-tight">Pengetahuan Terbit</div>
+                </div>
+                <div class="text-center border-x border-slate-200 dark:border-slate-700 px-1">
+                  <div class="text-lg sm:text-2xl font-extrabold text-[#2563eb] dark:text-blue-400">{{ Number(totalViews).toLocaleString('id-ID') }}</div>
+                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-tight">Total Pembaca</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white">{{ totalThreads }}</div>
+                  <div class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-tight">Diskusi Forum</div>
+                </div>
+              </div>
 
-              <!-- Tombol Bagikan Profil -->
-              <button
-                type="button"
-                @click="shareProfile"
-                class="group w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 text-white cursor-pointer"
-                :class="isCopied ? 'bg-emerald-600 hover:bg-emerald-700 hover:shadow-emerald-500/25' : 'bg-[#2563eb] hover:bg-[#1d4ed8] hover:shadow-blue-500/25 active:bg-[#1e40af]'"
-              >
-                <template v-if="!isCopied">
-                  <svg class="w-4 h-4 transition-transform duration-300 transform group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-                  </svg>
-                  <span>Bagikan Profil</span>
-                </template>
-                <template v-else>
-                  <svg class="w-4 h-4 transition-transform duration-300 transform scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                  </svg>
-                  <span>Tautan Berhasil Disalin!</span>
-                </template>
-              </button>
             </div>
           </div>
-
-          <!-- Identitas (di bawah avatar dan banner) -->
-          <div class="space-y-1.5 text-center sm:text-left mb-6">
-            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-                {{ user.name }}
-              </h1>
-              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                {{ user.role || 'Anggota' }}
-              </span>
-            </div>
-
-            <p v-if="user.pekerjaan || user.instansi" class="text-sm font-medium text-slate-600 dark:text-slate-300">
-              {{ user.pekerjaan || 'Anggota' }} &bull; {{ user.instansi || 'Badan Riset dan Inovasi Nasional (BRIN)' }}
-            </p>
-
-            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-slate-500 dark:text-slate-400 pt-1">
-              <span v-if="user.alamat" class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                <span>{{ user.alamat }}</span>
-              </span>
-
-              <span class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                <span>Bergabung {{ formattedJoinDate }}</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Statistik Ringkas Pengguna -->
-          <div class="grid grid-cols-3 gap-3 sm:gap-6 p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800">
-            <div class="text-center">
-              <div class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">{{ totalKnowledge }}</div>
-              <div class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Pengetahuan Terbit</div>
-            </div>
-            <div class="text-center border-x border-slate-200 dark:border-slate-700">
-              <div class="text-xl sm:text-3xl font-extrabold text-[#2563eb] dark:text-blue-400">{{ Number(totalViews).toLocaleString('id-ID') }}</div>
-              <div class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Total Pembaca (Views)</div>
-            </div>
-            <div class="text-center">
-              <div class="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">{{ totalThreads }}</div>
-              <div class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Diskusi Forum</div>
-            </div>
-          </div>
-
         </div>
-      </div>
 
-      <!-- Content Tabs Section -->
-      <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+        <!-- Kolom Kanan: Content Tabs Section (lg:col-span-8 xl:col-span-8) -->
+        <div class="lg:col-span-8 xl:col-span-8">
+          <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
 
-        <!-- Tabs Header -->
-        <div class="flex border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 overflow-x-auto">
+        <!-- Tabs Header with Left/Right Scroll Controls -->
+        <div class="relative border-b border-slate-200 dark:border-slate-800 flex items-center">
+          <!-- Tombol Geser Kiri -->
           <button
+            v-show="canScrollLeft"
             type="button"
-            @click="activeTab = 'pengetahuan'"
-            :class="activeTab === 'pengetahuan' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
-            class="py-4 px-4 sm:px-6 text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer"
+            @click="scrollTabs('left')"
+            class="absolute left-0 top-0 bottom-0 z-20 px-1.5 sm:px-2 bg-gradient-to-r from-white via-white/95 to-transparent dark:from-slate-900 dark:via-slate-900/95 dark:to-transparent flex items-center justify-center cursor-pointer transition-all"
+            title="Geser ke kiri"
+            aria-label="Geser tab ke kiri"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            <span>Pengetahuan Terbit ({{ totalKnowledge }})</span>
+            <span class="w-7 h-7 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:scale-110 active:scale-95 transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+              </svg>
+            </span>
           </button>
 
-          <button
-            type="button"
-            @click="activeTab = 'forum'"
-            :class="activeTab === 'forum' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
-            class="py-4 px-4 sm:px-6 text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer"
+          <!-- Tabs Scroll Container -->
+          <div
+            ref="tabsContainer"
+            @scroll="updateScrollButtons"
+            class="flex flex-1 items-center px-3 sm:px-4 overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
-            </svg>
-            <span>Diskusi Forum ({{ totalThreads }})</span>
-          </button>
+            <button
+              type="button"
+              @click="activeTab = 'pengetahuan'"
+              :class="activeTab === 'pengetahuan' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
+              class="py-3.5 px-2.5 sm:px-3.5 text-xs sm:text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+              <span>Pengetahuan Terbit ({{ totalKnowledge }})</span>
+            </button>
 
-          <button
-            v-if="isOwner"
-            type="button"
-            @click="activeTab = 'tersimpan'"
-            :class="activeTab === 'tersimpan' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
-            class="py-4 px-4 sm:px-6 text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer"
-          >
-            <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-            <span>Bookmark ({{ totalBookmarks }})</span>
-          </button>
+            <button
+              type="button"
+              @click="activeTab = 'forum'"
+              :class="activeTab === 'forum' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
+              class="py-3.5 px-2.5 sm:px-3.5 text-xs sm:text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+              </svg>
+              <span>Diskusi Forum ({{ totalThreads }})</span>
+            </button>
 
-          <button
-            type="button"
-            @click="activeTab = 'biodata'"
-            :class="activeTab === 'biodata' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
-            class="py-4 px-4 sm:px-6 text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-2 cursor-pointer"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span>Informasi & Instansi</span>
-          </button>
+            <button
+              v-if="isOwner"
+              type="button"
+              @click="activeTab = 'tersimpan'"
+              :class="activeTab === 'tersimpan' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
+              class="py-3.5 px-2.5 sm:px-3.5 text-xs sm:text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              <span>Bookmark ({{ totalBookmarks }})</span>
+            </button>
 
+            <button
+              type="button"
+              @click="activeTab = 'biodata'"
+              :class="activeTab === 'biodata' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
+              class="py-3.5 px-2.5 sm:px-3.5 text-xs sm:text-sm border-b-2 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span>Informasi & Instansi</span>
+            </button>
+
+            <button
+              v-if="canManageApiToken"
+              type="button"
+              @click="activeTab = 'apitoken'"
+              :class="activeTab === 'apitoken' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
+              class="py-3.5 px-2.5 sm:px-3.5 text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-1.5"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+              </svg>
+              <span>API Token</span>
+            </button>
+          </div>
+
+          <!-- Tombol Geser Kanan -->
           <button
-            v-if="canManageApiToken"
+            v-show="canScrollRight"
             type="button"
-            @click="activeTab = 'apitoken'"
-            :class="activeTab === 'apitoken' ? 'text-[#2563eb] dark:text-blue-400 border-[#2563eb] dark:border-blue-400 font-bold' : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200 font-medium'"
-            class="py-4 px-4 sm:px-6 text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2"
+            @click="scrollTabs('right')"
+            class="absolute right-0 top-0 bottom-0 z-20 px-1.5 sm:px-2 bg-gradient-to-l from-white via-white/95 to-transparent dark:from-slate-900 dark:via-slate-900/95 dark:to-transparent flex items-center justify-center cursor-pointer transition-all"
+            title="Geser ke kanan"
+            aria-label="Geser tab ke kanan"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-            </svg>
-            <span>API Token</span>
+            <span class="w-7 h-7 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-600 hover:scale-110 active:scale-95 transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
           </button>
         </div>
 
         <!-- Tab 1: Pengetahuan Terbit -->
         <div v-show="activeTab === 'pengetahuan'" class="p-6 sm:p-8">
           <div v-if="knowledgeList.data && knowledgeList.data.length > 0">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
               <div
                 v-for="item in knowledgeList.data"
                 :key="item.id"
@@ -361,7 +407,7 @@
         <!-- Tab: Pengetahuan Tersimpan (Bookmarks) - Hanya untuk Pemilik Akun -->
         <div v-if="isOwner" v-show="activeTab === 'tersimpan'" class="p-6 sm:p-8">
           <div v-if="bookmarkedList && bookmarkedList.data && bookmarkedList.data.length > 0">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
               <div
                 v-for="item in bookmarkedList.data"
                 :key="item.id"
@@ -429,7 +475,7 @@
 
         <!-- Tab 3: Informasi & Instansi -->
         <div v-show="activeTab === 'biodata'" class="p-6 sm:p-8">
-          <div class="max-w-2xl mx-auto bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/60">
+          <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/60">
             <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
               <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -536,13 +582,21 @@
         </div>
 
       </div>
+      <!-- End Card Content Tabs -->
 
     </div>
-  </PublicLayout>
+    <!-- End Kolom Kanan -->
+
+  </div>
+  <!-- End Grid Container -->
+
+</div>
+<!-- End Container Utama -->
+</PublicLayout>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { Link, usePage, useForm } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 
@@ -592,6 +646,42 @@ const props = defineProps({
 
 const activeTab = ref(props.initialTab || 'pengetahuan');
 const isCopied = ref(false);
+
+// ===== Tabs Horizontal Scroll Navigation =====
+const tabsContainer = ref(null);
+const canScrollLeft = ref(false);
+const canScrollRight = ref(false);
+
+const updateScrollButtons = () => {
+  if (!tabsContainer.value) return;
+  const { scrollLeft, scrollWidth, clientWidth } = tabsContainer.value;
+  canScrollLeft.value = scrollLeft > 8;
+  canScrollRight.value = scrollLeft + clientWidth < scrollWidth - 8;
+};
+
+const scrollTabs = (direction) => {
+  if (!tabsContainer.value) return;
+  const offset = direction === 'left' ? -220 : 220;
+  tabsContainer.value.scrollBy({ left: offset, behavior: 'smooth' });
+  setTimeout(updateScrollButtons, 350);
+};
+
+onMounted(() => {
+  nextTick(() => {
+    updateScrollButtons();
+  });
+  window.addEventListener('resize', updateScrollButtons);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScrollButtons);
+});
+
+watch(activeTab, () => {
+  nextTick(() => {
+    updateScrollButtons();
+  });
+});
 
 // ===== API Token Swagger =====
 const tokenForm = useForm({});
