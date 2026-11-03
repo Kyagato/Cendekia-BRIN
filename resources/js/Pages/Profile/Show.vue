@@ -19,7 +19,9 @@
       <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-8">
 
         <!-- Banner Cover -->
-        <div class="h-36 sm:h-48 relative overflow-hidden profile-animated-banner"></div>
+        <div class="h-36 sm:h-48 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 relative overflow-hidden">
+          <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        </div>
 
         <!-- User Info Section -->
         <div class="px-6 sm:px-8 pb-8 pt-0 relative">
@@ -39,7 +41,6 @@
               >
                 {{ userInitials }}
               </div>
-              <span class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full" title="Akun Aktif"></span>
             </div>
 
             <!-- Tombol Aksi Profil (Mepet dengan banner namun di luar/bawah banner) -->
