@@ -29,35 +29,80 @@
           {{ backLinkLabel }}
         </a>
 
-        <!-- Action Buttons (Edit, Pin, Lock, Hapus) -->
-        <div v-if="!thread.deleted_at" class="flex items-center gap-2">
-          <!-- Tombol Edit untuk Penulis atau Pengelola Forum -->
-          <a
-            v-if="canEditThread"
-            :href="`/forum/${thread.id}/edit`"
-            class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold bg-amber-500 hover:bg-amber-600 text-white transition shadow-sm"
+        <!-- Action Buttons (Disatukan ke tombol titik 3) -->
+        <div v-if="!thread.deleted_at && hasThreadActions" class="relative" ref="threadMenuContainerRef">
+          <button
+            type="button"
+            @click.stop="toggleThreadTopMenu"
+            class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition flex items-center gap-1.5 cursor-pointer text-xs font-semibold"
+            :class="{ 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white': openThreadTopMenu }"
+            title="Opsi Topik Diskusi"
+            aria-label="Opsi Topik Diskusi"
           >
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
-            Edit
-          </a>
+            <span class="hidden sm:inline">Aksi Topik</span>
+          </button>
 
-          <!-- Moderator Actions -->
-          <template v-if="canManageForum">
-            <button @click="togglePin" :class="thread.is_pinned ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 border-yellow-300' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-[#e2e8f0] dark:border-slate-700'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold border transition">
-              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
-              {{ thread.is_pinned ? 'Unpin' : 'Pin' }}
+          <!-- Dropdown Menu Titik 3 -->
+          <div
+            v-if="openThreadTopMenu"
+            class="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-50 text-left"
+          >
+            <!-- 1. Edit -->
+            <a
+              v-if="canEditThread"
+              :href="`/forum/${thread.id}/edit`"
+              class="flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition"
+            >
+              <svg class="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              <span>Edit</span>
+            </a>
+
+            <!-- 2. Pin / Unpin (Moderator / Admin) -->
+            <button
+              v-if="canManageForum"
+              type="button"
+              @click.stop="runTogglePin"
+              class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition text-left cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+              </svg>
+              <span>{{ thread.is_pinned ? 'Lepas Pin' : 'Pin' }}</span>
             </button>
-            <button @click="toggleLock" :class="thread.is_locked ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-[#e2e8f0] dark:border-slate-700'" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold border transition">
-              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-              {{ thread.is_locked ? 'Buka Kunci' : 'Kunci' }}
+
+            <!-- 3. Kunci / Buka Kunci (Moderator / Admin) -->
+            <button
+              v-if="canManageForum"
+              type="button"
+              @click.stop="runToggleLock"
+              class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition text-left cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+              </svg>
+              <span>{{ thread.is_locked ? 'Buka Kunci' : 'Kunci' }}</span>
             </button>
-            <button @click="confirmDelete" class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-semibold bg-rose-600 hover:bg-rose-700 text-white transition shadow-sm">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              Hapus
+
+            <div v-if="canManageForum || canEditThread" class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+
+            <!-- 4. Hapus -->
+            <button
+              v-if="canManageForum || canEditThread"
+              type="button"
+              @click.stop="runConfirmDelete"
+              class="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition text-left cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              <span>Hapus</span>
             </button>
-          </template>
+          </div>
         </div>
       </div>
 
@@ -761,6 +806,33 @@ const hasReplyMenu = (reply) => {
   return canPinReply(reply) || canEditReply(reply) || canDeleteReply(reply);
 };
 
+// Thread Top 3-Dots Menu
+const openThreadTopMenu = ref(false);
+const threadMenuContainerRef = ref(null);
+
+const hasThreadActions = computed(() => {
+  return canEditThread.value || canManageForum.value;
+});
+
+const toggleThreadTopMenu = () => {
+  openThreadTopMenu.value = !openThreadTopMenu.value;
+};
+
+const runTogglePin = () => {
+  openThreadTopMenu.value = false;
+  togglePin();
+};
+
+const runToggleLock = () => {
+  openThreadTopMenu.value = false;
+  toggleLock();
+};
+
+const runConfirmDelete = () => {
+  openThreadTopMenu.value = false;
+  confirmDelete();
+};
+
 // 3-Dots Dropdown State & Click-outside handling
 const openMenuReplyId = ref(null);
 const menuRefs = new Map();
@@ -778,6 +850,9 @@ const toggleReplyMenu = (id) => {
 };
 
 const handleDocumentClick = (event) => {
+  if (threadMenuContainerRef.value && !threadMenuContainerRef.value.contains(event.target)) {
+    openThreadTopMenu.value = false;
+  }
   if (!openMenuReplyId.value) return;
   const currentEl = menuRefs.get(openMenuReplyId.value);
   if (currentEl && !currentEl.contains(event.target)) {
