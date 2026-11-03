@@ -71,6 +71,7 @@ class KnowledgeController extends Controller
             data: $validatedData,
             fileUpload: $request->file('file_upload'),
             audioFile: $request->file('audio_file'),
+            documentFile: $request->file('document_file'),
             user: $user
         );
 
@@ -179,6 +180,7 @@ class KnowledgeController extends Controller
             data: $request->validated(),
             fileUpload: $request->file('file_upload'),
             audioFile: $request->file('audio_file'),
+            documentFile: $request->file('document_file'),
             user: $request->user()
         );
 

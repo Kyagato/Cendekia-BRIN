@@ -145,6 +145,37 @@
                     {{-- Upload Thumbnail / File Lampiran --}}
                     <div>
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Berkas Lampiran &amp; Thumbnail</label>
+                        @if($knowledge->document_path)
+                            <div class="mb-4 p-4 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/60 rounded-xl space-y-3">
+                                <span class="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider block">Dokumen Lampiran (Format Teks)</span>
+                                <div class="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 rounded-lg flex flex-col items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
+                                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span class="text-[9px] font-bold uppercase tracking-wider">{{ strtoupper(pathinfo($knowledge->document_path, PATHINFO_EXTENSION)) ?: 'DOC' }}</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate max-w-xs" title="{{ basename($knowledge->document_path) }}">
+                                                {{ basename($knowledge->document_path) }}
+                                            </div>
+                                            <span class="text-[11px] text-slate-500 dark:text-slate-400">Berkas dokumen materi</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <a href="{{ asset('storage/' . $knowledge->document_path) }}" target="_blank" class="px-3.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1.5 shadow-xs">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                            Buka / Pratinjau
+                                        </a>
+                                        <a href="{{ asset('storage/' . $knowledge->document_path) }}" download class="px-3.5 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-xs">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                            Unduh
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                         @if($knowledge->file_path)
                             @php
                                 $filePathExt = strtolower(pathinfo($knowledge->file_path, PATHINFO_EXTENSION));

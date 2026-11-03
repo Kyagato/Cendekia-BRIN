@@ -171,6 +171,55 @@
                                 @error('url_teks') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                         </template>
+
+                        {{-- Upload Dokumen (hanya muncul saat format = Text / Teks, di bawah Url teks) --}}
+                        <template x-if="formatType === 'Teks'">
+                            <div class="mt-4" x-data="{ docFileName: '', docError: '' }">
+                                <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Upload Dokumen (Opsional)</label>
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" onclick="document.getElementById('document_upload').click()">
+                                    <div class="space-y-1 text-center">
+                                        <svg x-show="!docFileName && !docError" class="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <svg x-cloak x-show="docFileName && !docError" class="mx-auto h-10 w-10 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <svg x-cloak x-show="docError" class="mx-auto h-10 w-10 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                        </svg>
+                                        <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
+                                            <label for="document_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300">
+                                                <span x-show="!docFileName">Pilih file dokumen</span>
+                                                <span x-cloak x-show="docFileName" x-text="docFileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[250px] inline-block"></span>
+                                                <input id="document_upload" name="document_file" type="file" 
+                                                       accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" 
+                                                       class="sr-only" 
+                                                       @change="
+                                                           const file = $event.target.files[0];
+                                                           if (file) {
+                                                               if (file.size > 5 * 1024 * 1024) {
+                                                                   docError = 'Ukuran dokumen melebihi batas maksimal 5MB.';
+                                                                   docFileName = '';
+                                                                   $event.target.value = '';
+                                                               } else {
+                                                                   docError = '';
+                                                                   docFileName = file.name;
+                                                               }
+                                                           } else {
+                                                               docError = '';
+                                                               docFileName = '';
+                                                           }
+                                                       ">
+                                            </label>
+                                        </div>
+                                        <p x-show="!docFileName && !docError" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PDF, DOC, DOCX, XLS, PPT, TXT — Maks 5MB</p>
+                                        <p x-cloak x-show="docError" x-text="docError" class="text-xs text-red-500 font-semibold mt-1"></p>
+                                        <p x-cloak x-show="docFileName && !docError" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Dokumen siap diupload</p>
+                                    </div>
+                                </div>
+                                @error('document_file') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </template>
                     </div>
 
                     {{-- Penulis & Kolaborator --}}

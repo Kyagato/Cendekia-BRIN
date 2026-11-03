@@ -62,6 +62,25 @@ class Knowledge extends Model
         return $this->status === self::STATUS_DITOLAK;
     }
 
+    public function getDocumentPathAttribute($value): ?string
+    {
+        if ($value) {
+            return $value;
+        }
+        if ($this->file_path) {
+            $ext = strtolower(pathinfo($this->file_path, PATHINFO_EXTENSION));
+            if (in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'])) {
+                return $this->file_path;
+            }
+        }
+        return null;
+    }
+
+    public function hasDocument(): bool
+    {
+        return !empty($this->document_path);
+    }
+
     /**
      * Estimasi waktu membaca materi dalam satuan menit (standar 200 kata/menit).
      */

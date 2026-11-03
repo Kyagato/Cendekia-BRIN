@@ -303,6 +303,37 @@
                 @endif
                 @endif
 
+                {{-- Dokumen Lampiran (Format Teks / Berkas Dokumen) --}}
+                @if($knowledge->document_path)
+                <section class="p-4 sm:p-5 rounded-2xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Dokumen Lampiran</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-xs sm:max-w-md" title="{{ basename($knowledge->document_path) }}">{{ basename($knowledge->document_path) }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                        <a href="{{ asset('storage/' . $knowledge->document_path) }}" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-xs">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            <span>Buka / Pratinjau</span>
+                        </a>
+                        <a href="{{ asset('storage/' . $knowledge->document_path) }}" download class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-primary-600 hover:bg-primary-700 text-white transition shadow-xs">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span>Unduh Dokumen</span>
+                        </a>
+                    </div>
+                </section>
+                @endif
+
                 {{-- Ringkasan --}}
                 @if($knowledge->deskripsi)
                 <section id="ringkasan" class="scroll-mt-28">
@@ -393,6 +424,19 @@
                                 <dt class="font-semibold text-slate-900 dark:text-slate-100">URL</dt>
                                 <dd>
                                     <a href="{{ $knowledge->url_teks }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline break-all">{{ $knowledge->url_teks }}</a>
+                                </dd>
+                            </div>
+                            @endif
+                            @if($knowledge->document_path)
+                            <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4">
+                                <dt class="font-semibold text-slate-900 dark:text-slate-100">Dokumen Lampiran</dt>
+                                <dd class="flex items-center gap-2">
+                                    <a href="{{ asset('storage/' . $knowledge->document_path) }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline break-all inline-flex items-center gap-1.5 font-medium">
+                                        <svg class="w-4 h-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <span>{{ basename($knowledge->document_path) }}</span>
+                                    </a>
                                 </dd>
                             </div>
                             @endif

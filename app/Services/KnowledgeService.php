@@ -38,16 +38,23 @@ class KnowledgeService
     /**
      * Menyimpan pengetahuan baru dengan database transaction.
      */
-    public function createKnowledge(array $data, ?User $user = null, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null): Knowledge
+    public function createKnowledge(array $data, ?User $user = null, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null, ?UploadedFile $documentFile = null): Knowledge
     {
         $user = $user ?? auth()->user();
         $newFiles = [];
 
         try {
-            return DB::transaction(function () use ($data, $fileUpload, $audioFile, $user, &$newFiles) {
+            return DB::transaction(function () use ($data, $fileUpload, $audioFile, $documentFile, $user, &$newFiles) {
                 $filePath = null;
+                $documentPath = null;
                 $urlTeks = $data['url_teks'] ?? null;
                 $tipe = $data['tipe'] ?? 'Teks';
+
+                // Unggah dokumen jika ada
+                if ($documentFile) {
+                    $documentPath = $documentFile->store('documents', 'public');
+                    $newFiles[] = $documentPath;
+                }
 
                 // Penanganan unggahan berkas berdasarkan tipe media
                 if ($tipe === 'Audio') {
@@ -91,6 +98,7 @@ class KnowledgeService
                     'status_akses'   => $data['status_akses'] ?? 'public',
                     'tipe'           => $tipe,
                     'file_path'      => $filePath,
+                    'document_path'  => $documentPath,
                     'status'         => $status,
                     'penulis'        => $data['penulis'] ?? $user->name,
                     'kolaborator'    => $data['kolaborator'] ?? null,
@@ -127,14 +135,14 @@ class KnowledgeService
     /**
      * Memperbarui pengetahuan yang sudah ada dengan database transaction.
      */
-    public function updateKnowledge(Knowledge $knowledge, array $data, ?User $user = null, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null): Knowledge
+    public function updateKnowledge(Knowledge $knowledge, array $data, ?User $user = null, ?UploadedFile $fileUpload = null, ?UploadedFile $audioFile = null, ?UploadedFile $documentFile = null): Knowledge
     {
         $user = $user ?? auth()->user();
         $newFiles = [];
         $oldFilesToDelete = [];
 
         try {
-            $updated = DB::transaction(function () use ($knowledge, $data, $fileUpload, $audioFile, $user, &$newFiles, &$oldFilesToDelete) {
+            $updated = DB::transaction(function () use ($knowledge, $data, $fileUpload, $audioFile, $documentFile, $user, &$newFiles, &$oldFilesToDelete) {
                 $tipe = $data['tipe'] ?? $knowledge->tipe;
 
                 $wasRejected = ($knowledge->status === Knowledge::STATUS_DITOLAK);
@@ -208,6 +216,15 @@ class KnowledgeService
                         $updateData['file_path'] = $fileUpload->store('uploads', 'public');
                         $newFiles[] = $updateData['file_path'];
                     }
+                }
+
+                // Penanganan unggahan berkas dokumen
+                if ($documentFile) {
+                    if ($knowledge->document_path && Storage::disk('public')->exists($knowledge->document_path)) {
+                        $oldFilesToDelete[] = $knowledge->document_path;
+                    }
+                    $updateData['document_path'] = $documentFile->store('documents', 'public');
+                    $newFiles[] = $updateData['document_path'];
                 }
 
                 $knowledge->update($updateData);
@@ -307,6 +324,7 @@ class KnowledgeService
             $knowledge->file_path,
             $knowledge->url_teks,
             $knowledge->gambar_sampul,
+            $knowledge->document_path,
         ]);
 
         $deleted = DB::transaction(function () use ($knowledge) {

@@ -76,6 +76,8 @@ class StoreKnowledgeRequest extends FormRequest
             $rules['url_teks']    = 'nullable|url|max:255';
         }
 
+        $rules['document_file'] = 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt|max:5120';
+
         return $rules;
     }
 
@@ -90,6 +92,8 @@ class StoreKnowledgeRequest extends FormRequest
             'file_upload.image'    => 'Thumbnail harus berupa gambar (PNG, JPG, GIF, WEBP).',
             'audio_file.max'       => 'Ukuran file audio tidak boleh lebih dari 10MB.',
             'file_upload.max'      => 'Ukuran file thumbnail / lampiran tidak boleh lebih dari 2MB.',
+            'document_file.max'    => 'Ukuran file dokumen tidak boleh lebih dari 5MB.',
+            'document_file.mimes'  => 'Format dokumen harus berupa PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, atau TXT.',
         ];
     }
 }

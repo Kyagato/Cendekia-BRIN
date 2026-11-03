@@ -193,3 +193,43 @@ it('accepts file upload under or equal to 2MB', function () {
     expect(Knowledge::where('judul', 'Artikel Thumbnail Valid')->exists())->toBeTrue();
 });
 
+it('rejects document upload larger than 5MB on format Teks', function () {
+    Storage::fake('public');
+    $user = User::factory()->create(['role' => 'Anggota']);
+
+    // Document 6 MB (6144 KB > 5120 KB)
+    $largeDoc = UploadedFile::fake()->create('dokumen_raksasa.pdf', 6144, 'application/pdf');
+
+    $response = $this->actingAs($user)->post(route('knowledge.store'), [
+        'judul'         => 'Artikel PDF Raksasa',
+        'category_id'   => $this->category->id,
+        'tipe'          => 'Teks',
+        'document_file' => $largeDoc,
+    ]);
+
+    $response->assertSessionHasErrors('document_file');
+    expect(Knowledge::where('judul', 'Artikel PDF Raksasa')->exists())->toBeFalse();
+});
+
+it('accepts document upload under or equal to 5MB on format Teks', function () {
+    Storage::fake('public');
+    $user = User::factory()->create(['role' => 'Anggota']);
+
+    // Document 4.5 MB (4608 KB <= 5120 KB)
+    $validDoc = UploadedFile::fake()->create('dokumen_valid.pdf', 4608, 'application/pdf');
+
+    $response = $this->actingAs($user)->post(route('knowledge.store'), [
+        'judul'         => 'Artikel Dokumen 5MB Valid',
+        'category_id'   => $this->category->id,
+        'tipe'          => 'Teks',
+        'document_file' => $validDoc,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $knowledge = Knowledge::where('judul', 'Artikel Dokumen 5MB Valid')->first();
+    expect($knowledge)->not->toBeNull();
+    expect($knowledge->document_path)->not->toBeNull();
+    Storage::disk('public')->assertExists($knowledge->document_path);
+});
+
+
