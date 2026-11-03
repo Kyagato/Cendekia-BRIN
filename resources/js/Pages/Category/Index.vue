@@ -474,7 +474,7 @@
                 :key="tag.id"
                 type="button"
                 @click="setFilter('label', form.label === tag.nama_label ? '' : tag.nama_label)" 
-                class="text-xs px-3 py-1 rounded-full transition cursor-pointer"
+                class="text-xs px-2.5 py-1 rounded-md transition cursor-pointer"
                 :class="form.label === tag.nama_label 
                   ? 'bg-[#2563eb] text-white font-semibold shadow-sm' 
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-blue-50 hover:text-[#2563eb]'"

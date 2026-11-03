@@ -314,10 +314,10 @@
                             <input type="hidden" name="tags" :value="hiddenValue">
                             <div class="flex flex-wrap items-center gap-2 min-h-[48px] px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-primary-600 focus-within:border-primary-600 transition">
                                 <template x-for="(tag, index) in tags" :key="index">
-                                    <span class="inline-flex items-center gap-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-semibold pl-3 pr-1.5 py-1.5 rounded-full">
+                                    <span class="inline-flex items-center gap-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-semibold pl-2.5 pr-1.5 py-1 rounded-md border border-primary-200 dark:border-primary-800/60">
                                         <span x-text="tag"></span>
-                                        <button type="button" @click="removeTag(index)" class="w-5 h-5 inline-flex items-center justify-center rounded-full bg-primary-200 dark:bg-primary-800 hover:bg-primary-400 dark:hover:bg-primary-600 text-primary-700 dark:text-primary-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
-                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        <button type="button" @click="removeTag(index)" class="w-4 h-4 inline-flex items-center justify-center rounded bg-primary-200 dark:bg-primary-800 hover:bg-primary-400 dark:hover:bg-primary-600 text-primary-700 dark:text-primary-200 hover:text-white transition cursor-pointer shrink-0" title="Hapus tag">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </span>
                                 </template>
