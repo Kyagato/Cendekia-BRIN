@@ -52,7 +52,7 @@ class FaqSeeder extends Seeder
             ],
             [
                 'pertanyaan' => 'Berapa ukuran maksimal file yang dapat diunggah?',
-                'jawaban' => 'Ukuran maksimal file adalah 50MB.',
+                'jawaban' => 'Ukuran maksimal file adalah 2MB.',
                 'kategori_faq' => 'Konten',
                 'urutan' => 2,
             ],

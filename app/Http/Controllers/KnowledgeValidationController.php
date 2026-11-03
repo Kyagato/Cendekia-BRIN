@@ -77,7 +77,7 @@ class KnowledgeValidationController extends Controller
             'detail'         => 'nullable|string',
             'category_id'    => 'nullable|exists:categories,id',
             'tanggal_terbit' => 'nullable|date',
-            'file'           => 'nullable|file|max:10240',
+            'file'           => 'nullable|file|max:2048',
         ]);
 
         $newUploadedFile = null;

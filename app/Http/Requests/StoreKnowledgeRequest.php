@@ -54,7 +54,7 @@ class StoreKnowledgeRequest extends FormRequest
         ];
 
         if ($this->input('tipe') === 'Gambar') {
-            $rules['file_upload'] = 'required|image|max:5120';
+            $rules['file_upload'] = 'required|image|max:2048';
         } elseif ($this->input('tipe') === 'Audio') {
             $rules['audio_file'] = [
                 'required',
@@ -70,9 +70,9 @@ class StoreKnowledgeRequest extends FormRequest
                     }
                 }
             ];
-            $rules['file_upload'] = 'nullable|image|max:5120';
+            $rules['file_upload'] = 'nullable|image|max:2048';
         } else {
-            $rules['file_upload'] = 'nullable|file|max:51200';
+            $rules['file_upload'] = 'nullable|file|max:2048';
             $rules['url_teks']    = 'nullable|url|max:255';
         }
 
@@ -89,7 +89,7 @@ class StoreKnowledgeRequest extends FormRequest
             'file_upload.required' => 'File gambar wajib diupload untuk format Gambar.',
             'file_upload.image'    => 'Thumbnail harus berupa gambar (PNG, JPG, GIF, WEBP).',
             'audio_file.max'       => 'Ukuran file audio tidak boleh lebih dari 10MB.',
-            'file_upload.max'      => 'Ukuran thumbnail gambar tidak boleh lebih dari 5MB.',
+            'file_upload.max'      => 'Ukuran file thumbnail / lampiran tidak boleh lebih dari 2MB.',
         ];
     }
 }

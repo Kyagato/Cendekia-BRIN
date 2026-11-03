@@ -167,8 +167,8 @@ class KnowledgeApiController extends Controller
             'kolaborator' => 'nullable|string|max:255',
             'status_akses' => 'nullable|in:public,private',
             'tags' => 'nullable|string',
-            'file' => 'nullable|file|max:51200', // max 50MB
-            'gambar_sampul' => 'nullable|image|max:5120', // max 5MB
+            'file' => 'nullable|file|max:2048', // max 2MB
+            'gambar_sampul' => 'nullable|image|max:2048', // max 2MB
         ]);
 
         $uploadedFiles = [];

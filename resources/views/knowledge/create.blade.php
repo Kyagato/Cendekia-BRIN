@@ -99,21 +99,39 @@
                     <div>
                         {{-- Upload Gambar (hanya muncul saat format = Gambar) --}}
                         <template x-if="formatType === 'Gambar'">
-                            <div x-data="{ imgFileName: '' }">
+                            <div x-data="{ imgFileName: '', imgError: '' }">
                                 <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Upload Gambar</label>
                                 <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" onclick="document.getElementById('gambar_upload').click()">
                                     <div class="space-y-1 text-center">
-                                        <svg x-show="!imgFileName" class="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                                        <svg x-cloak x-show="imgFileName" class="mx-auto h-10 w-10 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <svg x-show="!imgFileName && !imgError" class="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                        <svg x-cloak x-show="imgFileName && !imgError" class="mx-auto h-10 w-10 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <svg x-cloak x-show="imgError" class="mx-auto h-10 w-10 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
                                         <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
                                             <label for="gambar_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300">
                                                 <span x-show="!imgFileName">Pilih file gambar</span>
                                                 <span x-cloak x-show="imgFileName" x-text="imgFileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[250px] inline-block"></span>
-                                                <input id="gambar_upload" name="file_upload" type="file" accept="image/*" class="sr-only" @change="imgFileName = $event.target.files[0] ? $event.target.files[0].name : ''">
+                                                <input id="gambar_upload" name="file_upload" type="file" accept="image/*" class="sr-only" 
+                                                       @change="
+                                                           const file = $event.target.files[0];
+                                                           if (file) {
+                                                               if (file.size > 2 * 1024 * 1024) {
+                                                                   imgError = 'Ukuran gambar melebihi batas maksimal 2MB.';
+                                                                   imgFileName = '';
+                                                                   $event.target.value = '';
+                                                               } else {
+                                                                   imgError = '';
+                                                                   imgFileName = file.name;
+                                                               }
+                                                           } else {
+                                                               imgError = '';
+                                                               imgFileName = '';
+                                                           }
+                                                       ">
                                             </label>
                                         </div>
-                                        <p x-show="!imgFileName" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PNG, JPG, GIF, WEBP — Maks 5MB</p>
-                                        <p x-cloak x-show="imgFileName" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Gambar siap diupload</p>
+                                        <p x-show="!imgFileName && !imgError" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PNG, JPG, GIF, WEBP — Maks 2MB</p>
+                                        <p x-cloak x-show="imgError" x-text="imgError" class="text-xs text-red-500 font-semibold mt-1"></p>
+                                        <p x-cloak x-show="imgFileName && !imgError" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">Gambar siap diupload</p>
                                     </div>
                                 </div>
                                 @error('file_upload') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -288,27 +306,50 @@
                     </div>
 
                     {{-- Thumbnail Upload (tersembunyi hanya saat format Gambar karena upload gambar ada di kolom kiri) --}}
-                    <div x-show="formatType !== 'Gambar'" x-data="{ fileName: '' }">
+                    <div x-show="formatType !== 'Gambar'" x-data="{ fileName: '', fileError: '' }">
                         <label class="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Thumbnail / File Lampiran</label>
                         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer" onclick="document.getElementById('file_upload').click()">
                             <div class="space-y-1 text-center">
-                                <svg x-show="!fileName" class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <svg x-show="!fileName && !fileError" class="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
-                                <svg x-cloak x-show="fileName" class="mx-auto h-12 w-12 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg x-cloak x-show="fileName && !fileError" class="mx-auto h-12 w-12 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <svg x-cloak x-show="fileError" class="mx-auto h-12 w-12 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
                                 <div class="flex text-sm text-slate-600 dark:text-slate-400 justify-center mt-2">
                                     <label for="file_upload" class="relative cursor-pointer bg-transparent rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                                         <span x-show="!fileName">Unggah file thumbnail</span>
                                         <span x-cloak x-show="fileName" x-text="fileName" class="text-slate-800 dark:text-slate-200 font-semibold truncate max-w-[200px] inline-block"></span>
-                                        <input id="file_upload" name="file_upload" type="file" class="sr-only" @change="fileName = $event.target.files[0] ? $event.target.files[0].name : ''" :disabled="formatType === 'Gambar'">
+                                        <input id="file_upload" name="file_upload" type="file" class="sr-only" 
+                                               accept="image/*"
+                                               @change="
+                                                   const file = $event.target.files[0];
+                                                   if (file) {
+                                                       if (file.size > 2 * 1024 * 1024) {
+                                                           fileError = 'Ukuran file melebihi batas maksimal 2MB.';
+                                                           fileName = '';
+                                                           $event.target.value = '';
+                                                       } else {
+                                                           fileError = '';
+                                                           fileName = file.name;
+                                                       }
+                                                   } else {
+                                                       fileError = '';
+                                                       fileName = '';
+                                                   }
+                                               " 
+                                               :disabled="formatType === 'Gambar'">
                                     </label>
                                 </div>
-                                <p x-show="!fileName" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PNG, JPG, GIF up to 50MB</p>
-                                <p x-cloak x-show="fileName" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">File siap disimpan</p>
+                                <p x-show="!fileName && !fileError" class="text-xs text-slate-500 dark:text-slate-400 mt-1">PNG, JPG, GIF up to 2MB</p>
+                                <p x-cloak x-show="fileError" x-text="fileError" class="text-xs text-red-500 font-semibold mt-1"></p>
+                                <p x-cloak x-show="fileName && !fileError" class="text-xs text-green-600 dark:text-green-400 font-medium mt-1">File siap disimpan</p>
                             </div>
                         </div>
+                        @error('file_upload') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                 </div>

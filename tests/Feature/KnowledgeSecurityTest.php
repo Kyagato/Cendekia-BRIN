@@ -6,6 +6,8 @@ use App\Models\ForumThread;
 use App\Models\Knowledge;
 use App\Models\KnowledgeComment;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->category = Category::firstOrCreate(['nama_kategori' => 'Keamanan Sistem']);
@@ -136,3 +138,58 @@ it('rejects forum reply if parent_id belongs to a different thread', function ()
     $response->assertSessionHasErrors(['parent_id']);
     expect(ForumReply::where('thread_id', $threadB->id)->count())->toBe(0);
 });
+
+it('rejects file upload larger than 2MB on store knowledge', function () {
+    Storage::fake('public');
+    $user = User::factory()->create(['role' => 'Anggota']);
+
+    // 2.5 MB (2560 KB > 2048 KB)
+    $largeFile = UploadedFile::fake()->create('dokumen_besar.pdf', 2560);
+
+    $response = $this->actingAs($user)->post(route('knowledge.store'), [
+        'judul'        => 'Artikel Dokumen Besar',
+        'category_id'  => $this->category->id,
+        'tipe'         => 'Teks',
+        'file_upload'  => $largeFile,
+    ]);
+
+    $response->assertSessionHasErrors('file_upload');
+    expect(Knowledge::where('judul', 'Artikel Dokumen Besar')->exists())->toBeFalse();
+});
+
+it('rejects image thumbnail larger than 2MB on format Gambar', function () {
+    Storage::fake('public');
+    $user = User::factory()->create(['role' => 'Anggota']);
+
+    // Image 2.5 MB
+    $largeImage = UploadedFile::fake()->image('gambar_besar.jpg')->size(2560);
+
+    $response = $this->actingAs($user)->post(route('knowledge.store'), [
+        'judul'        => 'Artikel Gambar Besar',
+        'category_id'  => $this->category->id,
+        'tipe'         => 'Gambar',
+        'file_upload'  => $largeImage,
+    ]);
+
+    $response->assertSessionHasErrors('file_upload');
+    expect(Knowledge::where('judul', 'Artikel Gambar Besar')->exists())->toBeFalse();
+});
+
+it('accepts file upload under or equal to 2MB', function () {
+    Storage::fake('public');
+    $user = User::factory()->create(['role' => 'Anggota']);
+
+    // 1.5 MB (1536 KB <= 2048 KB)
+    $validFile = UploadedFile::fake()->image('thumbnail_valid.jpg')->size(1536);
+
+    $response = $this->actingAs($user)->post(route('knowledge.store'), [
+        'judul'        => 'Artikel Thumbnail Valid',
+        'category_id'  => $this->category->id,
+        'tipe'         => 'Teks',
+        'file_upload'  => $validFile,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    expect(Knowledge::where('judul', 'Artikel Thumbnail Valid')->exists())->toBeTrue();
+});
+

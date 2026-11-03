@@ -219,6 +219,8 @@
 
                         <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Ganti berkas lampiran (Opsional, jika ingin mengunggah berkas revisi):</label>
                         <input type="file" name="file" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-200 dark:hover:file:bg-slate-600 transition">
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Ukuran maksimal file: 2MB</p>
+                        @error('file') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                 </div>
