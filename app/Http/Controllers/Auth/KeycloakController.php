@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Inertia\Inertia;
 use Exception;
@@ -217,7 +219,7 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                     'role' => $assignedRole ?? User::ROLE_ANGGOTA,
                     'password' => ($keycloakUser->getEmail() === 'superadmin@brin.go.id')
                         ? Hash::make('admin123')
-                        : Hash::make(\Illuminate\Support\Str::random(32)),
+                        : Hash::make(Str::random(32)),
                 ]);
                 $user->forceFill(['email_verified_at' => now()])->save();
             }

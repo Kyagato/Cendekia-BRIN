@@ -34,3 +34,37 @@ test('users can logout via inertia request without type error', function () {
     expect($response->status())->toBeIn([409, 302]);
 });
 
+test('keycloak callback creates new user with password without class not found error', function () {
+    $abstractUser = Mockery::mock(\Laravel\Socialite\Two\User::class);
+    $abstractUser->shouldReceive('getId')->andReturn('kc-uuid-12345');
+    $abstractUser->shouldReceive('getName')->andReturn('Keycloak Test User');
+    $abstractUser->shouldReceive('getNickname')->andReturn('kctest');
+    $abstractUser->shouldReceive('getEmail')->andReturn('newuser@example.com');
+    $abstractUser->shouldReceive('getRaw')->andReturn([
+        'sub' => 'kc-uuid-12345',
+        'email' => 'newuser@example.com',
+        'name' => 'Keycloak Test User',
+        'realm_access' => ['roles' => ['Anggota']],
+    ]);
+    $abstractUser->user = [
+        'sub' => 'kc-uuid-12345',
+        'email' => 'newuser@example.com',
+        'name' => 'Keycloak Test User',
+        'realm_access' => ['roles' => ['Anggota']],
+    ];
+
+    $provider = Mockery::mock(\Laravel\Socialite\Two\AbstractProvider::class);
+    $provider->shouldReceive('stateless')->andReturnSelf();
+    $provider->shouldReceive('user')->andReturn($abstractUser);
+
+    \Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('keycloak')->andReturn($provider);
+
+    $response = $this->get('/auth/keycloak/callback?code=mock_code');
+
+    $response->assertRedirect('/');
+    $user = User::where('email', 'newuser@example.com')->first();
+    expect($user)->not->toBeNull();
+    expect($user->password)->not->toBeNull();
+});
+
+
