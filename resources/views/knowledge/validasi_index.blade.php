@@ -30,7 +30,7 @@
         <div class="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col md:flex-row gap-4 justify-between items-center">
             
             {{-- Search Form with Search Input & Status Filter Dropdown --}}
-            <form method="GET" action="{{ route('validasi.index') }}" class="w-full flex flex-col sm:flex-row items-center gap-3 justify-between">
+            <form method="GET" action="{{ route('validasi.index') }}" class="w-full flex flex-col sm:flex-row sm:flex-wrap items-center justify-start gap-2">
                 
                 {{-- Search Bar --}}
                 <div class="relative w-full sm:w-80 flex items-center">
@@ -45,7 +45,10 @@
                 </div>
 
                 {{-- Status Filter Dropdown --}}
-                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="submit" class="shrink-0 px-4 py-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white rounded-lg text-sm font-semibold transition shadow-sm">
+                        Cari
+                    </button>
                     <div class="relative inline-block text-left w-full sm:w-auto" x-data="{ open: false }">
                         <button @click="open = !open"
                                 @click.outside="open = false"
@@ -111,9 +114,6 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white rounded-lg text-sm font-semibold transition shadow-sm">
-                        Cari
-                    </button>
                 </div>
 
             </form>
