@@ -56,7 +56,7 @@ class KnowledgeApiController extends Controller
         $perPage = min(max((int) $request->input('per_page', 12), 1), 50);
 
         $query = Knowledge::with(['category', 'user', 'tags'])
-            ->where('status', 'Disetujui');
+            ->where('status', 'Disetujui')->where('status_akses', 'public');
 
         // Gunakan filter bawaan model Knowledge (termasuk sorting via parameter 'sort')
         $query->filter($request->all());

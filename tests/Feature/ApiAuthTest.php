@@ -42,7 +42,7 @@ it('allows super admin to login via api and obtain sanctum token', function () {
         ]);
 });
 
-it('auto-initializes superadmin password when null and logging in with admin123', function () {
+it('rejects default password when superadmin has no local password', function () {
     $user = User::factory()->create([
         'email' => 'superadmin@brin.go.id',
         'password' => null,
@@ -54,9 +54,8 @@ it('auto-initializes superadmin password when null and logging in with admin123'
         'password' => 'admin123',
     ]);
 
-    $response->assertStatus(200);
-    expect($response->json('token'))->not->toBeEmpty();
-    expect(Hash::check('admin123', $user->fresh()->password))->toBeTrue();
+    $response->assertStatus(401);
+    expect($user->fresh()->password)->toBeNull();
 });
 
 it('rejects invalid password on api login', function () {

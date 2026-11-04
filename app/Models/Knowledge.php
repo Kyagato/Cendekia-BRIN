@@ -98,7 +98,7 @@ class Knowledge extends Model
      */
     public function canBeViewedBy(?User $user): bool
     {
-        if ($this->status === self::STATUS_DISETUJUI) {
+        if ($this->status === self::STATUS_DISETUJUI && $this->status_akses !== 'private') {
             return true;
         }
 

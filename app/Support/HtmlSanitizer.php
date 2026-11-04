@@ -94,7 +94,7 @@ class HtmlSanitizer
                 if (in_array($tagName, ['html', 'head', 'meta', 'body'])) {
                     continue;
                 }
-                if ($node->getAttribute('id') === '__sanitizer_root__') {
+                if ($node === $dom->getElementById('__sanitizer_root__')) {
                     continue;
                 }
 

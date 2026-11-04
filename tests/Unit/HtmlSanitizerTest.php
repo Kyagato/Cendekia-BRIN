@@ -69,3 +69,8 @@ class HtmlSanitizerTest extends TestCase
         $this->assertSame('', HtmlSanitizer::clean('   '));
     }
 }
+
+ it('sanitizes attacker elements using the wrapper id', function () {
+    $clean = \App\Support\HtmlSanitizer::clean('<p id="__sanitizer_root__" onclick="alert(1)">test</p>');
+    expect($clean)->not->toContain('onclick');
+});

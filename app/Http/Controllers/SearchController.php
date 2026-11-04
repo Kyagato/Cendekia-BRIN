@@ -43,7 +43,7 @@ class SearchController extends Controller
     {
         $results = Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
             ->select('id', 'judul', 'tipe', 'category_id', 'user_id', 'created_at', 'views_count', 'file_path')
-            ->where('status', 'Disetujui')
+            ->where('status', 'Disetujui')->where('status_akses', 'public')
             ->filter($request->all())
             ->take(10)
             ->get();
@@ -75,17 +75,17 @@ class SearchController extends Controller
 
         $results = Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
             ->select($cardColumns)
-            ->where('status', 'Disetujui')
+            ->where('status', 'Disetujui')->where('status_akses', 'public')
             ->filter($request->all())
             ->paginate(12)
             ->appends($request->all());
 
         // Data untuk sidebar filter
         $categories = Category::withCount([
-            'knowledge' => fn($q) => $q->where('status', 'Disetujui')
+            'knowledge' => fn($q) => $q->where('status', 'Disetujui')->where('status_akses', 'public')
         ])->get();
 
-        $popularTags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+        $popularTags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')->where('status_akses', 'public')])
             ->has('knowledge')
             ->where('nama_label', 'not like', '%{%')
             ->where('nama_label', 'not like', '%[%')

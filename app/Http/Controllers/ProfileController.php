@@ -110,7 +110,7 @@ class ProfileController extends Controller
         }
 
         // Only Super Admin, Admin Pusat, Admin can change roles
-        if ($role && $user->isAdmin()) {
+        if ($role && $user->isSuperAdmin() && in_array($role, \App\Models\User::ALL_ROLES, true)) {
             $user->role = $role;
         }
 

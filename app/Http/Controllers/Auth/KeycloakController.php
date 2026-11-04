@@ -128,12 +128,7 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
     public function callback()
     {
         try {
-            try {
-                $keycloakUser = Socialite::driver('keycloak')->user();
-            } catch (\Laravel\Socialite\Two\InvalidStateException $e) {
-                // Fallback stateless jika session state hilang karena redirect cross-port (localhost:8080 <-> localhost:8000)
-                $keycloakUser = Socialite::driver('keycloak')->stateless()->user();
-            }
+            $keycloakUser = Socialite::driver('keycloak')->user();
 
             // Cocokkan berdasarkan keycloak_id atau email
             $user = User::where('keycloak_id', $keycloakUser->getId())
@@ -233,10 +228,6 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                 if ($assignedRole) {
                     $updateData['role'] = $assignedRole;
                 }
-                // Jika user Super Admin belum punya password lokal (untuk Swagger/API), set password default 'admin123'
-                if (empty($user->password) && $user->email === 'superadmin@brin.go.id') {
-                    $updateData['password'] = Hash::make('admin123');
-                }
                 $user->forceFill($updateData)->save();
             } else {
                 $user = new User([
@@ -244,9 +235,7 @@ KEYCLOAK_REDIRECT_URI=http://localhost:8000/auth/keycloak/callback</pre>
                     'email' => $keycloakUser->getEmail(),
                     'keycloak_id' => $keycloakUser->getId(),
                     'role' => $assignedRole ?? User::ROLE_ANGGOTA,
-                    'password' => ($keycloakUser->getEmail() === 'superadmin@brin.go.id')
-                        ? Hash::make('admin123')
-                        : Hash::make(Str::random(32)),
+                    'password' => Hash::make(Str::random(32)),
                 ]);
                 $user->forceFill(['email_verified_at' => now()])->save();
             }

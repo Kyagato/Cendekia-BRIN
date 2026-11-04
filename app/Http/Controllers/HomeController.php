@@ -35,28 +35,28 @@ class HomeController extends Controller
             return [
                 'featuredKnowledges' => Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
                     ->select($cardColumns)
-                    ->where('status', 'Disetujui')
+                    ->where('status', 'Disetujui')->where('status_akses', 'public')
                     ->where('unggulan', true)
                     ->latest()
                     ->take(6)
                     ->get(),
                 'mostViewed' => Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
                     ->select($cardColumns)
-                    ->where('status', 'Disetujui')
+                    ->where('status', 'Disetujui')->where('status_akses', 'public')
                     ->orderByDesc('views_count')
                     ->take(6)
                     ->get(),
                 'latest' => Knowledge::with(['category:id,nama_kategori', 'user:id,name,foto_profil', 'tags:id,nama_label'])
                     ->select($cardColumns)
-                    ->where('status', 'Disetujui')
+                    ->where('status', 'Disetujui')->where('status_akses', 'public')
                     ->latest()
                     ->take(8)
                     ->get(),
-                'popularCategories' => Category::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+                'popularCategories' => Category::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')->where('status_akses', 'public')])
                     ->orderByDesc('knowledge_count')
                     ->take(8)
                     ->get(),
-                'popularTags' => Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+                'popularTags' => Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')->where('status_akses', 'public')])
                     ->has('knowledge')
                     ->where('nama_label', 'not like', '%{%')
                     ->where('nama_label', 'not like', '%[%')
@@ -94,8 +94,8 @@ class HomeController extends Controller
 
     public function category(Request $request)
     {
-        $categories = Category::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])->get();
-        $tags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')])
+        $categories = Category::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')->where('status_akses', 'public')])->get();
+        $tags = Tag::withCount(['knowledge' => fn($q) => $q->where('status', 'Disetujui')->where('status_akses', 'public')])
             ->has('knowledge')
             ->where('nama_label', 'not like', '%{%')
             ->where('nama_label', 'not like', '%[%')
@@ -104,7 +104,7 @@ class HomeController extends Controller
             ->get();
 
         $knowledge = Knowledge::with(['category', 'user', 'tags'])
-            ->where('status', 'Disetujui')
+            ->where('status', 'Disetujui')->where('status_akses', 'public')
             ->filter($request->all())
             ->paginate(12)
             ->withQueryString();

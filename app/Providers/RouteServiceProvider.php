@@ -53,7 +53,7 @@ class RouteServiceProvider extends ServiceProvider
 
         // Rate Limiter untuk Permintaan OTP Lupa Password (maksimal 3 percobaan per menit per email/IP)
         RateLimiter::for('auth-otp', function (Request $request) {
-            $key = (string) $request->input('email', $request->ip());
+            $key = $request->ip();
             return Limit::perMinute(3)->by($key)->response(function () {
                 return response()->json([
                     'status' => 'error',

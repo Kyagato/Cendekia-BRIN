@@ -35,11 +35,13 @@ class ForgotPasswordOtpController extends Controller
         ]);
 
         // Generate 4-digit numeric OTP code
-        $otp = str_pad((string) mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        $otp = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
 
         session([
             'reset_email'  => $request->email,
             'reset_otp'    => $otp,
+            'reset_otp_expires' => now()->addMinutes(5)->timestamp,
+            'reset_otp_attempts' => 0,
             'otp_verified' => false,
         ]);
 
@@ -83,6 +85,11 @@ class ForgotPasswordOtpController extends Controller
             'otp.digits'   => 'Kode autentikasi harus persis 4 digit angka.',
         ]);
 
+        if (!session('reset_email') || !session('reset_otp_expires') || time() >= session('reset_otp_expires') || session('reset_otp_attempts', 0) >= 5) {
+            session()->forget(['reset_email', 'reset_otp', 'otp_verified', 'reset_otp_expires', 'reset_otp_attempts']);
+            return redirect()->route('password.request')->withErrors(['email' => 'Kode kedaluwarsa atau batas percobaan tercapai.']);
+        }
+        session(['reset_otp_attempts' => session('reset_otp_attempts', 0) + 1]);
         $savedOtp = session('reset_otp');
 
         if ($request->otp != $savedOtp) {
@@ -100,7 +107,7 @@ class ForgotPasswordOtpController extends Controller
      */
     public function showResetForm(): View|RedirectResponse
     {
-        if (!session('otp_verified') || !session('reset_email')) {
+        if (!session('otp_verified') || !session('reset_email') || time() >= session('reset_otp_expires', 0)) {
             return redirect()->route('password.request')
                 ->withErrors(['email' => 'Sesi verifikasi telah berakhir. Silakan masukkan email dari awal.']);
         }
@@ -113,7 +120,7 @@ class ForgotPasswordOtpController extends Controller
      */
     public function updatePassword(Request $request): RedirectResponse
     {
-        if (!session('otp_verified') || !session('reset_email')) {
+        if (!session('otp_verified') || !session('reset_email') || time() >= session('reset_otp_expires', 0)) {
             return redirect()->route('password.request')
                 ->withErrors(['email' => 'Sesi verifikasi telah berakhir. Silakan masukkan email dari awal.']);
         }
@@ -132,6 +139,7 @@ class ForgotPasswordOtpController extends Controller
         if ($user) {
             $user->password = Hash::make($request->password);
             $user->save();
+            $user->tokens()->delete();
         }
 
         // Hapus data sesi reset password
