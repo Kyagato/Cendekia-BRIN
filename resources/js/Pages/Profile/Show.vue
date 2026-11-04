@@ -1,5 +1,13 @@
 <template>
   <PublicLayout>
+    <Teleport to="body">
+      <Transition enter-active-class="transition duration-200 ease-out motion-reduce:transition-none" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in motion-reduce:transition-none" leave-from-class="opacity-100" leave-to-class="opacity-0">
+        <div v-if="bannerMessage" role="status" aria-live="polite" class="fixed top-5 left-1/2 z-[100] -translate-x-1/2 w-max max-w-[calc(100%-2rem)] flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-medium text-emerald-700 shadow-lg dark:border-emerald-800 dark:bg-slate-900 dark:text-emerald-400">
+          <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          {{ bannerMessage }}
+        </div>
+      </Transition>
+    </Teleport>
     <div class="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
       <!-- Breadcrumbs -->
@@ -24,8 +32,17 @@
 
             <!-- Banner Cover -->
             <div class="h-32 sm:h-36 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 relative overflow-hidden">
-              <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              <img v-if="user.banner_path" :src="`/storage/${user.banner_path}`" alt="" class="absolute inset-0 h-full w-full object-cover" />
+              <div v-else class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              <template v-if="isOwner">
+                <input ref="bannerInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" @change="uploadBanner" />
+                <button type="button" :disabled="bannerForm.processing" @click="bannerInput?.click()" aria-label="Edit latar banner profil" title="Edit banner (JPG, PNG, WebP, maksimal 5 MB)" class="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-sm transition hover:bg-white hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-60 disabled:cursor-wait">
+                  <svg v-if="!bannerForm.processing" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L9.832 16.82a4.5 4.5 0 01-1.897 1.13L5 19l1.05-2.935a4.5 4.5 0 011.13-1.897L16.862 4.487zm0 0L19.5 7.125" /></svg>
+                  <span v-else class="text-xs" role="status">...</span>
+                </button>
+              </template>
             </div>
+            <p v-if="bannerForm.errors.banner" role="alert" class="px-5 pt-2 text-sm text-red-600">{{ bannerForm.errors.banner }}</p>
 
             <!-- User Info Section -->
             <div class="px-5 sm:px-6 pb-6 pt-0 relative">
@@ -601,6 +618,32 @@ import { Link, usePage, useForm } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 
 const page = usePage();
+const bannerInput = ref(null);
+const bannerMessage = ref('');
+let bannerMessageTimer;
+const bannerForm = useForm({ banner: null });
+const uploadBanner = (event) => {
+  const file = event.target.files?.[0];
+  if (!file || bannerForm.processing) return;
+  bannerMessage.value = '';
+  clearTimeout(bannerMessageTimer);
+  bannerForm.clearErrors();
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+    bannerForm.setError('banner', 'Pilih gambar JPG, PNG, atau WebP maksimal 5 MB.');
+    event.target.value = '';
+    return;
+  }
+  bannerForm.banner = file;
+  bannerForm.post('/profile/banner', {
+    preserveScroll: true,
+    onSuccess: () => {
+      bannerMessage.value = 'Banner berhasil diperbarui.';
+      clearTimeout(bannerMessageTimer);
+      bannerMessageTimer = setTimeout(() => { bannerMessage.value = ''; }, 3000);
+    },
+    onFinish: () => { bannerForm.reset('banner'); if (bannerInput.value) bannerInput.value.value = ''; },
+  });
+};
 const isOwner = computed(() => {
   return page.props.auth?.user?.id === props.user?.id;
 });
@@ -674,6 +717,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  clearTimeout(bannerMessageTimer);
   window.removeEventListener('resize', updateScrollButtons);
 });
 

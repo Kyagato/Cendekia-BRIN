@@ -12,6 +12,31 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function updateBanner(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'banner' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $user = $request->user();
+        $oldPath = $user->banner_path;
+        $newPath = $request->file('banner')->store('profile_banners', 'public');
+
+        try {
+            $user->banner_path = $newPath;
+            $user->save();
+        } catch (\Throwable $exception) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($newPath);
+            throw $exception;
+        }
+
+        if ($oldPath) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+        }
+
+        return Redirect::route('users.show', $user)->with('success', 'Banner profil berhasil diperbarui.');
+    }
+
     /**
      * Display the user's profile form.
      */
@@ -194,6 +219,7 @@ class ProfileController extends Controller
             'pekerjaan' => $user->pekerjaan,
             'alamat' => $user->alamat,
             'foto_profil' => $user->foto_profil,
+            'banner_path' => $user->banner_path,
             'created_at' => $user->created_at,
         ];
 

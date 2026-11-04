@@ -61,6 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ----- Profil (semua user login) -----
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ----- API Token Swagger (khusus Super Admin, dicek di controller) -----

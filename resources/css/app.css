@@ -274,17 +274,28 @@
         transform: rotate(-35deg) translate(-1px, -2px);
     }
 
-    /* Perimeter outline animation for knowledge cards (searah jarum jam dari kiri atas, mundur saat leave) */
+    /* Reveal the whole media-colored outline together on hover or keyboard focus. */
     .outline-card-stroke {
         fill: none;
         stroke-width: 2.5;
-        stroke-dasharray: 100;
-        stroke-dashoffset: 100;
-        transition: stroke-dashoffset 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transition: opacity 0.2s ease;
     }
 
-    .group:hover .outline-card-stroke {
-        stroke-dashoffset: 0;
+    .card-hover:hover .outline-card-stroke,
+    .card-hover:focus-within .outline-card-stroke {
+        opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .card-hover,
+        .outline-card-stroke {
+            transition: none;
+        }
+
+        .card-hover:hover {
+            transform: none;
+        }
     }
 
     /* ========================================================

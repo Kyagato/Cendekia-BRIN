@@ -1,6 +1,6 @@
 <template>
   <div class="relative bg-white dark:bg-slate-900 rounded-lg border border-[#e2e8f0] dark:border-slate-800 card-hover flex flex-col h-full overflow-hidden group">
-    <!-- Animated Perimeter Outline on Hover -->
+    <!-- Media-colored outline appears together on hover -->
     <svg 
       class="absolute inset-0 w-full h-full pointer-events-none z-20 rounded-lg overflow-visible" 
       xmlns="http://www.w3.org/2000/svg"
