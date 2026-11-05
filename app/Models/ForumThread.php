@@ -73,7 +73,8 @@ class ForumThread extends Model
 
     public function knowledge()
     {
-        return $this->belongsTo(Knowledge::class, 'knowledge_id');
+        // Forum content may be public; never serialize restricted linked material.
+        return $this->belongsTo(Knowledge::class, 'knowledge_id')->publiclyVisible();
     }
 
     public function approvedBy()

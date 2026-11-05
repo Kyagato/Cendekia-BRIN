@@ -174,13 +174,13 @@ class ProfileController extends Controller
     {
         // Hanya ambil pengetahuan yang berstatus 'Disetujui' (terbit publik)
         $knowledgeList = $user->knowledge()
-            ->where('status', 'Disetujui')
+            ->publiclyVisible()
             ->with(['category', 'tags'])
             ->latest()
             ->paginate(9);
 
-        $totalKnowledge = $user->knowledge()->where('status', 'Disetujui')->count();
-        $totalViews = (int) ($user->knowledge()->where('status', 'Disetujui')->sum('views_count') ?? 0);
+        $totalKnowledge = $user->knowledge()->publiclyVisible()->count();
+        $totalViews = (int) ($user->knowledge()->publiclyVisible()->sum('views_count') ?? 0);
 
         // Thread forum yang dibuat oleh user ini
         $forumThreads = \App\Models\ForumThread::where('user_id', $user->id)
@@ -203,11 +203,12 @@ class ProfileController extends Controller
 
         if ($isOwner) {
             $bookmarkedList = $user->bookmarkedKnowledge()
+                ->visibleTo($currentUser)
                 ->where('status', 'Disetujui')
                 ->with(['category', 'tags'])
                 ->latest('bookmarks.created_at')
                 ->paginate(9);
-            $totalBookmarks = $user->bookmarkedKnowledge()->where('status', 'Disetujui')->count();
+            $totalBookmarks = $user->bookmarkedKnowledge()->visibleTo($currentUser)->where('status', 'Disetujui')->count();
         }
 
         // Batasi data pengguna yang dikirim ke halaman profil publik agar tidak membocorkan PII (email, no_telepon, keycloak_id)

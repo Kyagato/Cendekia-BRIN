@@ -21,13 +21,13 @@ class ForumController extends Controller
     {
         $categories = Category::all();
         $knowledges = \App\Models\Knowledge::with('category')
-            ->where('status', 'Disetujui')
+            ->publiclyVisible()
             ->orderBy('judul')
             ->get();
 
         $linkedKnowledge = null;
         if ($request->filled('knowledge_id')) {
-            $linkedKnowledge = \App\Models\Knowledge::find($request->knowledge_id);
+            $linkedKnowledge = \App\Models\Knowledge::publiclyVisible()->findOrFail($request->knowledge_id);
         }
 
         return Inertia::render('Forum/Create', [
@@ -45,7 +45,7 @@ class ForumController extends Controller
             'judul'        => 'required|string|max:255',
             'konten'       => 'required|string',
             'category_id'  => 'required|exists:categories,id',
-            'knowledge_id' => 'nullable|exists:knowledge,id',
+            'knowledge_id' => ['nullable', Rule::exists('knowledge', 'id')->where(fn ($query) => $query->where('status', 'Disetujui')->where('status_akses', 'public')->whereNull('deleted_at'))],
         ]);
 
         $user   = Auth::user();
@@ -90,7 +90,7 @@ class ForumController extends Controller
 
         $categories = Category::all();
         $knowledges = \App\Models\Knowledge::with('category')
-            ->where('status', 'Disetujui')
+            ->publiclyVisible()
             ->orderBy('judul')
             ->get();
 
@@ -116,7 +116,7 @@ class ForumController extends Controller
             'judul'        => 'required|string|max:255',
             'konten'       => 'required|string',
             'category_id'  => 'required|exists:categories,id',
-            'knowledge_id' => 'nullable|exists:knowledge,id',
+            'knowledge_id' => ['nullable', Rule::exists('knowledge', 'id')->where(fn ($query) => $query->where('status', 'Disetujui')->where('status_akses', 'public')->whereNull('deleted_at'))],
         ]);
 
         $isResubmit = $request->boolean('resubmit') || $request->input('action_type') === 'resubmit';

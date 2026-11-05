@@ -23,6 +23,8 @@ class BookmarkController extends Controller
             ], 401);
         }
 
+        abort_unless($knowledge->canBeViewedBy($user), 404);
+
         $existing = Bookmark::where('user_id', $user->id)
             ->where('knowledge_id', $knowledge->id)
             ->first();
@@ -67,6 +69,7 @@ class BookmarkController extends Controller
         $query = $user->bookmarkedKnowledge()
             ->with(['category', 'tags', 'user'])
             ->where('knowledge.status', 'Disetujui')
+            ->visibleTo($user)
             ->filter(array_merge($request->all(), ['sort' => false]));
 
         $knowledges = $query->latest('bookmarks.created_at')

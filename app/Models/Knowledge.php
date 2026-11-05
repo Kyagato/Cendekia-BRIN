@@ -109,6 +109,26 @@ class Knowledge extends Model
         return ($this->user_id === $user->id) || $user->isAdmin() || $user->isAnalyst();
     }
 
+    public function scopePubliclyVisible(Builder $query): Builder
+    {
+        return $query->where('knowledge.status', self::STATUS_DISETUJUI)
+            ->where('knowledge.status_akses', 'public');
+    }
+
+    public function scopeVisibleTo(Builder $query, ?User $user): Builder
+    {
+        if ($user && ($user->isAdmin() || $user->isAnalyst())) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $visible) use ($user) {
+            $visible->publiclyVisible();
+            if ($user) {
+                $visible->orWhere('knowledge.user_id', $user->id);
+            }
+        });
+    }
+
     /**
      * Mencatat penambahan tayangan (views_count) secara atomik dengan proteksi debounce cache
      * per pengunjung (User ID atau IP) agar tidak terdistorsi spam refresh.
