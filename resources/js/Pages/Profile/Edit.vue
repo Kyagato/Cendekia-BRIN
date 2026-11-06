@@ -217,7 +217,7 @@
                 Ubah Kata Sandi
               </h3>
               <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5 mb-4">
-                Kosongkan jika Anda tidak ingin mengubah kata sandi.
+                Kosongkan jika tidak ingin mengubah kata sandi. Untuk akun SSO, kata sandi baru disimpan di Keycloak dan aplikasi ini.
               </p>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">

@@ -95,7 +95,7 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, \App\Services\PasswordSyncService $passwords): RedirectResponse
     {
         $user = $request->user();
         
@@ -105,9 +105,7 @@ class ProfileController extends Controller
         unset($validatedData['role']);
         
         // Handle password update if filled
-        if (!empty($validatedData['password'])) {
-            $user->password = \Illuminate\Support\Facades\Hash::make($validatedData['password']);
-        }
+        $newPassword = $validatedData['password'] ?? null;
         unset($validatedData['password']);
 
         $user->fill($validatedData);
@@ -117,20 +115,16 @@ class ProfileController extends Controller
         }
         
         // Handle photo removal
+        $oldPhoto = $user->foto_profil;
+        $newPhoto = null;
         if ($request->boolean('remove_foto_profil') || $request->input('remove_foto_profil') == '1') {
-            if ($user->foto_profil && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->foto_profil)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
-            }
             $user->foto_profil = null;
         }
 
         // Handle profile photo upload
         if ($request->hasFile('foto_profil')) {
-            // Delete old photo if exists
-            if ($user->foto_profil && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->foto_profil)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
-            }
             $path = $request->file('foto_profil')->store('profile_photos', 'public');
+            $newPhoto = $path;
             $user->foto_profil = $path;
         }
 
@@ -139,7 +133,23 @@ class ProfileController extends Controller
             $user->role = $role;
         }
 
-        $user->save();
+        try {
+            if ($newPassword) {
+                $passwords->update($user, $newPassword);
+                $request->session()->regenerate();
+            } else {
+                $user->save();
+            }
+        } catch (\Throwable $exception) {
+            if ($newPhoto) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($newPhoto);
+            }
+            throw $exception;
+        }
+
+        if ($oldPhoto && $oldPhoto !== $user->foto_profil) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPhoto);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

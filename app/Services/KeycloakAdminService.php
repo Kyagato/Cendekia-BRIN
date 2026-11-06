@@ -31,6 +31,26 @@ class KeycloakAdminService
         return !empty($this->baseUrl) && !empty($this->clientId) && !empty($this->clientSecret);
     }
 
+    /** Update the linked identity only; never log credentials or response bodies. */
+    public function updateUserPassword(string $keycloakUserId, #[\SensitiveParameter] string $password): bool
+    {
+        $token = $this->getAdminToken();
+        if (!$token) {
+            return false;
+        }
+
+        try {
+            return Http::withToken($token)->timeout(10)->put(
+                "{$this->baseUrl}/admin/realms/" . rawurlencode($this->realm)
+                    . '/users/' . rawurlencode($keycloakUserId) . '/reset-password',
+                ['type' => 'password', 'value' => $password, 'temporary' => false]
+            )->successful();
+        } catch (Exception $exception) {
+            Log::warning('Keycloak password update unavailable.');
+            return false;
+        }
+    }
+
     /**
      * Mendapatkan Admin Access Token dari Keycloak menggunakan Client Credentials Grant.
      * Token di-cache di memory/redis/database agar tidak membebani server Keycloak di setiap request.
