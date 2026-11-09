@@ -10,6 +10,7 @@ use App\Models\ForumThread;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Support\ForumValidation;
 use OpenApi\Attributes as OA;
 
 class ForumApiController extends Controller
@@ -147,12 +148,7 @@ class ForumApiController extends Controller
     {
         $user = $request->user();
 
-        $validated = $request->validate([
-            'judul' => 'required|string|max:255',
-            'konten' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
-            'knowledge_id' => ['nullable', Rule::exists('knowledge', 'id')->where(fn ($query) => $query->where('status', 'Disetujui')->where('status_akses', 'public')->whereNull('deleted_at'))],
-        ]);
+        $validated = $request->validate(ForumValidation::threadRules());
 
         $isAutoApprove = ForumThread::canAutoApprove($user);
 

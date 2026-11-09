@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use App\Support\ForumValidation;
 use Inertia\Inertia;
 
 class ForumController extends Controller
@@ -41,12 +42,7 @@ class ForumController extends Controller
     // 2. Simpan Thread
     public function store(Request $request)
     {
-        $request->validate([
-            'judul'        => 'required|string|max:255',
-            'konten'       => 'required|string',
-            'category_id'  => 'required|exists:categories,id',
-            'knowledge_id' => ['nullable', Rule::exists('knowledge', 'id')->where(fn ($query) => $query->where('status', 'Disetujui')->where('status_akses', 'public')->whereNull('deleted_at'))],
-        ]);
+        $request->validate(ForumValidation::threadRules());
 
         $user   = Auth::user();
         $isAutoApprove = ForumThread::canAutoApprove($user);
@@ -112,12 +108,7 @@ class ForumController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk mengedit topik ini.');
         }
 
-        $request->validate([
-            'judul'        => 'required|string|max:255',
-            'konten'       => 'required|string',
-            'category_id'  => 'required|exists:categories,id',
-            'knowledge_id' => ['nullable', Rule::exists('knowledge', 'id')->where(fn ($query) => $query->where('status', 'Disetujui')->where('status_akses', 'public')->whereNull('deleted_at'))],
-        ]);
+        $request->validate(ForumValidation::threadRules());
 
         $isResubmit = $request->boolean('resubmit') || $request->input('action_type') === 'resubmit';
         $wasRejected = $thread->isRejected();
