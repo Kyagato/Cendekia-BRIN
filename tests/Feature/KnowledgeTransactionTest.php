@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 it('creates knowledge and syncs tags atomically within database transaction', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
 
     $user = User::factory()->create(['role' => 'Anggota']);
     $category = Category::create(['nama_kategori' => 'Keamanan Siber']);
@@ -33,11 +33,11 @@ it('creates knowledge and syncs tags atomically within database transaction', fu
     expect($knowledge->id)->not->toBeNull();
     expect($knowledge->tags)->toHaveCount(3);
     expect(Tag::whereIn('nama_label', ['siber', 'keamanan', 'pedoman'])->count())->toBe(3);
-    Storage::disk('public')->assertExists($knowledge->file_path);
+    Storage::disk('knowledge')->assertExists($knowledge->file_path);
 });
 
 it('rolls back database and uploaded files when knowledge transaction fails', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
 
     $user = User::factory()->create(['role' => 'Anggota']);
     $file = UploadedFile::fake()->create('gagal.pdf', 100);
@@ -62,11 +62,11 @@ it('rolls back database and uploaded files when knowledge transaction fails', fu
     // Pastikan tidak ada data yang tersimpan (Rollback)
     expect(Knowledge::count())->toBe($initialKnowledgeCount);
     // Pastikan file yang diunggah tidak tertinggal di disk storage
-    expect(Storage::disk('public')->allFiles('uploads'))->toBeEmpty();
+    expect(Storage::disk('knowledge')->allFiles('uploads'))->toBeEmpty();
 });
 
 it('atomically updates knowledge and tags during validation process', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
 
     $analyst = User::factory()->create(['role' => 'Analisis Pengetahuan']);
     $category1 = Category::create(['nama_kategori' => 'Kategori Lama']);
@@ -96,11 +96,11 @@ it('atomically updates knowledge and tags during validation process', function (
     expect($knowledge->judul)->toBe('Judul Sesudah Validasi');
     expect($knowledge->category_id)->toBe($category2->id);
     expect($knowledge->tags)->toHaveCount(3);
-    Storage::disk('public')->assertExists($knowledge->file_path);
+    Storage::disk('knowledge')->assertExists($knowledge->file_path);
 });
 
 it('atomically stores knowledge and tags via API with sanctum authentication', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
 
     $user = User::factory()->create(['role' => 'Anggota']);
     Sanctum::actingAs($user);
@@ -123,5 +123,5 @@ it('atomically stores knowledge and tags via API with sanctum authentication', f
     $knowledge = Knowledge::where('judul', 'SOP Layanan Publik API')->first();
     expect($knowledge)->not->toBeNull();
     expect($knowledge->tags)->toHaveCount(3);
-    Storage::disk('public')->assertExists($knowledge->file_path);
+    Storage::disk('knowledge')->assertExists($knowledge->file_path);
 });

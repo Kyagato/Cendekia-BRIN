@@ -181,7 +181,7 @@ class KnowledgeApiController extends Controller
 
                 if ($request->hasFile('file')) {
                     $uploadedFile = $request->file('file');
-                    $filePath = $uploadedFile->store('knowledge_files', 'public');
+                    $filePath = $uploadedFile->store('knowledge_files', 'knowledge');
                     $fileName = $uploadedFile->getClientOriginalName();
                     $fileSize = $uploadedFile->getSize();
                     $uploadedFiles[] = $filePath;
@@ -189,7 +189,7 @@ class KnowledgeApiController extends Controller
 
                 $coverPath = null;
                 if ($request->hasFile('gambar_sampul')) {
-                    $coverPath = $request->file('gambar_sampul')->store('knowledge_covers', 'public');
+                    $coverPath = $request->file('gambar_sampul')->store('knowledge_covers', 'knowledge');
                     $uploadedFiles[] = $coverPath;
                 }
 
@@ -240,8 +240,8 @@ class KnowledgeApiController extends Controller
             });
         } catch (\Throwable $e) {
             foreach ($uploadedFiles as $file) {
-                if ($file && Storage::disk('public')->exists($file)) {
-                    Storage::disk('public')->delete($file);
+                if ($file && Storage::disk('knowledge')->exists($file)) {
+                    Storage::disk('knowledge')->delete($file);
                 }
             }
             throw $e;

@@ -86,10 +86,10 @@ class KnowledgeValidationController extends Controller
         try {
             DB::transaction(function () use ($request, $knowledge, $validated, &$newUploadedFile, &$oldFileToDelete) {
                 if ($request->hasFile('file')) {
-                    if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
+                    if ($knowledge->file_path && Storage::disk('knowledge')->exists($knowledge->file_path)) {
                         $oldFileToDelete = $knowledge->file_path;
                     }
-                    $newUploadedFile = $request->file('file')->store('knowledge_files', 'public');
+                    $newUploadedFile = $request->file('file')->store('knowledge_files', 'knowledge');
                     $validated['file_path'] = $newUploadedFile;
                 }
 
@@ -116,13 +116,13 @@ class KnowledgeValidationController extends Controller
             });
 
             // Hapus berkas lama hanya setelah transaksi database berhasil di-commit
-            if ($oldFileToDelete && Storage::disk('public')->exists($oldFileToDelete)) {
-                Storage::disk('public')->delete($oldFileToDelete);
+            if ($oldFileToDelete && Storage::disk('knowledge')->exists($oldFileToDelete)) {
+                Storage::disk('knowledge')->delete($oldFileToDelete);
             }
         } catch (\Throwable $e) {
             // Bersihkan file yang baru diunggah jika transaksi dibatalkan
-            if ($newUploadedFile && Storage::disk('public')->exists($newUploadedFile)) {
-                Storage::disk('public')->delete($newUploadedFile);
+            if ($newUploadedFile && Storage::disk('knowledge')->exists($newUploadedFile)) {
+                Storage::disk('knowledge')->delete($newUploadedFile);
             }
             throw $e;
         }

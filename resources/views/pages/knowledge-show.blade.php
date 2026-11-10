@@ -419,6 +419,10 @@
                                 <dt class="font-semibold text-slate-900 dark:text-slate-100">Status Publikasi</dt>
                                 <dd class="text-slate-600 dark:text-slate-300">{{ $knowledge->status }}</dd>
                             </div>
+                            <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4">
+                                <dt class="font-semibold text-slate-900 dark:text-slate-100">Akses</dt>
+                                <dd class="text-slate-600 dark:text-slate-300">{{ $knowledge->status_akses === 'private' ? 'Private' : 'Publik' }}</dd>
+                            </div>
                             @if($knowledge->url_teks)
                             <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-[180px_1fr] gap-4">
                                 <dt class="font-semibold text-slate-900 dark:text-slate-100">URL</dt>

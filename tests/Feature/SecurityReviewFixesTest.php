@@ -26,12 +26,12 @@ it('prevents mass assignment of email_verified_at on User model', function () {
 });
 
 it('deletes physical files after database transaction commits in forceDeleteKnowledge', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
 
     $user = User::factory()->create(['role' => 'Anggota']);
     $category = Category::create(['nama_kategori' => 'Kategori File Test']);
     $file = UploadedFile::fake()->create('dokumen.pdf', 50);
-    $path = $file->store('knowledge_files', 'public');
+    $path = $file->store('knowledge_files', 'knowledge');
 
     $knowledge = Knowledge::create([
         'user_id' => $user->id,
@@ -42,14 +42,14 @@ it('deletes physical files after database transaction commits in forceDeleteKnow
         'file_path' => $path,
     ]);
 
-    Storage::disk('public')->assertExists($path);
+    Storage::disk('knowledge')->assertExists($path);
 
     $service = app(KnowledgeService::class);
     $result = $service->forceDeleteKnowledge($knowledge);
 
     expect($result)->toBeTrue();
     expect(Knowledge::find($knowledge->id))->toBeNull();
-    Storage::disk('public')->assertMissing($path);
+    Storage::disk('knowledge')->assertMissing($path);
 });
 
 it('forbids unauthorized access to unapproved knowledge in KnowledgeApiController show', function () {

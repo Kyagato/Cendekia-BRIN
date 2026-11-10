@@ -140,7 +140,7 @@ it('rejects forum reply if parent_id belongs to a different thread', function ()
 });
 
 it('rejects file upload larger than 2MB on store knowledge', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
     $user = User::factory()->create(['role' => 'Anggota']);
 
     // 2.5 MB (2560 KB > 2048 KB)
@@ -158,7 +158,7 @@ it('rejects file upload larger than 2MB on store knowledge', function () {
 });
 
 it('rejects image thumbnail larger than 2MB on format Gambar', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
     $user = User::factory()->create(['role' => 'Anggota']);
 
     // Image 2.5 MB
@@ -176,7 +176,7 @@ it('rejects image thumbnail larger than 2MB on format Gambar', function () {
 });
 
 it('accepts file upload under or equal to 2MB', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
     $user = User::factory()->create(['role' => 'Anggota']);
 
     // 1.5 MB (1536 KB <= 2048 KB)
@@ -194,7 +194,7 @@ it('accepts file upload under or equal to 2MB', function () {
 });
 
 it('rejects document upload larger than 5MB on format Teks', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
     $user = User::factory()->create(['role' => 'Anggota']);
 
     // Document 6 MB (6144 KB > 5120 KB)
@@ -212,7 +212,7 @@ it('rejects document upload larger than 5MB on format Teks', function () {
 });
 
 it('accepts document upload under or equal to 5MB on format Teks', function () {
-    Storage::fake('public');
+    Storage::fake('knowledge');
     $user = User::factory()->create(['role' => 'Anggota']);
 
     // Document 4.5 MB (4608 KB <= 5120 KB)
@@ -229,7 +229,7 @@ it('accepts document upload under or equal to 5MB on format Teks', function () {
     $knowledge = Knowledge::where('judul', 'Artikel Dokumen 5MB Valid')->first();
     expect($knowledge)->not->toBeNull();
     expect($knowledge->document_path)->not->toBeNull();
-    Storage::disk('public')->assertExists($knowledge->document_path);
+    Storage::disk('knowledge')->assertExists($knowledge->document_path);
 });
 
 

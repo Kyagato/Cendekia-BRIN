@@ -38,6 +38,13 @@ return [
             'report' => false,
         ],
 
+        'knowledge' => [
+            'driver' => 'local',
+            'root' => storage_path('app/knowledge'),
+            'visibility' => 'private',
+            'throw' => true,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

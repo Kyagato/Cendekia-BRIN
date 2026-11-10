@@ -18,6 +18,9 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Knowledge files must never bypass Laravel, including legacy public copies.
+    RewriteRule ^storage/(uploads|documents|knowledge_files|knowledge_covers)/ index.php [L]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

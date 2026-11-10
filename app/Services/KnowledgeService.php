@@ -52,7 +52,7 @@ class KnowledgeService
 
                 // Unggah dokumen jika ada
                 if ($documentFile) {
-                    $documentPath = $documentFile->store('documents', 'public');
+                    $documentPath = $documentFile->store('documents', 'knowledge');
                     $newFiles[] = $documentPath;
                 }
 
@@ -60,13 +60,13 @@ class KnowledgeService
                 if ($tipe === 'Audio') {
                     $audioPath = null;
                     if ($audioFile) {
-                        $audioPath = $audioFile->store('uploads', 'public');
+                        $audioPath = $audioFile->store('uploads', 'knowledge');
                         $newFiles[] = $audioPath;
                     }
 
                     if ($fileUpload) {
                         // Ada thumbnail gambar yang diunggah
-                        $filePath = $fileUpload->store('uploads', 'public');
+                        $filePath = $fileUpload->store('uploads', 'knowledge');
                         $newFiles[] = $filePath;
                         $urlTeks = $audioPath;
                     } else {
@@ -75,7 +75,7 @@ class KnowledgeService
                     }
                 } else {
                     if ($fileUpload) {
-                        $filePath = $fileUpload->store('uploads', 'public');
+                        $filePath = $fileUpload->store('uploads', 'knowledge');
                         $newFiles[] = $filePath;
                     }
                 }
@@ -124,8 +124,8 @@ class KnowledgeService
             });
         } catch (\Throwable $e) {
             foreach ($newFiles as $file) {
-                if ($file && Storage::disk('public')->exists($file)) {
-                    Storage::disk('public')->delete($file);
+                if ($file && Storage::disk('knowledge')->exists($file)) {
+                    Storage::disk('knowledge')->delete($file);
                 }
             }
             throw $e;
@@ -187,18 +187,18 @@ class KnowledgeService
                     }
 
                     if ($audioFile) {
-                        if ($knowledge->url_teks && Storage::disk('public')->exists($knowledge->url_teks)) {
+                        if ($knowledge->url_teks && Storage::disk('knowledge')->exists($knowledge->url_teks)) {
                             $oldFilesToDelete[] = $knowledge->url_teks;
                         }
-                        $audioPath = $audioFile->store('uploads', 'public');
+                        $audioPath = $audioFile->store('uploads', 'knowledge');
                         $newFiles[] = $audioPath;
                     }
 
                     if ($fileUpload) {
-                        if ($knowledge->file_path && $knowledge->file_path !== $audioPath && Storage::disk('public')->exists($knowledge->file_path)) {
+                        if ($knowledge->file_path && $knowledge->file_path !== $audioPath && Storage::disk('knowledge')->exists($knowledge->file_path)) {
                             $oldFilesToDelete[] = $knowledge->file_path;
                         }
-                        $updateData['file_path'] = $fileUpload->store('uploads', 'public');
+                        $updateData['file_path'] = $fileUpload->store('uploads', 'knowledge');
                         $newFiles[] = $updateData['file_path'];
                         $updateData['url_teks'] = $audioPath;
                     } else {
@@ -210,20 +210,20 @@ class KnowledgeService
                     }
                 } else {
                     if ($fileUpload) {
-                        if ($knowledge->file_path && Storage::disk('public')->exists($knowledge->file_path)) {
+                        if ($knowledge->file_path && Storage::disk('knowledge')->exists($knowledge->file_path)) {
                             $oldFilesToDelete[] = $knowledge->file_path;
                         }
-                        $updateData['file_path'] = $fileUpload->store('uploads', 'public');
+                        $updateData['file_path'] = $fileUpload->store('uploads', 'knowledge');
                         $newFiles[] = $updateData['file_path'];
                     }
                 }
 
                 // Penanganan unggahan berkas dokumen
                 if ($documentFile) {
-                    if ($knowledge->document_path && Storage::disk('public')->exists($knowledge->document_path)) {
+                    if ($knowledge->document_path && Storage::disk('knowledge')->exists($knowledge->document_path)) {
                         $oldFilesToDelete[] = $knowledge->document_path;
                     }
-                    $updateData['document_path'] = $documentFile->store('documents', 'public');
+                    $updateData['document_path'] = $documentFile->store('documents', 'knowledge');
                     $newFiles[] = $updateData['document_path'];
                 }
 
@@ -253,16 +253,16 @@ class KnowledgeService
 
             // Hapus file lama hanya jika transaksi database sukses
             foreach ($oldFilesToDelete as $oldFile) {
-                if ($oldFile && Storage::disk('public')->exists($oldFile)) {
-                    Storage::disk('public')->delete($oldFile);
+                if ($oldFile && Storage::disk('knowledge')->exists($oldFile)) {
+                    Storage::disk('knowledge')->delete($oldFile);
                 }
             }
 
             return $updated;
         } catch (\Throwable $e) {
             foreach ($newFiles as $file) {
-                if ($file && Storage::disk('public')->exists($file)) {
-                    Storage::disk('public')->delete($file);
+                if ($file && Storage::disk('knowledge')->exists($file)) {
+                    Storage::disk('knowledge')->delete($file);
                 }
             }
             throw $e;
@@ -356,8 +356,8 @@ class KnowledgeService
         // Hapus file fisik hanya setelah transaksi database berhasil di-commit
         if ($deleted) {
             foreach ($filesToDelete as $filePath) {
-                if (Storage::disk('public')->exists($filePath)) {
-                    Storage::disk('public')->delete($filePath);
+                if (Storage::disk('knowledge')->exists($filePath)) {
+                    Storage::disk('knowledge')->delete($filePath);
                 }
             }
         }

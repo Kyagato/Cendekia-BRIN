@@ -31,6 +31,11 @@ Route::get('/cari', [App\Http\Controllers\SearchController::class, 'index'])->na
 // Detail Pengetahuan (Layout Publik — untuk Beranda & Kategori)
 Route::get('/knowledge/{id}', [HomeController::class, 'knowledgeShow'])->name('knowledge.show')->whereNumber('id');
 
+// Media URLs keep their existing format but always pass through authorization.
+Route::get('/storage/{knowledgePath}', \App\Http\Controllers\KnowledgeFileController::class)
+    ->where('knowledgePath', '(?:uploads|documents|knowledge_files|knowledge_covers)/.+')
+    ->name('knowledge.file');
+
 // Profil Publik Pengguna (POV Pengunjung & User Lain)
 Route::get('/users/{user}', [ProfileController::class, 'show'])->name('users.show');
 
