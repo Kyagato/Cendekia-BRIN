@@ -129,6 +129,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'update'])->name('forum.update')->whereNumber('thread');
     Route::delete('/forum/{thread}', [App\Http\Controllers\ForumController::class, 'destroy'])->name('forum.destroy');
     Route::post('/forum/{thread}/reply', [App\Http\Controllers\ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::put('/forum/reply/{reply}/vote', \App\Http\Controllers\ForumReplyVoteController::class)
+        ->middleware('throttle:60,1')->name('forum.reply.vote');
     Route::put('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'updateReply'])->name('forum.reply.update');
     Route::delete('/forum/reply/{reply}', [App\Http\Controllers\ForumController::class, 'destroyReply'])->name('forum.reply.destroy');
     Route::patch('/forum/reply/{reply}/pin', [App\Http\Controllers\ForumController::class, 'pinReply'])->name('forum.reply.pin');

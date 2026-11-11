@@ -17,6 +17,21 @@ class ForumReply extends Model
         'is_best_answer' => 'boolean',
     ];
 
+    public function votes()
+    {
+        return $this->hasMany(ForumReplyVote::class);
+    }
+
+    public function scopeWithVoteSummary($query)
+    {
+        return $query->withCount([
+            'votes as upvotes' => fn ($q) => $q->where('value', 1),
+            'votes as downvotes' => fn ($q) => $q->where('value', -1),
+        ])->withSum([
+            'votes as user_vote' => fn ($q) => $q->where('user_id', auth()->id()),
+        ], 'value');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -30,7 +45,7 @@ class ForumReply extends Model
     // Self-referencing: a reply can have nested child replies
     public function replies()
     {
-        return $this->hasMany(ForumReply::class, 'parent_id')
+        return $this->hasMany(ForumReply::class, 'parent_id')->withVoteSummary()
             ->with('user', 'replies')
             ->orderByDesc('is_pinned')
             ->oldest();

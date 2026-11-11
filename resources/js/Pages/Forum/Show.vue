@@ -331,7 +331,8 @@
                 <div class="text-sm text-[#475569] dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ reply.konten }}</div>
 
                 <!-- Action Balas -->
-                <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-3 pt-0.5">
+                <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-3 pt-0.5 flex flex-wrap items-center gap-3">
+                  <ForumReplyVotes :reply="reply" />
                   <button 
                     @click="handleReply(reply)" 
                     class="inline-flex items-center gap-1 text-xs text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
@@ -470,7 +471,8 @@
                       </div>
 
                       <!-- Action Balas pada nested reply (Level 1) -->
-                      <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-2 pt-0.5">
+                      <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-2 pt-0.5 flex flex-wrap items-center gap-3">
+                        <ForumReplyVotes :reply="nested" />
                         <button 
                           @click="handleReply(nested)" 
                           class="inline-flex items-center gap-1 text-[11px] text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
@@ -609,7 +611,8 @@
                             </div>
 
                             <!-- Action Balas pada subNested (jika dibalas lagi, tetap di Level 2 di bawah nested ini, tidak menjorok lagi!) -->
-                            <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-2 pt-0.5">
+                            <div v-if="!thread.is_locked && thread.status === 'approved' && user" class="mt-2 pt-0.5 flex flex-wrap items-center gap-3">
+                              <ForumReplyVotes :reply="subNested" />
                               <button 
                                 @click="handleReply(subNested, nested)" 
                                 class="inline-flex items-center gap-1 text-[11px] text-[#2563eb] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
@@ -720,6 +723,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import PublicLayout from '../../Layouts/PublicLayout.vue';
 import UserPreviewPopover from '../../Components/UserPreviewPopover.vue';
+import ForumReplyVotes from '../../Components/ForumReplyVotes.vue';
 
 const props = defineProps({
   thread: Object,

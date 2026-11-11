@@ -189,7 +189,7 @@ class ForumController extends Controller
         $thread->load(['user', 'category', 'knowledge.category']);
 
         // Load only top-level replies (no parent), with their nested replies & user info
-        $replies = $thread->replies()
+        $replies = $thread->replies()->withVoteSummary()
             ->whereNull('parent_id')
             ->with(['user', 'replies.user', 'replies.replies.user'])
             ->orderByDesc('is_pinned')
