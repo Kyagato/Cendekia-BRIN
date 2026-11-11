@@ -62,7 +62,7 @@
         <div class="flex items-center gap-2">
             <!-- Tombol Tambah Bagian Baru (Warna Biru) -->
             <button @click="openCreateSectionModal()" 
-                    class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition whitespace-nowrap shrink-0">
+                    class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm hover:shadow-md hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer motion-reduce:transition-none motion-reduce:transform-none whitespace-nowrap shrink-0">
                 <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
                 <span>Tambah Bagian Baru</span>
             </button>
@@ -173,7 +173,7 @@
             </svg>
             <h3 class="text-base font-bold text-slate-900 dark:text-white">Belum ada Bagian atau Data FAQ</h3>
             <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 mb-4">Klik tombol di bawah ini untuk membuat Bagian baru.</p>
-            <button @click="openCreateSectionModal()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition shadow-sm">
+            <button @click="openCreateSectionModal()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-sm hover:shadow-md hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 cursor-pointer motion-reduce:transition-none motion-reduce:transform-none">
                 + Tambah Bagian Baru
             </button>
         </div>
