@@ -178,9 +178,26 @@
       </div>
 
       <!-- Reply Count -->
-      <h2 class="text-lg font-bold text-[#0f172a] dark:text-slate-100">
-        {{ replies?.total || 0 }} Balasan
-      </h2>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-[#0f172a] dark:text-slate-100">
+          {{ replies?.total || 0 }} Balasan
+        </h2>
+        <div class="flex items-center gap-2">
+          <label for="reply-sort" class="text-xs font-medium text-slate-500 dark:text-slate-400">Urutkan</label>
+          <div class="relative">
+          <select id="reply-sort" :value="replySort" @change="changeReplySort($event.target.value)"
+            style="background-image: none"
+            class="reply-sort-select appearance-none rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-700 dark:text-slate-200 py-2 pl-3 pr-9 focus:border-blue-500 focus:ring-blue-500 cursor-pointer">
+            <option value="default">Default</option>
+            <option value="newest">Terbaru</option>
+            <option value="oldest">Terlama</option>
+          </select>
+            <svg class="reply-sort-chevron pointer-events-none absolute right-3 top-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
+        </div>
+      </div>
 
       <!-- Replies List -->
       <div v-if="replies?.data?.length > 0" class="space-y-4">
@@ -728,11 +745,23 @@ import ForumReplyVotes from '../../Components/ForumReplyVotes.vue';
 const props = defineProps({
   thread: Object,
   replies: Object,
+  replySort: { type: String, default: 'default' },
   from: {
     type: String,
     default: '',
   },
 });
+
+function changeReplySort(value) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('reply_sort', value);
+  url.searchParams.delete('page');
+  router.get(url.pathname + url.search, {}, {
+    preserveScroll: true,
+    preserveState: true,
+    replace: true,
+  });
+}
 
 const isFromDashboard = computed(() => {
   if (props.from === 'dashboard') return true;
@@ -1002,3 +1031,20 @@ const formatDate = (date) => {
   });
 };
 </script>
+
+<style scoped>
+.reply-sort-chevron {
+  transform: translateY(-50%);
+  transition: transform 150ms ease;
+}
+
+.reply-sort-select:open + .reply-sort-chevron {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reply-sort-chevron {
+    transition: none;
+  }
+}
+</style>

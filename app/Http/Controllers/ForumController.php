@@ -189,16 +189,30 @@ class ForumController extends Controller
         $thread->load(['user', 'category', 'knowledge.category']);
 
         // Load only top-level replies (no parent), with their nested replies & user info
-        $replies = $thread->replies()->withVoteSummary()
+        $replySort = request()->query('reply_sort', 'default');
+        if (!in_array($replySort, ['default', 'newest', 'oldest'], true)) {
+            $replySort = 'default';
+        }
+
+        $replyQuery = $thread->replies()->withVoteSummary()
             ->whereNull('parent_id')
             ->with(['user', 'replies.user', 'replies.replies.user'])
-            ->orderByDesc('is_pinned')
-            ->latest()
-            ->paginate(15);
+            ->withCount('replies')
+            ->orderByDesc('is_pinned');
+
+        if ($replySort === 'default') {
+            $replyQuery->orderByDesc('upvotes')->orderByDesc('replies_count');
+        }
+
+        $direction = $replySort === 'oldest' ? 'asc' : 'desc';
+        $replies = $replyQuery->orderBy('created_at', $direction)
+            ->orderBy('id', $direction)
+            ->paginate(15)
+            ->withQueryString();
 
         $from = request('from') ?? request('ref');
 
-        return Inertia::render('Forum/Show', compact('thread', 'replies', 'from'));
+        return Inertia::render('Forum/Show', compact('thread', 'replies', 'from', 'replySort'));
     }
 
     // 4. Tambah Balasan (Reply) — supports nested replies
