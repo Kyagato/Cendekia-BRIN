@@ -202,7 +202,7 @@ class HomeController extends Controller
         // Likes & Comments (memanfaatkan likes_count & all_comments_count dari withCount)
         $isLiked = $currentUser ? $knowledge->isLikedBy($currentUser) : false;
         $likesCount = $knowledge->likes_count;
-        $comments = $knowledge->comments()->get();
+        $comments = $knowledge->comments()->sortedForDisplay(request()->query('comment_sort', 'default'))->get();
         $commentsCount = $knowledge->all_comments_count;
 
         $layout = 'layouts.public';

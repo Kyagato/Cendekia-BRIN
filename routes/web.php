@@ -83,6 +83,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ----- Like & Komentar Pengetahuan -----
     Route::post('/knowledge/{knowledge}/like', [\App\Http\Controllers\KnowledgeInteractionController::class, 'toggleLike'])->name('knowledge.like');
     Route::post('/knowledge/{knowledge}/comment', [\App\Http\Controllers\KnowledgeInteractionController::class, 'storeComment'])->name('knowledge.comment');
+    Route::put('/knowledge/comment/{comment}/vote', \App\Http\Controllers\KnowledgeCommentVoteController::class)
+        ->middleware('throttle:60,1')->name('knowledge.comment.vote');
     Route::put('/knowledge/comment/{comment}', [\App\Http\Controllers\KnowledgeInteractionController::class, 'updateComment'])->name('knowledge.comment.update');
     Route::delete('/knowledge/comment/{comment}', [\App\Http\Controllers\KnowledgeInteractionController::class, 'destroyComment'])->name('knowledge.comment.destroy');
 

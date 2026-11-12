@@ -1,4 +1,4 @@
-<div id="comment-{{ $comment->id }}" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm space-y-3">
+<div data-created="{{ $comment->created_at->getTimestamp() }}" data-upvotes="{{ (int) ($comment->upvotes ?? 0) }}" id="comment-{{ $comment->id }}" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm space-y-3">
     <div class="flex items-start justify-between gap-3">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-700 dark:text-slate-200 overflow-hidden">
@@ -112,7 +112,8 @@
 
         {{-- Tombol Balas --}}
         @auth
-        <div class="pl-1 sm:pl-3 pt-2">
+        <div class="pl-1 sm:pl-3 pt-2 flex flex-wrap items-center gap-3">
+            @include('partials.knowledge-comment-votes', ['voteComment' => $comment])
             <button type="button" 
                     @click="setReply({{ $comment->id }}, '{{ addslashes($comment->user?->name ?? 'Anonim') }}', 'replies-container-{{ $comment->id }}', false)"
                     class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 transition cursor-pointer">

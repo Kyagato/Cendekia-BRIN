@@ -643,8 +643,8 @@
                 </div>
 
                 {{-- Section Komentar --}}
-                <section id="komentar" class="scroll-mt-28 space-y-6 pt-4" x-data="commentSystem()">
-                    <div class="flex items-center justify-between">
+                <section id="komentar" class="scroll-mt-28 space-y-6 pt-4" x-data="commentSystem()" x-init="sortComments()" @comment-voted.window="sortComments()">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
                             <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -654,6 +654,18 @@
                                 {{ $commentsCount }}
                             </span>
                         </h2>
+                        <div class="flex items-center gap-2">
+                            <label for="knowledge-comment-sort" class="text-xs font-medium text-slate-500 dark:text-slate-400">Urutkan</label>
+                            <div class="relative">
+                                <select id="knowledge-comment-sort" x-model="commentSort" @change="changeCommentSort()" style="background-image: none"
+                                    class="knowledge-comment-sort appearance-none rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-700 dark:text-slate-200 py-2 pl-3 pr-9 focus:border-blue-500 focus:ring-blue-500 cursor-pointer">
+                                    <option value="default">Default</option>
+                                    <option value="newest">Terbaru</option>
+                                    <option value="oldest">Terlama</option>
+                                </select>
+                                <svg class="knowledge-comment-chevron pointer-events-none absolute right-3 top-1/2 h-4 w-4 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" /></svg>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Flash Session Success (Otomatis hilang setelah 5 detik) --}}
@@ -1027,6 +1039,39 @@ function toggleLike(knowledgeId) {
     });
 }
 
+function knowledgeCommentVote(id, initialVote, initialUpvotes, initialDownvotes) {
+    return {
+        vote: initialVote, upvotes: initialUpvotes, downvotes: initialDownvotes, pending: false, error: '',
+        async submit(value) {
+            if (this.pending) return;
+            this.pending = true;
+            this.error = '';
+            try {
+                const response = await fetch(`/knowledge/comment/${id}/vote`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json', 'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({ value: this.vote === value ? 0 : value }),
+                });
+                if (!response.ok) throw new Error('Suara belum tersimpan. Coba lagi atau muat ulang halaman.');
+                const data = await response.json();
+                this.vote = data.user_vote;
+                this.upvotes = data.upvotes;
+                this.downvotes = data.downvotes;
+                const card = document.getElementById('comment-' + id);
+                if (card) card.dataset.upvotes = String(data.upvotes);
+                this.$dispatch('comment-voted');
+            } catch (error) {
+                this.error = error.message;
+            } finally {
+                this.pending = false;
+            }
+        },
+    };
+}
+
 function commentSystem() {
     return {
         isCollapsed: false,
@@ -1037,6 +1082,31 @@ function commentSystem() {
         isSubmitting: false,
         commentText: '',
         commentsCount: {{ $commentsCount }},
+        commentSort: @js(in_array(request('comment_sort'), ['default', 'newest', 'oldest'], true) ? request('comment_sort') : 'default'),
+        changeCommentSort() {
+            this.sortComments();
+            const url = new URL(window.location.href);
+            url.searchParams.set('comment_sort', this.commentSort);
+            window.history.replaceState(null, '', url);
+        },
+        sortComments() {
+            const list = document.getElementById('comments-list');
+            if (!list) return;
+            const cards = [...list.children];
+            const childCount = card => document.getElementById('replies-container-' + card.id.replace('comment-', ''))?.children.length || 0;
+            cards.sort((a, b) => {
+                if (this.commentSort === 'default') {
+                    const byVotes = Number(b.dataset.upvotes || 0) - Number(a.dataset.upvotes || 0);
+                    if (byVotes) return byVotes;
+                    const byReplies = childCount(b) - childCount(a);
+                    if (byReplies) return byReplies;
+                }
+                const direction = this.commentSort === 'oldest' ? 1 : -1;
+                return direction * (Number(a.dataset.created) - Number(b.dataset.created)
+                    || Number(a.id.replace('comment-', '')) - Number(b.id.replace('comment-', '')));
+            });
+            cards.forEach(card => list.appendChild(card));
+        },
         toast: {
             show: false,
             message: '',
@@ -1182,6 +1252,7 @@ function commentSystem() {
                     // Reset form & state
                     this.commentText = '';
                     this.cancelReply();
+                    this.sortComments();
                     this.commentsCount++;
 
                     // Update count di tombol atas
@@ -1230,8 +1301,9 @@ function commentSystem() {
                         el.style.transition = 'all 0.3s ease';
                         el.style.opacity = '0';
                         el.style.transform = 'scale(0.95)';
-                        setTimeout(() => el.remove(), 300);
+                        setTimeout(() => { el.remove(); this.sortComments(); }, 300);
                     }
+                    this.sortComments();
                     this.commentsCount = Math.max(0, this.commentsCount - 1);
                     const badge = document.getElementById('top-comments-count');
                     if (badge) badge.innerText = this.commentsCount;
@@ -1307,6 +1379,12 @@ function triggerNativeShare(title, url) {
     }
 }
 </script>
+
+<style>
+.knowledge-comment-chevron { transform: translateY(-50%); transition: transform 150ms ease; }
+.knowledge-comment-sort:open + .knowledge-comment-chevron { transform: translateY(-50%) rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .knowledge-comment-chevron { transition: none; } }
+</style>
 
 {{-- Floating Toast Feedback Salin Link --}}
 <div id="copy-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold shadow-2xl">

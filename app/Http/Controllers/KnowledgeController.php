@@ -130,7 +130,7 @@ class KnowledgeController extends Controller
         $bookmarksCount = $knowledge->bookmarks_count ?? 0;
         $isLiked = $user ? $knowledge->isLikedBy($user) : false;
         $likesCount = $knowledge->likes_count ?? 0;
-        $comments = $knowledge->comments()->get();
+        $comments = $knowledge->comments()->sortedForDisplay(request()->query('comment_sort', 'default'))->get();
         $commentsCount = $knowledge->all_comments_count ?? 0;
 
         $layout = 'layouts.admin';

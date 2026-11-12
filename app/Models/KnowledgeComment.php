@@ -19,6 +19,33 @@ class KnowledgeComment extends Model
         'konten',
     ];
 
+    public function votes(): HasMany
+    {
+        return $this->hasMany(KnowledgeCommentVote::class);
+    }
+
+    public function scopeWithVoteSummary($query)
+    {
+        return $query->withCount([
+            'votes as upvotes' => fn ($q) => $q->where('value', 1),
+            'votes as downvotes' => fn ($q) => $q->where('value', -1),
+        ])->withSum([
+            'votes as user_vote' => fn ($q) => $q->where('user_id', auth()->id()),
+        ], 'value');
+    }
+
+    public function scopeSortedForDisplay($query, $sort = 'default')
+    {
+        $sort = in_array($sort, ['default', 'newest', 'oldest'], true) ? $sort : 'default';
+        $query->withVoteSummary()->withCount('replies')->reorder();
+        if ($sort === 'default') {
+            $query->orderByDesc('upvotes')->orderByDesc('replies_count');
+        }
+        $direction = $sort === 'oldest' ? 'asc' : 'desc';
+
+        return $query->orderBy('created_at', $direction)->orderBy('id', $direction);
+    }
+
     public function knowledge(): BelongsTo
     {
         return $this->belongsTo(Knowledge::class);
@@ -36,7 +63,7 @@ class KnowledgeComment extends Model
 
     public function replies(): HasMany
     {
-        return $this->hasMany(KnowledgeComment::class, 'parent_id')
+        return $this->hasMany(KnowledgeComment::class, 'parent_id')->withVoteSummary()
             ->with(['user', 'replies.user'])
             ->oldest();
     }

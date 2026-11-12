@@ -1,4 +1,4 @@
-<div id="comment-{{ $subReply->id }}" class="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 border border-slate-200/90 dark:border-slate-700/80 space-y-2 transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-800">
+<div data-created="{{ $subReply->created_at->getTimestamp() }}" data-upvotes="{{ (int) ($subReply->upvotes ?? 0) }}" id="comment-{{ $subReply->id }}" class="bg-white/80 dark:bg-slate-800/80 rounded-xl p-3 border border-slate-200/90 dark:border-slate-700/80 space-y-2 transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-800">
     <div class="flex items-start justify-between gap-2">
         <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-xs text-slate-700 dark:text-slate-200">
@@ -117,7 +117,8 @@
 
         {{-- Tombol Balas pada sub-balasan Level 2 (dibalas lagi tetap di Level 2 di bawah parent yang sama, tidak menjorok lagi!) --}}
         @auth
-        <div class="pl-1 sm:pl-2 pt-1">
+        <div class="pl-1 sm:pl-2 pt-1 flex flex-wrap items-center gap-3">
+            @include('partials.knowledge-comment-votes', ['voteComment' => $subReply])
             <button type="button" 
                     @click="setReply({{ $parent->id }}, '{{ addslashes($subReply->user?->name ?? 'Anonim') }}', 'replies-container-{{ $parent->id }}', true)"
                     class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 transition cursor-pointer">
