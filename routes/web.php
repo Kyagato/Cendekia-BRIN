@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // =================================================================
-// PUBLIC ROUTES — Bisa diakses tanpa login (termasuk Guest)
+// PUBLIC ROUTES â€” Bisa diakses tanpa login (termasuk Guest)
 // =================================================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tentang', [HomeController::class, 'about'])->name('about');
@@ -28,7 +28,7 @@ Route::get('/api/search/autocomplete', [App\Http\Controllers\SearchController::c
     ->middleware('throttle:search-limit');
 Route::get('/cari', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
 
-// Detail Pengetahuan (Layout Publik — untuk Beranda & Kategori)
+// Detail Pengetahuan (Layout Publik â€” untuk Beranda & Kategori)
 Route::get('/knowledge/{id}', [HomeController::class, 'knowledgeShow'])->name('knowledge.show')->whereNumber('id');
 
 // Media URLs keep their existing format but always pass through authorization.
@@ -40,7 +40,7 @@ Route::get('/storage/{knowledgePath}', \App\Http\Controllers\KnowledgeFileContro
 Route::get('/users/{user}', [ProfileController::class, 'show'])->name('users.show');
 
 // =================================================================
-// AUTHENTICATED ROUTES — Semua user yang sudah login
+// AUTHENTICATED ROUTES â€” Semua user yang sudah login
 // =================================================================
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -106,7 +106,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    // Detail Knowledge (Dashboard Admin Preview — layout admin)
+    // Detail Knowledge (Dashboard Admin Preview â€” layout admin)
     Route::get('/dashboard/knowledge/{id}', [KnowledgeController::class, 'show'])->name('admin.knowledge.show');
 
     // =============================================================
@@ -167,11 +167,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // =============================================================
     // ROLE: SUPER ADMIN + ADMIN PUSAT + ADMIN
-    // Panel administrator — kelola statistik, users, FAQ
+    // Panel administrator â€” kelola statistik, users, FAQ
     // =============================================================
     Route::prefix('admin')->name('admin.')->middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
         Route::get('/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('statistik');
-        Route::resource('/users', App\Http\Controllers\UserController::class)->except(['show']);
+        Route::get('/users', [App\Http\Controllers\KeycloakUserController::class, 'index'])->name('users.index');
+        Route::get('/users/keycloak/{keycloakId}/edit', [App\Http\Controllers\KeycloakUserController::class, 'edit'])->name('users.keycloak.edit');
+        Route::delete('/users/keycloak/{keycloakId}', [App\Http\Controllers\KeycloakUserController::class, 'destroy'])->middleware('throttle:10,1')->name('users.keycloak.destroy');
+        Route::put('/users/keycloak/{keycloakId}/password', [App\Http\Controllers\KeycloakUserController::class, 'updatePassword'])->middleware('throttle:10,1')->name('users.keycloak.password');
+        Route::put('/users/keycloak/{keycloakId}', [App\Http\Controllers\KeycloakUserController::class, 'update'])->middleware('throttle:30,1')->name('users.keycloak.update');
+        Route::resource('/users', App\Http\Controllers\UserController::class)->except(['show', 'index']);
         Route::resource('/faq', App\Http\Controllers\FaqController::class)->except(['create', 'show', 'edit']);
         Route::post('/faq-section', [App\Http\Controllers\FaqController::class, 'storeSection'])->name('faq.storeSection');
         Route::put('/faq-section/update', [App\Http\Controllers\FaqController::class, 'updateSection'])->name('faq.updateSection');

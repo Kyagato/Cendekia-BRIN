@@ -128,6 +128,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        if ($user->keycloak_id) return redirect()->route('admin.users.keycloak.edit', $user->keycloak_id);
         $allowedRoles = $this->getAllowedRoles();
 
         // Prevent editing users outside of allowed roles (except Super Admin can edit everyone)
@@ -146,6 +147,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        abort_if((bool) $user->keycloak_id, 403, 'Gunakan form edit Keycloak untuk akun yang terhubung.');
         $allowedRoles = $this->getAllowedRoles();
         $allowedRolesString = implode(',', $allowedRoles);
 
@@ -219,6 +221,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        abort_if((bool) $user->keycloak_id, 403, 'Penghapusan akun Keycloak tidak tersedia pada tahap ini.');
         if (auth()->id() === $user->id) {
             return redirect()->route('admin.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
