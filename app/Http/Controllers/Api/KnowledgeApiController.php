@@ -142,6 +142,7 @@ class KnowledgeApiController extends Controller
                         new OA\Property(property: 'penulis', type: 'string', example: 'Diskominfo'),
                         new OA\Property(property: 'kolaborator', type: 'string', example: 'BSSN'),
                         new OA\Property(property: 'tags', type: 'string', example: 'keamanan,sop,data'),
+                        new OA\Property(property: 'status_akses', type: 'string', enum: ['public', 'private'], default: 'public', description: 'Visibilitas pengetahuan. Akses private dibatasi kepada pemilik serta Admin atau Analis.'),
                         new OA\Property(property: 'file', type: 'string', format: 'binary'),
                         new OA\Property(property: 'gambar_sampul', type: 'string', format: 'binary'),
                     ]

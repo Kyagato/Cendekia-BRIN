@@ -16,13 +16,43 @@
         }
     ],
     "paths": {
+        "/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Data pengguna yang sedang terautentikasi",
+                "description": "Mengembalikan data akun pemilik token Sanctum yang digunakan. Password, remember_token, dan keycloak_id tidak disertakan.",
+                "operationId": "getCurrentUser",
+                "responses": {
+                    "200": {
+                        "description": "Data akun aktif",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Login API & Dapatkan Sanctum Token",
-                "description": "Autentikasi dengan email dan password untuk mendapatkan token Bearer Sanctum. Untuk Super Admin, gunakan email: superadmin@brin.go.id dan password: admin123. Token yang didapat ditempelkan di tombol \"Authorize\" pada Swagger UI (cukup tempel tokennya saja tanpa mengetik \"Bearer \").",
+                "description": "Autentikasi dengan email dan password untuk mendapatkan token Bearer Sanctum. Gunakan kredensial lokal yang telah dikonfigurasi. Token yang didapat ditempelkan di tombol \"Authorize\" pada Swagger UI (cukup tempel tokennya saja tanpa mengetik \"Bearer \").",
                 "operationId": "apiLogin",
                 "requestBody": {
                     "description": "Kredensial login",
@@ -43,7 +73,7 @@
                                     "password": {
                                         "type": "string",
                                         "format": "password",
-                                        "example": "admin123"
+                                        "example": "your-local-password"
                                     }
                                 },
                                 "type": "object"
@@ -693,6 +723,15 @@
                                         "type": "string",
                                         "example": "keamanan,sop,data"
                                     },
+                                    "status_akses": {
+                                        "description": "Visibilitas pengetahuan. Akses private dibatasi kepada pemilik serta Admin atau Analis.",
+                                        "type": "string",
+                                        "default": "public",
+                                        "enum": [
+                                            "public",
+                                            "private"
+                                        ]
+                                    },
                                     "file": {
                                         "type": "string",
                                         "format": "binary"
@@ -1075,7 +1114,7 @@
                     "Roles"
                 ],
                 "summary": "Ubah role user",
-                "description": "Mengubah role user di database lokal. Nantinya akan terintegrasi dengan Keycloak Admin API untuk sinkronisasi realm role.",
+                "description": "Mengubah role pengguna di database lokal dan mencoba menyinkronkan realm role ke Keycloak untuk akun yang terhubung. Periksa keycloak_synced pada respons untuk mengetahui hasil sinkronisasi.",
                 "operationId": "updateUserRole",
                 "parameters": [
                     {
@@ -1219,7 +1258,7 @@
         "securitySchemes": {
             "sanctum": {
                 "type": "http",
-                "description": "Masukkan token Sanctum Anda (cukup tempel tokennya saja tanpa kata \"Bearer \"). Dapatkan token melalui endpoint POST /api/login (email: superadmin@brin.go.id, password: admin123) atau dari menu Profil > API Token di website.",
+                "description": "Masukkan token Sanctum Anda (cukup tempel tokennya saja tanpa kata \"Bearer \"). Dapatkan token melalui POST /api/login menggunakan kredensial lokal akun Anda. Super Admin juga dapat membuat token melalui menu Profil > API Token.",
                 "bearerFormat": "Token",
                 "scheme": "bearer"
             }

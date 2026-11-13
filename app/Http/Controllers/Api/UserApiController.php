@@ -241,7 +241,7 @@ class UserApiController extends Controller
         path: '/admin/users/{id}/role',
         operationId: 'updateUserRole',
         summary: 'Ubah role user',
-        description: 'Mengubah role user di database lokal. Nantinya akan terintegrasi dengan Keycloak Admin API untuk sinkronisasi realm role.',
+        description: 'Mengubah role pengguna di database lokal dan mencoba menyinkronkan realm role ke Keycloak untuk akun yang terhubung. Periksa keycloak_synced pada respons untuk mengetahui hasil sinkronisasi.',
         security: [['sanctum' => []]],
         tags: ['Roles'],
         parameters: [

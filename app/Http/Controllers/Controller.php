@@ -22,7 +22,7 @@ use OpenApi\Attributes as OA;
     type: 'http',
     scheme: 'bearer',
     bearerFormat: 'Token',
-    description: 'Masukkan token Sanctum Anda (cukup tempel tokennya saja tanpa kata "Bearer "). Dapatkan token melalui endpoint POST /api/login (email: superadmin@brin.go.id, password: admin123) atau dari menu Profil > API Token di website.'
+    description: 'Masukkan token Sanctum Anda (cukup tempel tokennya saja tanpa kata "Bearer "). Dapatkan token melalui POST /api/login menggunakan kredensial lokal akun Anda. Super Admin juga dapat membuat token melalui menu Profil > API Token.'
 )]
 #[OA\Tag(name: 'System', description: 'Endpoint status dan health check sistem')]
 #[OA\Tag(name: 'Authentication', description: 'Endpoint untuk autentikasi dan manajemen token')]

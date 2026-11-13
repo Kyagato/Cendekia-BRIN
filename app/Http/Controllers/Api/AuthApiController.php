@@ -9,6 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use OpenApi\Attributes as OA;
 
+#[OA\Get(
+    path: '/user',
+    operationId: 'getCurrentUser',
+    summary: 'Data pengguna yang sedang terautentikasi',
+    description: 'Mengembalikan data akun pemilik token Sanctum yang digunakan. Password, remember_token, dan keycloak_id tidak disertakan.',
+    security: [['sanctum' => []]],
+    tags: ['Authentication'],
+    responses: [
+        new OA\Response(response: 200, description: 'Data akun aktif', content: new OA\JsonContent(type: 'object')),
+        new OA\Response(response: 401, description: 'Unauthenticated'),
+    ]
+)]
 class AuthApiController extends Controller
 {
     /**
