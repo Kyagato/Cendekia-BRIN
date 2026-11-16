@@ -1,50 +1,55 @@
-# Keycloak user directory
+# Manajemen pengguna Keycloak
 
-`/admin/users` is the existing dashboard menu for Super Admin, Admin Pusat and Admin. It now reads paginated/searchable users from Keycloak, including identities that have never signed in locally. It does not auto-link or create local accounts by email. Edits use Keycloak's immutable user ID; firstName, lastName, email and username are editable. Password changes use a separate form/endpoint with confirmation. Role and enabled state are not editable in this stage.
+Halaman `/admin/users` tersedia untuk Super Admin, Admin Pusat, dan Admin. Daftar membaca pengguna Keycloak, termasuk yang belum pernah masuk secara lokal. Pencarian, filter peran, dan pengurutan tersedia. Foto profil berasal dari akun lokal yang terhubung; jika tidak ada, inisial ditampilkan.
 
-Hierarchy: Super Admin can edit others; Admin Pusat can edit Admin and non-admin roles; Admin can edit non-admin roles. Self editing is blocked. The higher privilege of the remote effective role or linked local role is used. Effective realm roles and effective roles of KEYCLOAK_CLIENT_ID are read; unrelated client roles are excluded. List access is available to all three admins. Failure to read roles fails closed.
+## Fitur dan hak akses
 
-## Setup
+- Super Admin dan Admin Pusat dapat membuat pengguna. Super Admin dapat memilih semua peran aplikasi; Admin Pusat dapat memilih Admin, Analisis Pengetahuan, Moderator, atau Anggota.
+- Ketiga admin dapat melihat daftar dan mengedit, mengubah password, atau menghapus pengguna sesuai hierarki. Super Admin dapat mengelola pengguna lain; Admin Pusat dapat mengelola Admin dan peran nonadmin; Admin dapat mengelola peran nonadmin.
+- Pengelolaan akun sendiri dan akun layanan Keycloak diblokir. Aplikasi mempertimbangkan peran efektif Keycloak dan peran lokal yang terhubung, memakai tingkat yang lebih tinggi. Jika peran tidak dapat dibaca, akses pengelolaan ditolak.
+- Username, nama depan, nama belakang, email, dan peran dapat diubah. Status aktif tidak dapat diubah melalui formulir edit. Password memiliki formulir terpisah. Penghapusan bersifat permanen dan perlu dikonfirmasi; periksa dampak pada data terkait di dialog konfirmasi.
+- Pengguna dikenali berdasarkan ID Keycloak; akun tidak otomatis ditautkan berdasarkan email atau username.
 
-Use the existing services.keycloak configuration (KEYCLOAK_BASE_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID, KEYCLOAK_CLIENT_SECRET). Enable service accounts for the confidential client. Configure realm-management permissions allowing user search/view/update and viewing the configured client and effective role mappings. Standard roles commonly used are query-users, view-users, manage-users and view-clients; use finer permissions if configured. Never put the secret or admin token in frontend code.
+## Konfigurasi
 
-Run `php artisan migrate --force` before opening the page. No external user is changed by installation or listing. User edits are explicit admin actions. Existing linked local edit/delete endpoints are blocked or redirected to prevent bypass of the new workflow; creating and deleting remote identities are outside this stage.
+1. Atur `KEYCLOAK_BASE_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`, dan `KEYCLOAK_CLIENT_SECRET` pada server. Aktifkan service account pada client confidential.
+2. Berikan izin `realm-management` untuk mencari, membaca, dan mengelola pengguna, serta membaca client dan pemetaan perannya. Peran yang umum digunakan adalah `query-users`, `view-users`, `manage-users`, `view-clients`, dan `view-realm`; gunakan izin lebih khusus jika tersedia.
+3. Pastikan peran aplikasi tersedia sebagai **client role** pada client `KEYCLOAK_CLIENT_ID` untuk pembuatan pengguna, dan sebagai **realm role** untuk alur edit peran saat ini. Periksa kebijakan username, email, dan password realm.
+4. Jalankan migrasi database sebelum menggunakan fitur, termasuk migrasi username dan catatan sinkronisasi. Pada produksi, jalankan `php artisan migrate --force` sesuai prosedur deployment.
 
-## Synchronization
+Jangan menyimpan client secret atau token admin di frontend. Pembukaan daftar tidak mengubah pengguna Keycloak.
 
-Persist a sync intent before calling Keycloak. A successful remote update is followed by a transaction updating the linked local user's name/email/verification status and marking the intent synced. Unlinked users stay unlinked. Changing email resets emailVerified remotely and email_verified_at locally. Passwords, roles, profile pictures, articles and forum relationships remain under their existing workflows. Keycloak 409/400 failures show validation messages, authorization/outage errors show generic notices; no response body or token is exposed.
+## Pembuatan pengguna
 
-Two systems cannot share one atomic transaction. Timeouts, server errors and local-write failures are recorded as reconciliation_required. The UI never reports full success for them. Run `php artisan keycloak:reconcile-users` after the underlying problem is resolved. It checks current remote identity fields before applying the local update; newer/conflicting remote data is marked requires_review instead of overwritten. Pending intents older than five minutes are also checked for interrupted processes. This command is manual in this stage. Inspect keycloak_user_syncs for record IDs/status; before and after snapshots contain identity data and require database access controls/retention policy.
+Formulir menerima username, nama depan, nama belakang, email, peran, password awal, dan konfirmasi password. Username dinormalisasi menjadi huruf kecil. Password awal dikirim ke Keycloak sebagai password permanen (`temporary=false`); formulir tidak mewajibkan perubahan password saat login pertama.
 
-AuditLog records actor, target Keycloak ID, before/after, outcome and sync ID. No password, credentials or admin token is recorded. Audit dashboard work remains separate.
+Aplikasi membuat akun Keycloak dalam keadaan nonaktif, memasang peran pada client `KEYCLOAK_CLIENT_ID`, lalu mengaktifkan akun. Identitas, peran efektif, dan client role dibaca kembali sebelum akun lokal dibuat dengan ID Keycloak yang dikembalikan. Kunci permintaan unik dan cache lock membantu membatasi pengiriman ganda.
 
-API reference: https://www.keycloak.org/docs-api/latest/rest-api/index.html
+## Perubahan pengguna dan lokasi peran
 
-Tests use Http::fake and temporary SQLite, never real Keycloak writes. A live smoke check requires a running Keycloak instance and the service-account permissions above.
+Perubahan identitas dan peran dikirim ke Keycloak dan dibaca kembali. Setelah terkonfirmasi, akun lokal yang terhubung diperbarui berdasarkan ID Keycloak. Perubahan email mereset verifikasi email di Keycloak dan akun lokal. Jika belum terhubung, akun lokal tidak dibuat atau ditautkan otomatis.
 
+**Lokasi peran berbeda menurut operasi:**
 
-## Username and password extension
+- Pembuatan pengguna memasang peran sebagai client role pada client aplikasi yang dikonfigurasi.
+- Edit peran menghapus pemetaan langsung peran aplikasi yang dikenali pada realm dan client aplikasi, lalu memasang peran yang dipilih sebagai realm role. Setelah edit, peran baru tidak selalu muncul pada daftar pengguna client role. Client lain tidak menjadi target penghapusan ini. Peran efektif diperiksa kembali.
 
-Run migrations for the nullable unique local username and password sync tracking. Username edits are confirmed by reading the Keycloak representation back before local sync. The Keycloak realm must allow admin username edits; email-as-username realms may impose their own policy. Conflicts and policy rejection are shown as errors.
+Password diperbarui melalui endpoint reset-password Keycloak dengan `temporary=false`. Setelah keberhasilan Keycloak terkonfirmasi, hash password diperbarui pada akun lokal yang terhubung, token Sanctum dicabut, dan sesi lokal dengan driver database dihapus. Ini tidak menjamin pencabutan semua sesi SSO Keycloak. Password asli tidak disimpan atau dicatat; hash sementara dienkripsi dalam catatan sinkronisasi dan dihapus setelah penyelesaian atau penolakan.
 
-The table uses the linked local foto_profil and falls back to initials; it does not invent Keycloak avatars or link accounts by email.
+Penghapusan menghapus akun di Keycloak terlebih dahulu, kemudian akun lokal yang terhubung. Kedua sistem tidak dapat berbagi satu transaksi atomik; gangguan dapat membuat salah satu sisi berubah sementara sisi lainnya belum selesai.
 
-Password reset calls the Keycloak reset-password endpoint with temporary=false. Plaintext passwords are neither stored nor audited. A hash is temporarily encrypted in the sync intent so a confirmed remote reset can be completed locally after a database failure. The encrypted hash is cleared on completion or rejection. Unknown/time-out remote results require manual review; recovery never assumes the password was changed. Older confirmed password intents cannot overwrite a newer confirmed reset. Successful local password sync revokes Sanctum tokens and database-backed local sessions. This does not claim to revoke every Keycloak SSO session.
+## Penanganan kegagalan dan rekonsiliasi
 
+1. Jika sinkronisasi belum selesai, jangan langsung mengulang pembuatan atau perubahan. Periksa koneksi, izin service account, kebijakan realm, catatan `keycloak_user_syncs`, dan audit berdasarkan ID referensi yang tersedia. Batasi akses ke catatan karena snapshot memuat data identitas.
+2. Setelah penyebab gangguan ditangani, administrator dapat menjalankan `php artisan keycloak:reconcile-users`. Perintah memeriksa status `reconciliation_required` dan `pending` yang tidak diperbarui selama lebih dari lima menit. Perintah dijalankan secara manual; perhatikan hasil `Synced`, `Review required`, atau `Synchronization pending`, lalu periksa statusnya.
+3. Rekonsiliasi memeriksa kondisi Keycloak sebelum menyelesaikan perubahan lokal. Data yang bertentangan atau lebih baru dapat ditandai `requires_review`; status ini perlu pemeriksaan manual dan tidak otomatis diproses ulang oleh perintah tersebut.
+4. Jika hasil pembuatan tidak diketahui atau ID Keycloak belum didapat, periksa secara manual sebelum mencoba lagi. Sistem tidak otomatis menautkan akun berdasarkan email atau username. Jika ID diketahui tetapi pemasangan peran gagal dan akun masih nonaktif, administrator harus memeriksa dan menyelesaikannya; rekonsiliasi tidak diam-diam mengaktifkan atau menaikkan peran akun.
+5. Jika hasil perubahan password tidak pasti karena timeout atau gangguan, lakukan pemeriksaan manual. Pemulihan tidak mengasumsikan password telah berubah. Jika perubahan Keycloak terkonfirmasi tetapi pembaruan lokal gagal, rekonsiliasi dapat menyelesaikan bagian lokal berdasarkan data pemulihan yang tersedia.
 
-## Create users
+Audit mencatat aktor, ID Keycloak, hasil, dan referensi sinkronisasi tanpa mencatat password atau token admin. Dashboard audit dikerjakan terpisah.
 
-Super Admin and Admin Pusat can use Tambah Pengguna in the lower toolbar. Super Admin can select all application roles; Admin Pusat can select Admin, Analyst, Moderator or Anggota. Admin cannot access either create endpoint. The form accepts username, first/last name, email, role and initial password with confirmation. Keycloak receives the initial password directly; local storage and recovery retain only an encrypted hash, cleared after successful completion.
+## Pengujian
 
-Run the request-key migration before using creation. The existing /admin/users/create and POST /admin/users routes now use Keycloak; they no longer create local-only users. A unique request key plus a cache lock prevents repeated submissions from issuing multiple remote create requests. Keycloak also enforces username/email conflicts. The account is created disabled, assigned its requested role, enabled, then read back and inserted locally using the returned immutable Keycloak ID. Initial passwords are permanent by default (no first-login password action in this form).
+Tes fitur menggunakan `Http::fake` dan SQLite sementara sehingga tidak mengubah Keycloak sungguhan. Pemeriksaan langsung membutuhkan instance Keycloak, konfigurasi client dan peran yang sesuai, serta izin service account di atas. Gunakan akun uji dan periksa lokasi realm role atau client role sesuai operasinya.
 
-Unknown POST outcomes require manual review and never auto-link an existing account by email or username. A known remote ID whose local write failed can be reconciled after verifying all requested fields and role. If role setup failed and the remote account is still disabled, it must be inspected and completed by an administrator; recovery does not silently enable or promote it. Creation failures are audited without credentials.
-
-Deployment permissions also require realm-management view-realm to list the application realm roles; the local setup was updated after observing 403 without this permission. The page now supports role updates and permanent deletion (with cascade impacts explained in the confirmation); earlier stage descriptions above are historical.
-
-
-## Client roles on user creation
-
-New account creation assigns the selected application role directly to the configured KEYCLOAK_CLIENT_ID client, not as a realm role. The target client role must already exist. The backend checks both the effective application role and membership in that client's role mappings before creating the local account. Unrelated client roles are preserved. Existing realm-role workflows for other operations are unchanged by this creation-specific change.
-
-Creation usernames are normalized to lowercase before submitting to Keycloak. Recovery accepts case-only Keycloak normalization and stores the confirmed remote username locally. Missing client-role membership still blocks local completion, even if an equivalent realm role exists.
+Referensi API: https://www.keycloak.org/docs-api/latest/rest-api/index.html
