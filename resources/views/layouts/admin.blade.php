@@ -64,15 +64,21 @@
                     </a>
                 @endif
 
-                {{-- Manajemen Pengguna: Super Admin, Admin Pusat, Admin --}}
+                {{-- Menu administrasi untuk Super Admin, Admin Pusat, dan Admin --}}
                 @if(auth()->check() && auth()->user()->isAdmin())
-                    <a href="{{ route('admin.users.index') }}"
-                       class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
-                              {{ request()->routeIs('admin.users.*')
-                                  ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400'
-                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
-                        Manajemen Pengguna
-                    </a>
+                    <div class="relative" x-data="{ managementOpen: false }" @click.outside="managementOpen = false" @keydown.escape.window="managementOpen = false">
+                        <button type="button" @click="managementOpen = !managementOpen" :aria-expanded="managementOpen.toString()" aria-controls="management-menu-desktop"
+                                class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('admin.users.*', 'validasi.*', 'moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">
+                            Manajemen
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': managementOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="management-menu-desktop" x-show="managementOpen" x-transition @click.outside="managementOpen = false" style="display: none;"
+                             class="absolute left-0 top-full mt-1 w-56 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-1 shadow-xl z-50">
+                            <a href="{{ route('admin.users.index') }}" @if(request()->routeIs('admin.users.*')) aria-current="page" @endif class="block px-4 py-2.5 text-sm font-medium {{ request()->routeIs('admin.users.*') ? 'text-primary-600 bg-primary-50 dark:text-primary-400 dark:bg-slate-700' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Manajemen Pengguna</a>
+                            <a href="{{ route('validasi.index') }}" @if(request()->routeIs('validasi.*')) aria-current="page" @endif class="block px-4 py-2.5 text-sm font-medium {{ request()->routeIs('validasi.*') ? 'text-primary-600 bg-primary-50 dark:text-primary-400 dark:bg-slate-700' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Validasi Pengetahuan</a>
+                            <a href="{{ route('moderator.forum.approval') }}" @if(request()->routeIs('moderator.forum.*')) aria-current="page" @endif class="block px-4 py-2.5 text-sm font-medium {{ request()->routeIs('moderator.forum.*') ? 'text-primary-600 bg-primary-50 dark:text-primary-400 dark:bg-slate-700' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
+                        </div>
+                    </div>
                 @endif
 
                 {{-- Pengetahuan: semua user login --}}
@@ -96,7 +102,7 @@
 
 
                 {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
-                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAnalyst()))
+                @if(auth()->check() && !auth()->user()->isAdmin() && auth()->user()->isAnalyst())
                     <a href="{{ route('validasi.index') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('validasi.*')
@@ -108,7 +114,7 @@
 
 
                 {{-- Atur Forum: hanya untuk role moderator/admin --}}
-                @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isModerator()))
+                @if(auth()->check() && !auth()->user()->isAdmin() && auth()->user()->isModerator())
                     <a href="{{ route('moderator.forum.approval') }}"
                        class="px-3.5 py-2 rounded-lg text-sm font-semibold transition
                               {{ request()->routeIs('moderator.forum.*')
@@ -231,11 +237,20 @@
                   {{ request()->routeIs('admin.statistik') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Statistik</a>
         @endif
 
-        {{-- Manajemen Pengguna: Super Admin, Admin Pusat, Admin --}}
+        {{-- Menu administrasi untuk Super Admin, Admin Pusat, dan Admin --}}
         @if(auth()->check() && auth()->user()->isAdmin())
-        <a href="{{ route('admin.users.index') }}"
-           class="block px-3 py-2 rounded-lg text-base font-semibold transition
-                  {{ request()->routeIs('admin.users.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Manajemen Pengguna</a>
+        <div x-data="{ managementOpen: false }" @keydown.escape.window="managementOpen = false">
+            <button type="button" @click="managementOpen = !managementOpen" :aria-expanded="managementOpen.toString()" aria-controls="management-menu-mobile"
+                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-base font-semibold transition {{ request()->routeIs('admin.users.*', 'validasi.*', 'moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
+                Manajemen
+                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': managementOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <div id="management-menu-mobile" x-show="managementOpen" x-transition style="display: none;" class="ml-3 border-l border-slate-200 dark:border-slate-700 pl-2 space-y-1">
+                <a href="{{ route('admin.users.index') }}" @if(request()->routeIs('admin.users.*')) aria-current="page" @endif class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('admin.users.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Manajemen Pengguna</a>
+                <a href="{{ route('validasi.index') }}" @if(request()->routeIs('validasi.*')) aria-current="page" @endif class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('validasi.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Validasi Pengetahuan</a>
+                <a href="{{ route('moderator.forum.approval') }}" @if(request()->routeIs('moderator.forum.*')) aria-current="page" @endif class="block px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
+            </div>
+        </div>
         @endif
 
         {{-- Pengetahuan & Forum: semua user login --}}
@@ -250,14 +265,14 @@
 
 
         {{-- Validasi: Super Admin, Admin, Analisis Pengetahuan --}}
-        @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isAnalyst()))
+        @if(auth()->check() && !auth()->user()->isAdmin() && auth()->user()->isAnalyst())
         <a href="{{ route('validasi.index') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('validasi.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Validasi</a>
         @endif
 
 
-        @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isModerator()))
+        @if(auth()->check() && !auth()->user()->isAdmin() && auth()->user()->isModerator())
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
