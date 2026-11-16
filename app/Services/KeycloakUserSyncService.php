@@ -199,6 +199,12 @@ class KeycloakUserSyncService
         if (! in_array($sync->status, ['pending', 'reconciliation_required'], true)) {
             return $sync->status === 'synced';
         }
+        if ($sync->operation === 'create') {
+            app(KeycloakUserCreationService::class)->finish($sync);
+            $this->audit($sync, 'KEYCLOAK_USER_CREATE_RECONCILED', $sync->actor);
+
+            return true;
+        }
         if ($sync->operation === 'delete') {
             try {
                 $this->directory->user($sync->keycloak_user_id);

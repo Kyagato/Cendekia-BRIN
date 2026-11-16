@@ -33,6 +33,30 @@ class KeycloakUserDirectory
         return $response->json();
     }
 
+    public function create(#[\SensitiveParameter] array $payload): string
+    {
+        $token = $this->admin->getAdminToken();
+        if (! $token) {
+            throw new KeycloakDirectoryException;
+        }
+        $url = rtrim(config('services.keycloak.base_url'), '/').'/admin/realms/'.rawurlencode(config('services.keycloak.realms')).'/users';
+        try {
+            $response = Http::withToken($token)->acceptJson()->timeout(10)->post($url, $payload);
+        } catch (\Throwable $exception) {
+            throw new KeycloakDirectoryException;
+        }
+        if ($response->status() !== 201) {
+            throw new KeycloakDirectoryException($response->status());
+        }
+        $path = parse_url($response->header('Location'), PHP_URL_PATH);
+        $id = is_string($path) ? rawurldecode(basename($path)) : '';
+        if (! $id || $id === 'users' || str_contains($id, '/')) {
+            throw new KeycloakDirectoryException;
+        }
+
+        return $id;
+    }
+
     public function users(string $search, int $page, int $perPage = 10): array
     {
         $filter = $search === '' ? [] : ['search' => $search];
@@ -89,10 +113,64 @@ class KeycloakUserDirectory
         ]);
     }
 
+    private function applicationClientId(): string
+    {
+        if ($this->clientUuid === null) {
+            $clients = $this->request('GET', '/clients', ['clientId' => config('services.keycloak.client_id')]);
+            $client = collect($clients)->firstWhere('clientId', config('services.keycloak.client_id'));
+            if (! is_array($client) || empty($client['id'])) {
+                throw new KeycloakDirectoryException;
+            }
+            $this->clientUuid = $client['id'];
+        }
+
+        return $this->clientUuid;
+    }
+
+    private function canonicalRole(string $name): string
+    {
+        $name = strtolower(trim(str_replace(['_', '-'], ' ', $name)));
+
+        return match ($name) {
+            'analis pengetahuan', 'analyst', 'analis' => 'analisis pengetahuan',
+            'superadmin' => 'super admin', 'admin ippd' => 'admin',
+            'member', 'kreator pengetahuan' => 'anggota', default => $name,
+        };
+    }
+
+    public function hasClientRole(string $id, string $role): bool
+    {
+        $roles = $this->request('GET', '/users/'.rawurlencode($id).'/role-mappings/clients/'.rawurlencode($this->applicationClientId()).'/composite');
+
+        return collect($roles)->contains(fn ($item) => $this->canonicalRole($item['name']) === $this->canonicalRole($role));
+    }
+
+    public function setClientRole(string $id, string $role): void
+    {
+        $client = rawurlencode($this->applicationClientId());
+        $roles = $this->request('GET', '/clients/'.$client.'/roles');
+        $target = collect($roles)->first(fn ($item) => $this->canonicalRole($item['name']) === $this->canonicalRole($role));
+        if (! $target) {
+            throw new KeycloakDirectoryException(400);
+        }
+        $path = '/users/'.rawurlencode($id).'/role-mappings/clients/'.$client;
+        $managed = array_map(fn ($name) => $this->canonicalRole($name), User::ALL_ROLES);
+        $direct = $this->request('GET', $path);
+        $remove = array_values(array_filter($direct, fn ($item) => in_array($this->canonicalRole($item['name']), $managed, true) && $item['id'] !== $target['id']));
+        if ($remove) {
+            $this->request('DELETE', $path, $remove);
+        }
+        $this->request('POST', $path, [array_intersect_key($target, array_flip(['id', 'name']))]);
+        if (! $this->hasClientRole($id, $role) || $this->role($id) !== $role) {
+            throw new KeycloakDirectoryException(409);
+        }
+    }
+
     public function setRole(string $id, string $role): void
     {
         $normalize = function ($name) {
             $name = strtolower(trim(str_replace(['_', '-'], ' ', $name)));
+
             return match ($name) {
                 'analis pengetahuan', 'analyst', 'analis' => 'analisis pengetahuan',
                 'superadmin' => 'super admin', 'admin ippd' => 'admin',

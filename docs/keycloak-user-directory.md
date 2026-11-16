@@ -30,3 +30,21 @@ Run migrations for the nullable unique local username and password sync tracking
 The table uses the linked local foto_profil and falls back to initials; it does not invent Keycloak avatars or link accounts by email.
 
 Password reset calls the Keycloak reset-password endpoint with temporary=false. Plaintext passwords are neither stored nor audited. A hash is temporarily encrypted in the sync intent so a confirmed remote reset can be completed locally after a database failure. The encrypted hash is cleared on completion or rejection. Unknown/time-out remote results require manual review; recovery never assumes the password was changed. Older confirmed password intents cannot overwrite a newer confirmed reset. Successful local password sync revokes Sanctum tokens and database-backed local sessions. This does not claim to revoke every Keycloak SSO session.
+
+
+## Create users
+
+Super Admin and Admin Pusat can use Tambah Pengguna in the lower toolbar. Super Admin can select all application roles; Admin Pusat can select Admin, Analyst, Moderator or Anggota. Admin cannot access either create endpoint. The form accepts username, first/last name, email, role and initial password with confirmation. Keycloak receives the initial password directly; local storage and recovery retain only an encrypted hash, cleared after successful completion.
+
+Run the request-key migration before using creation. The existing /admin/users/create and POST /admin/users routes now use Keycloak; they no longer create local-only users. A unique request key plus a cache lock prevents repeated submissions from issuing multiple remote create requests. Keycloak also enforces username/email conflicts. The account is created disabled, assigned its requested role, enabled, then read back and inserted locally using the returned immutable Keycloak ID. Initial passwords are permanent by default (no first-login password action in this form).
+
+Unknown POST outcomes require manual review and never auto-link an existing account by email or username. A known remote ID whose local write failed can be reconciled after verifying all requested fields and role. If role setup failed and the remote account is still disabled, it must be inspected and completed by an administrator; recovery does not silently enable or promote it. Creation failures are audited without credentials.
+
+Deployment permissions also require realm-management view-realm to list the application realm roles; the local setup was updated after observing 403 without this permission. The page now supports role updates and permanent deletion (with cascade impacts explained in the confirmation); earlier stage descriptions above are historical.
+
+
+## Client roles on user creation
+
+New account creation assigns the selected application role directly to the configured KEYCLOAK_CLIENT_ID client, not as a realm role. The target client role must already exist. The backend checks both the effective application role and membership in that client's role mappings before creating the local account. Unrelated client roles are preserved. Existing realm-role workflows for other operations are unchanged by this creation-specific change.
+
+Creation usernames are normalized to lowercase before submitting to Keycloak. Recovery accepts case-only Keycloak normalization and stores the confirmed remote username locally. Missing client-role membership still blocks local completion, even if an equivalent realm role exists.

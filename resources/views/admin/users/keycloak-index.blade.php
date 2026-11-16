@@ -6,7 +6,15 @@
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Manajemen Pengguna</h1>
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Daftar akun dari Keycloak. Perubahan nama dan email disinkronkan ke MojoPedia.</p>
     </div>
-    <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap items-center gap-2">
+</div>
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdminPusat())
+        <a href="{{ route('admin.users.create') }}" class="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm hover:shadow-md hover:shadow-blue-500/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 motion-reduce:transform-none cursor-pointer">
+            <svg class="w-5 h-5 transition-transform duration-200 group-hover:rotate-90 motion-reduce:transform-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-width="2" d="M12 5v14M5 12h14" /></svg>
+            Tambah Pengguna
+        </a>
+    @endif
+    <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap items-center gap-2 ml-auto">
         <label for="user-role" class="sr-only">Filter peran</label>
         <div class="relative">
         <select id="user-role" name="role" onchange="this.form.requestSubmit()" style="background-image: none" class="user-filter-select appearance-none pr-9 rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white text-sm">
@@ -76,12 +84,18 @@
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a2 2 0 110-4 2 2 0 010 4zm0 9a2 2 0 110-4 2 2 0 010 4zm0 9a2 2 0 110-4 2 2 0 010 4z" /></svg>
                             </button>
                             <div id="user-actions-{{ $loop->index }}" x-show="open" x-cloak x-transition.origin.top.right class="absolute right-full top-0 mr-1 z-30 w-36 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl py-1">
-                                <a href="{{ route('admin.users.keycloak.edit', $entry['id']) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">Edit</a>
+                                <a href="{{ route('admin.users.keycloak.edit', $entry['id']) }}" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                    <span>Edit</span>
+                                </a>
                                 <form method="POST" action="{{ route('admin.users.keycloak.destroy', $entry['id']) }}" onsubmit="return confirm('Hapus permanen akun ini dari Keycloak dan MojoPedia? Pengetahuan, forum, dan komentar terkait akun lokal juga dapat terhapus. Tindakan ini tidak dapat dibatalkan.');">
                                     @csrf
                                     @method('DELETE')
                                     <input type="hidden" name="confirm_delete" value="1">
-                                    <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer">Hapus</button>
+                                    <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        <span>Hapus</span>
+                                    </button>
                                 </form>
                             </div>
                         </div>

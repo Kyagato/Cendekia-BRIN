@@ -5,15 +5,59 @@ namespace App\Http\Controllers;
 use App\Exceptions\KeycloakDirectoryException;
 use App\Models\User;
 use App\Services\KeycloakUserAccess;
+use App\Services\KeycloakUserCreationService;
 use App\Services\KeycloakUserDirectory;
 use App\Services\KeycloakUserSyncService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class KeycloakUserController extends Controller
 {
     public function __construct(private KeycloakUserDirectory $directory, private KeycloakUserAccess $access) {}
+
+    public function create(Request $request)
+    {
+        abort_unless($request->user()->isSuperAdmin() || $request->user()->isAdminPusat(), 403);
+        $allowedRoles = $this->access->assignableRoles($request->user());
+        $requestKey = (string) Str::uuid();
+
+        return view('admin.users.keycloak-create', compact('allowedRoles', 'requestKey'));
+    }
+
+    public function store(Request $request, KeycloakUserCreationService $service)
+    {
+        abort_unless($request->user()->isSuperAdmin() || $request->user()->isAdminPusat(), 403);
+        $data = $request->validate([
+            'request_key' => ['required', 'uuid'],
+            'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9._@-]+$/', 'unique:users,username'],
+            'firstName' => ['required', 'string', 'max:100'], 'lastName' => ['nullable', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'role' => ['required', Rule::in($this->access->assignableRoles($request->user()))],
+            'password' => ['required', 'string', 'min:8', 'max:72', 'confirmed', function ($attribute, $value, $fail) {
+                if (strlen($value) > 72) {
+                    $fail('Password maksimal 72 byte.');
+                }
+            }],
+        ]);
+        $identity = ['username' => trim($data['username']), 'firstName' => trim($data['firstName']),
+            'lastName' => trim($data['lastName'] ?? ''), 'email' => strtolower(trim($data['email'])), 'role' => $data['role']];
+        try {
+            $service->create($request->user(), $identity, $data['password'], $data['request_key']);
+        } catch (KeycloakDirectoryException $exception) {
+            return back()->withErrors(['keycloak' => match ($exception->httpStatus) {
+                409 => 'Username atau email sudah digunakan di Keycloak.',
+                400 => 'Keycloak menolak data atau password. Periksa kebijakan akun dan password.',
+                default => 'Pembuatan akun belum dapat dikonfirmasi. Periksa catatan sinkronisasi sebelum mencoba lagi.',
+            }])->withInput($request->except(['password', 'password_confirmation', 'request_key']));
+        } catch (\Throwable $exception) {
+            return back()->withErrors(['keycloak' => 'Pembuatan akun belum selesai disinkronkan. Hubungi administrator untuk memeriksa catatan sinkronisasi.'])
+                ->withInput($request->except(['password', 'password_confirmation', 'request_key']));
+        }
+
+        return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dibuat di Keycloak dan MojoPedia dengan role yang dipilih.');
+    }
 
     public function index(Request $request)
     {

@@ -171,12 +171,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =============================================================
     Route::prefix('admin')->name('admin.')->middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
         Route::get('/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('statistik');
+        Route::get('/users/create', [App\Http\Controllers\KeycloakUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [App\Http\Controllers\KeycloakUserController::class, 'store'])->middleware('throttle:10,1')->name('users.store');
         Route::get('/users', [App\Http\Controllers\KeycloakUserController::class, 'index'])->name('users.index');
         Route::get('/users/keycloak/{keycloakId}/edit', [App\Http\Controllers\KeycloakUserController::class, 'edit'])->name('users.keycloak.edit');
         Route::delete('/users/keycloak/{keycloakId}', [App\Http\Controllers\KeycloakUserController::class, 'destroy'])->middleware('throttle:10,1')->name('users.keycloak.destroy');
         Route::put('/users/keycloak/{keycloakId}/password', [App\Http\Controllers\KeycloakUserController::class, 'updatePassword'])->middleware('throttle:10,1')->name('users.keycloak.password');
         Route::put('/users/keycloak/{keycloakId}', [App\Http\Controllers\KeycloakUserController::class, 'update'])->middleware('throttle:30,1')->name('users.keycloak.update');
-        Route::resource('/users', App\Http\Controllers\UserController::class)->except(['show', 'index']);
+        Route::resource('/users', App\Http\Controllers\UserController::class)->except(['show', 'index', 'create', 'store']);
         Route::resource('/faq', App\Http\Controllers\FaqController::class)->except(['create', 'show', 'edit']);
         Route::post('/faq-section', [App\Http\Controllers\FaqController::class, 'storeSection'])->name('faq.storeSection');
         Route::put('/faq-section/update', [App\Http\Controllers\FaqController::class, 'updateSection'])->name('faq.updateSection');
