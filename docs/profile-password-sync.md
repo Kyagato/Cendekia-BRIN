@@ -25,6 +25,6 @@ Database dan Keycloak bukan satu transaksi terdistribusi: timeout setelah Keyclo
 atau kegagalan commit database tetap dapat memerlukan rekonsiliasi/manual reset. Tidak ada klaim atomicity lintas sistem.
 
 Perubahan ini khusus perubahan password setelah login melalui profil dan PUT /password.
-Alur lupa password OTP serta perubahan password melalui admin belum menggunakan layanan ini.
+Alur lupa password OTP tidak menggunakan layanan ini. Perubahan password melalui manajemen pengguna admin menggunakan alur sinkronisasi tersendiri; lihat [panduan manajemen pengguna Keycloak](keycloak-user-directory.md).
 
 Referensi: https://www.keycloak.org/docs-api/latest/rest-api/index.html

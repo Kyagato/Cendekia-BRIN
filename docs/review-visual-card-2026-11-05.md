@@ -1,7 +1,7 @@
 # Review visual card pengetahuan
 
 Tanggal pemeriksaan: 5 November 2026 (Asia/Jakarta).
-Dilanjutkan: 6 November 2026. Catatan pekerjaan, bukan pengingat otomatis.
+Dilanjutkan: 6 November 2026. Catatan pekerjaan, bukan pengingat otomatis. Hasil di bawah merupakan catatan historis pada tanggal tersebut dan belum diverifikasi ulang terhadap tampilan terbaru; daftar perbaikan bukan bukti bahwa masalah masih ada sekarang.
 
 ## Pemeriksaan langsung
 

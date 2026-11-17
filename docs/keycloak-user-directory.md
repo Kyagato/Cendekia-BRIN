@@ -1,6 +1,6 @@
 # Manajemen pengguna Keycloak
 
-Halaman `/admin/users` tersedia untuk Super Admin, Admin Pusat, dan Admin. Daftar membaca pengguna Keycloak, termasuk yang belum pernah masuk secara lokal. Pencarian, filter peran, dan pengurutan tersedia. Foto profil berasal dari akun lokal yang terhubung; jika tidak ada, inisial ditampilkan.
+Halaman `/admin/users` tersedia untuk Super Admin, Admin Pusat, dan Admin. Daftar membaca pengguna Keycloak, termasuk yang belum pernah masuk secara lokal. Pencarian, filter peran, dan pengurutan tersedia. Foto profil berasal dari akun lokal yang terhubung; jika tidak ada, inisial ditampilkan. Pada dashboard ketiga role tersebut, halaman ini berada di menu **Manajemen > Manajemen Pengguna**. Menu Manajemen juga memuat Validasi Pengetahuan dan Atur Forum; Analis dan Moderator tetap melihat menu yang sesuai secara terpisah.
 
 ## Fitur dan hak akses
 

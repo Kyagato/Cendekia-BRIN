@@ -153,6 +153,12 @@ spacing:
   space-xl: 2.5rem
 ---
 
+## Status panduan
+
+Dokumen ini adalah acuan desain; kesesuaiannya dengan seluruh halaman belum diverifikasi. Perubahan pada antarmuka perlu diperiksa pada mode terang, mode gelap, dan layar kecil sebelum dianggap sesuai dengan seluruh panduan ini.
+
+Pada dashboard Super Admin, Admin Pusat, dan Admin, navigasi **Manajemen** mengelompokkan Manajemen Pengguna, Validasi Pengetahuan, dan Atur Forum dalam dropdown desktop maupun menu seluler. Dropdown menunjukkan halaman aktif, memiliki panah yang berubah arah, dan mendukung penutupan dengan tombol Escape. Navigasi Analis dan Moderator tetap mengikuti akses masing-masing.
+
 ## Brand & Style
 
 This design system establishes an authoritative, accessible, and structured visual language for national public sector knowledge management. Developed to serve government apparatus, researchers, institutional partners, and the public, the design system projects competence, transparency, institutional credibility, and effortless searchability.

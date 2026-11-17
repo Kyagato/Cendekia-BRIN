@@ -1,59 +1,44 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MojoPedia
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+MojoPedia adalah aplikasi manajemen dan berbagi pengetahuan berbasis Laravel. Aplikasi menyediakan pengetahuan, forum, profil pengguna, dan dashboard sesuai peran, serta integrasi autentikasi dan pengelolaan pengguna dengan Keycloak.
 
-## About Laravel
+## Fitur utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Pengetahuan dengan kategori, lampiran, pilihan akses, dan proses validasi.
+- Forum dan komentar pengetahuan, termasuk upvote, downvote, dan pengurutan komentar.
+- Profil pengguna, bookmark, dan pengaturan password.
+- Dashboard berdasarkan peran: Super Admin, Admin Pusat, Admin, Analisis Pengetahuan, Moderator, dan Anggota.
+- Manajemen pengguna Keycloak berdasarkan hak akses. Pembuatan pengguna tersedia untuk Super Admin dan Admin Pusat.
+- API Laravel Sanctum dan dokumentasi Swagger pada `/api/documentation` sesuai pengaturan akses aplikasi.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Pada dashboard Super Admin, Admin Pusat, dan Admin, dropdown **Manajemen** berisi Manajemen Pengguna, Validasi Pengetahuan, dan Atur Forum. Menu Validasi bagi Analis dan Atur Forum bagi Moderator tetap tersedia secara terpisah.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Aplikasi sudah mencatat sejumlah aktivitas di audit log. Halaman audit log khusus masih berupa rencana, belum dianggap tersedia.
 
-## Learning Laravel
+## Persyaratan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP 8.2 atau lebih baru beserta ekstensi yang diperlukan dependensi Laravel.
+- Composer, Node.js, dan npm.
+- Database yang sesuai konfigurasi `.env` dan akses ke instance Keycloak untuk fitur SSO dan manajemen pengguna.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Menjalankan secara lokal
 
-## Laravel Sponsors
+1. Instal dependensi: `composer install` dan `npm install`.
+2. Salin `.env.example` menjadi `.env`, lalu sesuaikan `APP_URL` dan konfigurasi database. Jika menggunakan SQLite, siapkan file database sesuai konfigurasi. Jangan menyalin atau membagikan secret dari lingkungan lain.
+3. Buat kunci aplikasi dengan `php artisan key:generate`, lalu jalankan `php artisan migrate`.
+4. Untuk SSO dan manajemen pengguna, tambahkan dan sesuaikan `KEYCLOAK_BASE_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`, dan `KEYCLOAK_CLIENT_SECRET` di `.env`. Variabel ini tidak tersedia pada `.env.example` saat ini. Ikuti panduan Keycloak di bawah untuk pengaturan service account dan role.
+5. Jalankan server dengan `php artisan serve` dan, di terminal lain, `npm run dev`. Untuk membangun aset gunakan `npm run build`.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Untuk lingkungan produksi, sesuaikan konfigurasi keamanan, penyimpanan file, database, HTTPS, dan Keycloak dengan server tujuan. Jangan menjalankan migrasi atau prosedur pemindahan file lama tanpa memastikan backup dan target database.
 
-### Premium Partners
+## Pengujian
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Jalankan `php artisan test` atau `composer test`. Tes tertentu menggunakan HTTP palsu untuk Keycloak; hasilnya tidak menggantikan pengujian integrasi terhadap instance Keycloak sebenarnya.
 
-## Contributing
+## Dokumentasi terkait
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- [Manajemen pengguna Keycloak](docs/keycloak-user-directory.md)
+- [Sinkronisasi password profil](docs/profile-password-sync.md)
+- [Perlindungan file pengetahuan](docs/private-knowledge-files.md)
+- [Panduan desain](DESIGN_SYSTEM.md)
+- [Catatan review visual kartu pengetahuan, November 2026](docs/review-visual-card-2026-11-05.md)
