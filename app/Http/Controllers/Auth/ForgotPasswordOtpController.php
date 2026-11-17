@@ -140,6 +140,7 @@ class ForgotPasswordOtpController extends Controller
             $user->password = Hash::make($request->password);
             $user->save();
             $user->tokens()->delete();
+            \App\Models\AuditLog::record('PASSWORD_RESET_LOCAL', 'Password lokal berhasil direset melalui OTP.', ['target_user_id' => $user->id]);
         }
 
         // Hapus data sesi reset password

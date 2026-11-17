@@ -13,7 +13,7 @@ MojoPedia adalah aplikasi manajemen dan berbagi pengetahuan berbasis Laravel. Ap
 
 Pada dashboard Super Admin, Admin Pusat, dan Admin, dropdown **Manajemen** berisi Manajemen Pengguna, Validasi Pengetahuan, dan Atur Forum. Menu Validasi bagi Analis dan Atur Forum bagi Moderator tetap tersedia secara terpisah.
 
-Aplikasi sudah mencatat sejumlah aktivitas di audit log. Halaman audit log khusus masih berupa rencana, belum dianggap tersedia.
+Audit Log tersedia sebagai menu tersendiri pada dashboard Super Admin, Admin Pusat, dan Admin. Halaman bersifat baca-saja dan menyediakan filter tanggal, aktivitas, pelaku, dan hasil. Pencatatan yang sudah ada tidak mencakup tindakan yang dilakukan langsung di konsol Keycloak.
 
 ## Persyaratan
 

@@ -47,13 +47,26 @@ class AuditLog extends Model
                 'description' => $description,
                 'ip_address'  => request()?->ip() ?? '127.0.0.1',
                 'user_agent'  => request()?->userAgent(),
-                'properties'  => $properties,
+                'properties'  => $properties === null ? null : self::redactSecrets($properties),
             ]);
         } catch (\Throwable $e) {
             // Jangan sampai kegagalan logging menghentikan alur utama aplikasi
-            \Illuminate\Support\Facades\Log::error('Gagal mencatat audit log: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Gagal mencatat audit log.', ['action' => strtoupper(trim($action))]);
             return null;
         }
+    }
+
+    private static function redactSecrets(array $values): array
+    {
+        $sensitive = ['password', 'current_password', 'new_password', 'password_confirmation', 'password_hash', 'local_password_hash', 'token', 'access_token', 'refresh_token', 'id_token', 'client_secret', 'secret', 'otp', 'authorization', 'credentials', 'api_key', 'private_key'];
+        foreach ($values as $key => $value) {
+            if (in_array(strtolower((string) $key), $sensitive, true)) {
+                $values[$key] = '[REDACTED]';
+            } elseif (is_array($value)) {
+                $values[$key] = self::redactSecrets($value);
+            }
+        }
+        return $values;
     }
 
     /**

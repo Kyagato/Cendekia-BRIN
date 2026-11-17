@@ -46,7 +46,7 @@ Penghapusan menghapus akun di Keycloak terlebih dahulu, kemudian akun lokal yang
 4. Jika hasil pembuatan tidak diketahui atau ID Keycloak belum didapat, periksa secara manual sebelum mencoba lagi. Sistem tidak otomatis menautkan akun berdasarkan email atau username. Jika ID diketahui tetapi pemasangan peran gagal dan akun masih nonaktif, administrator harus memeriksa dan menyelesaikannya; rekonsiliasi tidak diam-diam mengaktifkan atau menaikkan peran akun.
 5. Jika hasil perubahan password tidak pasti karena timeout atau gangguan, lakukan pemeriksaan manual. Pemulihan tidak mengasumsikan password telah berubah. Jika perubahan Keycloak terkonfirmasi tetapi pembaruan lokal gagal, rekonsiliasi dapat menyelesaikan bagian lokal berdasarkan data pemulihan yang tersedia.
 
-Audit mencatat aktor, ID Keycloak, hasil, dan referensi sinkronisasi tanpa mencatat password atau token admin. Dashboard audit dikerjakan terpisah.
+Audit mencatat aktor, ID Keycloak, hasil, dan referensi sinkronisasi tanpa mencatat password atau token admin. Halaman Audit Log tersedia sebagai menu terpisah untuk Super Admin, Admin Pusat, dan Admin.
 
 ## Pengujian
 

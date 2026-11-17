@@ -124,6 +124,10 @@
                     </a>
                 @endif
 
+                @if(auth()->check() && auth()->user()->isAdmin())
+                    <a href="{{ route('admin.audit.index') }}" class="px-3.5 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('admin.audit.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100' }}">Audit Log</a>
+                @endif
+
                 {{-- Edit FAQs: Super Admin, Admin Pusat, Admin --}}
                 @if(auth()->check() && auth()->user()->isAdmin())
                     <a href="{{ route('admin.faq.index') }}"
@@ -276,6 +280,10 @@
         <a href="{{ route('moderator.forum.approval') }}"
            class="block px-3 py-2 rounded-lg text-base font-semibold transition
                   {{ request()->routeIs('moderator.forum.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Atur Forum</a>
+        @endif
+
+        @if(auth()->check() && auth()->user()->isAdmin())
+        <a href="{{ route('admin.audit.index') }}" class="block px-3 py-2 rounded-lg text-base font-semibold transition {{ request()->routeIs('admin.audit.*') ? 'bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Audit Log</a>
         @endif
 
         @if(auth()->check() && auth()->user()->isAdmin())

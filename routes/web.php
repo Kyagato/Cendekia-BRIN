@@ -171,6 +171,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =============================================================
     Route::prefix('admin')->name('admin.')->middleware(['role:Super Admin,Admin Pusat,Admin'])->group(function () {
         Route::get('/statistik', [App\Http\Controllers\StatisticController::class, 'index'])->name('statistik');
+        Route::get('/audit-log', [App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit.index');
         Route::get('/users/create', [App\Http\Controllers\KeycloakUserController::class, 'create'])->name('users.create');
         Route::post('/users', [App\Http\Controllers\KeycloakUserController::class, 'store'])->middleware('throttle:10,1')->name('users.store');
         Route::get('/users', [App\Http\Controllers\KeycloakUserController::class, 'index'])->name('users.index');
