@@ -93,3 +93,36 @@ it('sorts the activity dropdown alphabetically by its Indonesian labels', functi
     $this->actingAs($admin)->get(route('admin.audit.index'))->assertOk()
         ->assertSeeInOrder(['value="LOGIN_FAILED"', 'value="LOGOUT"', 'value="LOGIN"'], false);
 });
+
+it('shows only audit logs from the last 30 days and automatically deletes older logs', function () {
+    $admin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+    $expired = AuditLog::record('LOGIN', 'Catatan kedaluwarsa 31 hari lalu', [], $admin);
+    $expired->forceFill(['created_at' => now()->subDays(31)])->save();
+
+    $recent = AuditLog::record('LOGOUT', 'Catatan masih berlaku 29 hari lalu', [], $admin);
+    $recent->forceFill(['created_at' => now()->subDays(29)])->save();
+
+    $this->actingAs($admin)->get(route('admin.audit.index'))
+        ->assertOk()
+        ->assertSee('Catatan masih berlaku 29 hari lalu')
+        ->assertDontSee('Catatan kedaluwarsa 31 hari lalu');
+
+    expect(AuditLog::find($expired->id))->toBeNull();
+    expect(AuditLog::find($recent->id))->not->toBeNull();
+});
+
+it('prunes audit logs older than 30 days via model:prune command', function () {
+    $admin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+    $expired = AuditLog::record('LOGIN', 'Log lama 35 hari', [], $admin);
+    $expired->forceFill(['created_at' => now()->subDays(35)])->save();
+
+    $recent = AuditLog::record('LOGOUT', 'Log baru 10 hari', [], $admin);
+    $recent->forceFill(['created_at' => now()->subDays(10)])->save();
+
+    $this->artisan('model:prune', ['--model' => [AuditLog::class]])->assertSuccessful();
+
+    expect(AuditLog::find($expired->id))->toBeNull();
+    expect(AuditLog::find($recent->id))->not->toBeNull();
+});

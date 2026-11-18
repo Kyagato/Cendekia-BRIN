@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 class AuditLog extends Model
 {
-    use HasFactory;
+    use HasFactory, MassPrunable;
+
+    public const RETENTION_DAYS = 30;
 
     protected $fillable = [
         'user_id',
@@ -34,6 +39,30 @@ class AuditLog extends Model
     }
 
     /**
+     * Menentukan query catatan audit log yang sudah melewati masa retensi (lebih dari 30 hari).
+     */
+    public function prunable(): Builder
+    {
+        return static::where('created_at', '<', now()->subDays(self::RETENTION_DAYS));
+    }
+
+    /**
+     * Menghapus seluruh catatan audit log yang berusia lebih dari batas hari retensi.
+     */
+    public static function pruneExpired(int $days = self::RETENTION_DAYS): int
+    {
+        return static::where('created_at', '<', now()->subDays($days))->delete();
+    }
+
+    /**
+     * Membatasi query hanya untuk audit log dalam N hari terakhir.
+     */
+    public function scopeRecent(Builder $query, int $days = self::RETENTION_DAYS): Builder
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    /**
      * Helper cepat untuk mencatat aktivitas ke audit log.
      */
     public static function record(string $action, string $description, ?array $properties = null, ?User $user = null): ?self
@@ -41,7 +70,7 @@ class AuditLog extends Model
         try {
             $currentUser = $user ?? request()?->user() ?? auth()->user();
 
-            return self::create([
+            $log = self::create([
                 'user_id'     => $currentUser?->id,
                 'action'      => strtoupper(trim($action)),
                 'description' => $description,
@@ -49,6 +78,12 @@ class AuditLog extends Model
                 'user_agent'  => request()?->userAgent(),
                 'properties'  => $properties === null ? null : self::redactSecrets($properties),
             ]);
+
+            if (Cache::add('audit_logs_auto_pruned', true, now()->addHours(6))) {
+                self::pruneExpired();
+            }
+
+            return $log;
         } catch (\Throwable $e) {
             // Jangan sampai kegagalan logging menghentikan alur utama aplikasi
             \Illuminate\Support\Facades\Log::error('Gagal mencatat audit log.', ['action' => strtoupper(trim($action))]);

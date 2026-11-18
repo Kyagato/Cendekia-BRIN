@@ -5,7 +5,7 @@
 <div class="space-y-6">
     <div>
         <h1 class="text-2xl font-bold text-slate-900 dark:text-white border-l-4 border-blue-600 pl-3">Audit Log</h1>
-        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Riwayat aktivitas pengguna dan administrasi MojoPedia. Waktu ditampilkan dalam WIB.</p>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Riwayat aktivitas pengguna dan administrasi MojoPedia untuk 30 hari terakhir. Catatan yang lebih dari 30 hari dihapus otomatis. Waktu ditampilkan dalam WIB.</p>
     </div>
 
     <form method="GET" action="{{ route('admin.audit.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">

@@ -26,7 +26,9 @@ class AuditLogController extends Controller
             'actor' => ['nullable', 'string', 'max:100'],
             'result' => ['nullable', Rule::in(['success', 'failed', 'recorded'])],
         ]);
-        $query = AuditLog::query()->with('user:id,name,email');
+        AuditLog::pruneExpired();
+
+        $query = AuditLog::query()->recent()->with('user:id,name,email');
         if (! empty($filters['from'])) {
             $query->where('created_at', '>=', \Carbon\Carbon::parse($filters['from'], 'Asia/Jakarta')->startOfDay()->utc());
         }
@@ -48,7 +50,7 @@ class AuditLogController extends Controller
             $query->whereNotIn('action', self::SUCCESS_ACTIONS)->where('action', 'not like', '%FAILED%')->where('action', 'not like', '%CONFLICT%');
         }
         $logs = $query->orderByDesc('created_at')->orderByDesc('id')->paginate(20)->withQueryString();
-        $actions = AuditLog::query()->distinct()->orderBy('action')->pluck('action')
+        $actions = AuditLog::query()->recent()->distinct()->orderBy('action')->pluck('action')
             ->filter(fn ($action) => ! str_starts_with(self::actionLabel($action), 'Aktivitas: '))
             ->sort(fn ($a, $b) => strcasecmp(self::actionLabel($a), self::actionLabel($b)) ?: strcmp($a, $b))
             ->values();
