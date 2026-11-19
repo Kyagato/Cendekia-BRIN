@@ -324,13 +324,24 @@
                 @endif
 
                 @if(session('success'))
-                <div x-data="{ show: true }"
+                @php($successPopup = request()->routeIs('admin.users.index'))
+                <div role="status"
+                     @if($successPopup)
+                     style="display: none"
+                     x-data="{ show: false }"
+                     x-init="$nextTick(() => { show = true; setTimeout(() => show = false, 3000) })"
+                     x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
+                     x-transition:enter-start="-translate-y-full opacity-0"
+                     x-transition:enter-end="translate-y-0 opacity-100"
+                     @else
+                     x-data="{ show: true }"
                      x-init="setTimeout(() => show = false, 3000)"
+                     @endif
                      x-show="show"
                      x-transition:leave="transition ease-in duration-300"
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0"
-                     class="mb-6 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg flex items-center gap-2">
+                     class="{{ $successPopup ? 'fixed inset-x-4 top-4 z-[60] mx-auto w-fit max-w-[calc(100%-2rem)] shadow-lg dark:bg-green-950' : 'mb-6 dark:bg-green-900/30' }} bg-green-50 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg flex items-center gap-2">
                     <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                     {{ session('success') }}
                 </div>

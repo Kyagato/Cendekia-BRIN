@@ -35,7 +35,22 @@
 </div>
 <div>
 <label for="password" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Password Awal</label>
-<input id="password" name="password" type="password" maxlength="72" required  class="w-full px-3.5 py-2.5 bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition" autocomplete="new-password">
+<div class="relative" x-data="{ visible: false }">
+    <input id="password" name="password" type="password" :type="visible ? 'text' : 'password'" maxlength="72" required  class="w-full pl-3.5 pr-11 py-2.5 bg-slate-50/70 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition" autocomplete="new-password">
+    <button type="button" aria-controls="password" @click="visible = !visible"
+            aria-label="Tampilkan password awal" :aria-label="visible ? 'Sembunyikan password awal' : 'Tampilkan password awal'"
+            class="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-lg text-blue-600 dark:text-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500">
+        <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <g x-show="!visible">
+                <path d="M3 9c4.5 6 13.5 6 18 0M5.5 11.5l-2 2.5M9.5 13.3l-.8 3M14.5 13.3l.8 3M18.5 11.5l2 2.5"/>
+            </g>
+            <g x-show="visible" style="display: none">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </g>
+        </svg>
+    </button>
+</div>
 @error('password')<p role="alert" class="mt-1 text-xs text-rose-500">{{ $message }}</p>@enderror
 </div>
 <div>

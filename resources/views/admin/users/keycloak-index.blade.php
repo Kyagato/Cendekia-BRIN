@@ -44,9 +44,6 @@
         <button class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md">Cari</button>
     </form>
 </div>
-@if(session('success'))
-<div role="status" class="mb-4 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">{{ session('success') }}</div>
-@endif
 @if($errors->any())
 <div role="alert" class="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">{{ $errors->first() }}</div>
 @endif
